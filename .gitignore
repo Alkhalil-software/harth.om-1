@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Secrets - never commit
+.env
+.env.local
+.env.*.local
+server/.env
+server/.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Uploaded files (runtime data, not source code)
+server/uploads/
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# Claude local settings (not needed in repo)
+.claude/settings.local.json
