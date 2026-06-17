@@ -1,0 +1,1797 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>لوحة المالك - حرث</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="design-system.css" />
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+      /* Dashboard-specific styles (scoped to this page only) */
+      .dash-container {
+        max-width: 1200px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .dash-card {
+        background: rgba(255, 255, 255, 0.92);
+        color: #1a1a1a;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      }
+      .dash-card h2 {
+        margin: 0 0 14px;
+        color: #2d5016;
+        border-bottom: 2px solid #6ab04c;
+        padding-bottom: 8px;
+      }
+      .dash-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+      }
+      /* ── Premium Equipment Cards ─────────────────────────── */
+      .equip-card {
+        background: #fff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(106,176,76,0.12);
+        position: relative;
+      }
+      .equip-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 36px rgba(0,0,0,0.13);
+      }
+      /* Media */
+      .eq-media {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+        background: linear-gradient(135deg,#e8f5e0,#d0e8c0);
+        flex-shrink: 0;
+      }
+      .eq-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+        display: block;
+      }
+      .equip-card:hover .eq-media img {
+        transform: scale(1.05);
+      }
+      .eq-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6ab04c;
+        opacity: 0.5;
+        font-size: 48px;
+      }
+      /* Floating badges over image */
+      .eq-badges {
+        position: absolute;
+        top: 10px;
+        inset-inline-start: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        z-index: 2;
+      }
+      .eq-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        letter-spacing: 0.2px;
+      }
+      .eq-badge--new   { background: rgba(255,210,0,0.93); color:#5a3e00; }
+      .eq-badge--rent  { background: rgba(106,176,76,0.92); color:#fff; }
+      .eq-badge--sale  { background: rgba(52,152,219,0.92); color:#fff; }
+      .eq-badge--both  { background: rgba(155,89,182,0.92); color:#fff; }
+      /* Status pill top-right */
+      .eq-status-pill {
+        position: absolute;
+        top: 10px;
+        inset-inline-end: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        z-index: 2;
+      }
+      .eq-s-available   { background:rgba(39,174,96,0.93);   color:#fff; }
+      .eq-s-rented      { background:rgba(241,196,15,0.93);  color:#5a3e00; }
+      .eq-s-maintenance { background:rgba(231,76,60,0.93);   color:#fff; }
+      .eq-s-sold        { background:rgba(52,73,94,0.93);    color:#fff; }
+      .eq-s-hidden      { background:rgba(150,150,150,0.93); color:#fff; }
+      /* Card body */
+      .eq-body {
+        padding: 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .eq-cat {
+        font-size: 11px;
+        color: #6ab04c;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .eq-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a2e10;
+        margin: 0;
+        line-height: 1.3;
+      }
+      .eq-price-row {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 2px;
+      }
+      .eq-price-main  { font-size: 22px; font-weight: 800; color:#2d5016; }
+      .eq-price-unit  { font-size: 13px; color:#888; }
+      .eq-price-extra { font-size: 13px; color:#3498db; font-weight:600; }
+      .eq-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 12px;
+        color: #777;
+      }
+      .eq-meta-row span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .eq-meta-row i { color:#6ab04c; width:12px; text-align:center; }
+      /* Action buttons */
+      .eq-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: auto;
+        padding-top: 4px;
+      }
+      .eq-btn {
+        flex: 1;
+        padding: 9px 8px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: opacity 0.15s, transform 0.1s;
+      }
+      .eq-btn:active { transform: scale(0.95); }
+      .eq-btn--edit   { background: linear-gradient(135deg,#f39c12,#e67e22); color:#fff; }
+      .eq-btn--hide   { background: linear-gradient(135deg,#95a5a6,#7f8c8d); color:#fff; }
+      .eq-btn--show   { background: linear-gradient(135deg,#27ae60,#2ecc71); color:#fff; }
+      .eq-btn--del    { background: linear-gradient(135deg,#e74c3c,#c0392b); color:#fff; flex:0 0 auto; width:38px; }
+      .eq-btn--pdf    { background: linear-gradient(135deg,#8e44ad,#9b59b6); color:#fff; flex:0 0 auto; width:38px; }
+      /* Legacy badge selectors kept for compat */
+      .badge { display:none; }
+
+      /* ── Technical specs accordion ── */
+      .specs-acc { margin-top:16px; border:1px solid rgba(106,176,76,.35); border-radius:12px; overflow:hidden; background:#fff; }
+      .specs-acc summary { cursor:pointer; padding:13px 18px; font-weight:700; color:#2d5016; font-size:14px; background:#f0f9f0; list-style:none; display:flex; align-items:center; gap:8px; user-select:none; }
+      .specs-acc summary::-webkit-details-marker { display:none; }
+      .specs-acc summary .acc-arrow { margin-inline-start:auto; font-size:11px; transition:transform .22s; }
+      .specs-acc[open] summary .acc-arrow { transform:rotate(-180deg); }
+      .specs-acc .acc-body { padding:18px; }
+      .specs-sub { font-weight:700; color:#2d5016; font-size:13px; margin:16px 0 10px; padding-top:14px; border-top:1px dashed #c8e6c9; display:flex; align-items:center; gap:6px; }
+      .specs-sub:first-child { margin-top:0; padding-top:0; border:none; }
+      .pdf-drop { border:2px dashed rgba(106,176,76,.5); border-radius:9px; padding:14px 16px; background:#f8fff8; margin-top:8px; }
+      .pdf-file-info { display:flex; align-items:center; gap:8px; margin-top:8px; padding:8px 12px; background:#fff; border:1px solid #dce; border-radius:7px; font-size:12px; color:#444; }
+      .pdf-file-info i { color:#e74c3c; font-size:16px; }
+      .pdf-current-link { margin-top:6px; font-size:12px; }
+      .pdf-current-link a { color:#6ab04c; text-decoration:none; }
+      .pdf-current-link a:hover { text-decoration:underline; }
+
+      /* Form */
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .form-grid label {
+        display: flex;
+        flex-direction: column;
+        font-size: 14px;
+        color: #333;
+      }
+      .form-grid input,
+      .form-grid select,
+      .form-grid textarea {
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 14px;
+        margin-top: 4px;
+      }
+      .form-grid textarea {
+        grid-column: 1 / -1;
+        min-height: 70px;
+      }
+      .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .btn-save {
+        background: #6ab04c;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-family: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn-cancel {
+        background: #95a5a6;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-family: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .image-preview {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .image-preview .thumb {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid #ddd;
+      }
+      .image-preview .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .image-preview .thumb .x {
+        position: absolute;
+        top: 2px;
+        inset-inline-end: 2px;
+        background: rgba(231, 76, 60, 0.9);
+        color: #fff;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      .image-preview .thumb.primary {
+        border-color: #6ab04c;
+      }
+      .image-preview .thumb .primary-badge {
+        position: absolute;
+        bottom: 2px;
+        inset-inline-start: 2px;
+        background: #6ab04c;
+        color: #fff;
+        font-size: 10px;
+        padding: 1px 6px;
+        border-radius: 4px;
+      }
+
+      #toast {
+        position: fixed;
+        bottom: 24px;
+        inset-inline-start: 50%;
+        transform: translateX(-50%);
+        background: #2d5016;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+        max-width: 90vw;
+      }
+      #toast.show {
+        opacity: 1;
+      }
+      #toast.error {
+        background: #c0392b;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+      }
+      .empty-state i {
+        font-size: 48px;
+        color: #6ab04c;
+        margin-bottom: 12px;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .stat-box {
+        background: linear-gradient(135deg, #6ab04c, #2d5016);
+        color: #fff;
+        padding: 16px;
+        border-radius: 12px;
+        text-align: center;
+      }
+      .stat-box .num {
+        font-size: 28px;
+        font-weight: 700;
+      }
+      .stat-box .label {
+        font-size: 13px;
+        opacity: 0.9;
+      }
+
+      .pagination {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      .pagination button {
+        padding: 6px 12px;
+        border: 1px solid #6ab04c;
+        background: #fff;
+        color: #2d5016;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .pagination button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .pagination button.active {
+        background: #6ab04c;
+        color: #fff;
+      }
+
+      .login-gate {
+        max-width: 420px;
+        margin: 60px auto;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.95);
+        color: #1a1a1a;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      }
+      .login-gate h2 {
+        color: #2d5016;
+        margin-top: 0;
+      }
+      .login-gate input {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-family: inherit;
+        box-sizing: border-box;
+      }
+      .login-gate button {
+        width: 100%;
+        padding: 12px;
+        background: #6ab04c;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      .hidden {
+        display: none !important;
+      }
+
+      .filter-bar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .filter-bar select,
+      .filter-bar input {
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-family: inherit;
+      }
+
+      /* ============================================================
+         RESPONSIVE — phones and tablets
+         The owner dashboard is heavily used by farmers on their
+         phones, so layout has to hold up at narrow widths. The
+         desktop grid (260px-min cards) becomes one column under
+         640px, and form fields stretch full-width.
+      ============================================================ */
+      @media (max-width: 640px) {
+        .dash-container {
+          margin: 14px auto;
+          padding: 0 12px;
+        }
+        .dash-card {
+          padding: 14px;
+          border-radius: 12px;
+          margin-bottom: 14px;
+        }
+        .dash-card h2 {
+          font-size: 18px;
+        }
+        /* Equipment cards single-column on phones — 260px-min was
+           causing horizontal overflow on small screens. */
+        .dash-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .eq-media { height: 180px; }
+        /* Filter bar wraps + inputs grow to share rows. */
+        .filter-bar {
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .filter-bar select,
+        .filter-bar input {
+          flex: 1 1 calc(50% - 4px);
+          min-width: 0;
+        }
+        /* Modals — let them fill more of the screen. */
+        .modal {
+          max-width: 94vw !important;
+          padding: 16px;
+        }
+        /* Tables collapse a bit. */
+        table th,
+        table td {
+          padding: 8px;
+          font-size: 13px;
+        }
+      }
+
+      @media (max-width: 420px) {
+        /* Tightest layout — phones in portrait. */
+        .dash-container {
+          padding: 0 10px;
+        }
+        .dash-card {
+          padding: 12px;
+        }
+        .dash-card h2 {
+          font-size: 17px;
+          padding-bottom: 6px;
+        }
+        .eq-media { height: 160px; }
+        .eq-name { font-size: 15px; }
+        .eq-meta-row { font-size: 11px; }
+        /* Trust + status banner action buttons should stack. */
+        #trust-banner-actions,
+        #status-banner-actions {
+          flex-wrap: wrap;
+          gap: 6px;
+        }
+        #trust-banner-actions > *,
+        #status-banner-actions > * {
+          flex: 1 1 100%;
+          text-align: center;
+        }
+      }
+    </style>
+  
+    <!-- HARTH-RESPONSIVE-CSS -->
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+
+  <body>
+    <header class="header-container">
+      <div class="header-capsule">
+        <div class="section right">
+          <div class="site-brand">
+            <img src="شعار حرث.jpeg" alt="Logo" />
+            <h1>حــرث</h1>
+          </div>
+        </div>
+        <nav class="section center">
+          <ul class="nav-links">
+            <li><a href="index.html" class="nav-item">الرئيسية</a></li>
+            <li><a href="tools.html" class="nav-item">تأجير معدات</a></li>
+            <li><a href="basket.html" class="nav-item">بيع معدات</a></li>
+            <li>
+              <a href="owner-dashboard.html" class="nav-item">لوحة المالك</a>
+            </li>
+          </ul>
+        </nav>
+        <div class="section left" id="auth-header">
+          <a href="register.html" class="hs-btn hs-btn--ghost hs-btn--sm" id="login-link">تسجيل دخول</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ========== LOGIN GATE (shown if not logged in) ========== -->
+    <section id="login-section" class="login-gate hidden">
+      <h2><i class="fas fa-user-shield"></i> تسجيل دخول المالك</h2>
+      <p style="color: #666; font-size: 14px">
+        هذه اللوحة مخصّصة لأصحاب المعدات. سجّل دخولك بحساب مالك.
+      </p>
+      <input type="email" id="login-email" placeholder="البريد الإلكتروني" />
+      <input type="password" id="login-password" placeholder="كلمة المرور" />
+      <button id="login-submit">دخول</button>
+      <p style="text-align: center; font-size: 13px; margin-top: 12px">
+        ليس لديك حساب؟
+        <a href="register.html" style="color: #6ab04c">سجّل كمالك</a>
+      </p>
+    </section>
+
+    <!-- ========== DASHBOARD (shown when logged in as owner/admin) ========== -->
+    <main id="dashboard-section" class="dash-container hidden">
+      <!-- Account-status banner (shown for pending/rejected/etc; hidden for approved) -->
+      <div id="status-banner" class="dash-card hidden" style="border:1px solid #f1c40f; background:rgba(241,196,15,0.12)">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <i class="fas fa-info-circle" id="status-banner-icon" style="font-size:24px;color:#f1c40f;margin-top:2px"></i>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:16px" id="status-banner-title">حسابك قيد المراجعة</div>
+            <div style="font-size:14px;color:#ddd;margin-top:6px" id="status-banner-msg">
+              حسابك كمزارع قيد المراجعة من قِبل الإدارة. ستُفعَّل صلاحية إضافة المعدات للبيع/الإيجار بعد الموافقة. يمكنك في هذه الأثناء تصفّح وشراء المنتجات من المتجر.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust banner: prompts the owner to verify their email and submit
+           KYC. Hidden once both are done. Filled in by initTrustBanner()
+           after the page loads (data comes from /auth/me, which already
+           returns email_verified + identity_status). -->
+      <div
+        id="trust-banner"
+        class="dash-card hidden"
+        style="border:1px solid #6ab04c; background:rgba(106,176,76,0.12)"
+      >
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <i class="fas fa-shield-alt" style="font-size:24px;color:#6ab04c;margin-top:2px"></i>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:16px;color:#fff">
+              عزّز ثقة المشترين بحسابك
+            </div>
+            <div id="trust-banner-msg" style="font-size:14px;color:#ddd;margin-top:6px"></div>
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap" id="trust-banner-actions"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Welcome + stats -->
+      <div class="dash-card">
+        <h2>
+          <i class="fas fa-tractor"></i>
+          <span id="welcome-text">مرحباً</span>
+        </h2>
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="num" id="stat-total">0</div>
+            <div class="label">إجمالي المعدات</div>
+          </div>
+          <div class="stat-box">
+            <div class="num" id="stat-available">0</div>
+            <div class="label">متاحة</div>
+          </div>
+          <div class="stat-box">
+            <div class="num" id="stat-rented">0</div>
+            <div class="label">مؤجرة</div>
+          </div>
+          <div class="stat-box">
+            <div class="num" id="stat-hidden">0</div>
+            <div class="label">مخفية</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add / Edit form (hidden when account isn't approved) -->
+      <div class="dash-card" id="equip-form-card">
+        <h2 id="form-title">
+          <i class="fas fa-plus-circle"></i> إضافة معدة جديدة
+        </h2>
+        <form id="equip-form">
+          <input type="hidden" id="equip-id" />
+
+          <div class="form-grid">
+            <label>
+              الاسم *
+              <input type="text" id="f-name" required maxlength="200" />
+            </label>
+
+            <label>
+              التصنيف *
+              <select id="f-category" required>
+                <option value="tractor">جرارات</option>
+                <option value="sprayer">مرشات</option>
+                <option value="harvester">حصادات</option>
+                <option value="tools">أدوات</option>
+                <option value="seeds">بذور</option>
+                <option value="fertilizer">أسمدة</option>
+                <option value="pesticide">مبيدات</option>
+                <option value="other">أخرى</option>
+              </select>
+            </label>
+
+            <label>
+              نوع الإدراج *
+              <select id="f-listing-type" required>
+                <option value="rent">للإيجار</option>
+                <option value="sale">للبيع</option>
+                <option value="both">بيع وإيجار</option>
+              </select>
+            </label>
+
+            <label>
+              الحالة
+              <select id="f-status">
+                <option value="available">متاح</option>
+                <option value="rented">مؤجر</option>
+                <option value="maintenance">صيانة</option>
+                <option value="sold">مباع</option>
+                <option value="hidden">مخفي</option>
+              </select>
+            </label>
+
+            <label id="f-daily-wrap">
+              سعر اليوم (ريال) *
+              <input type="number" id="f-daily-price" min="0" step="0.01" />
+            </label>
+
+            <label id="f-sale-wrap">
+              سعر البيع (ريال)
+              <input type="number" id="f-sale-price" min="0" step="0.01" />
+            </label>
+
+            <!-- Optional security deposit. Held when the rental starts and
+                 refunded at completion (or forfeited on damage). Hidden for
+                 listing_type='sale' — it makes no sense to hold a deposit
+                 against a sale. -->
+            <label id="f-deposit-wrap">
+              تأمين قابل للاسترداد (ريال) <small style="color:#777">— اختياري</small>
+              <input
+                type="number"
+                id="f-deposit-amount"
+                min="0"
+                step="0.01"
+                placeholder="مثال: 50.00"
+              />
+              <small style="color:#777;display:block;margin-top:4px">
+                يُحجز من المستأجر عند الحجز ويُعاد عند إرجاع المعدة سليمة.
+                ينطبق فقط على المعدات للإيجار.
+              </small>
+            </label>
+
+            <label>
+              الكمية المتاحة
+              <input type="number" id="f-stock" min="0" step="1" value="1" />
+            </label>
+
+            <label>
+              المحافظة
+              <select id="f-governorate">
+                <option value="">بدون تحديد</option>
+                <option value="muscat">مسقط</option>
+                <option value="dhofar">ظفار</option>
+                <option value="musandam">مسندم</option>
+                <option value="buraimi">البريمي</option>
+                <option value="dakhiliyah">الداخلية</option>
+                <option value="north_batinah">شمال الباطنة</option>
+                <option value="south_batinah">جنوب الباطنة</option>
+                <option value="south_sharqiyah">جنوب الشرقية</option>
+                <option value="north_sharqiyah">شمال الشرقية</option>
+                <option value="dhahirah">الظاهرة</option>
+                <option value="wusta">الوسطى</option>
+              </select>
+            </label>
+
+            <textarea
+              id="f-description"
+              placeholder="وصف المعدة..."
+              maxlength="5000"
+            ></textarea>
+          </div>
+
+          <!-- Technical specs accordion -->
+          <details class="specs-acc" id="tech-specs-acc">
+            <summary>
+              <i class="fas fa-cogs"></i> المواصفات الفنية التفصيلية
+              <small style="color:#888;font-weight:400;margin-inline-start:4px">(اختياري — لتوليد الملف الفني PDF)</small>
+              <span class="acc-arrow">▼</span>
+            </summary>
+            <div class="acc-body">
+
+              <p class="specs-sub"><i class="fas fa-id-card"></i> بيانات التعريف</p>
+              <div class="form-grid">
+                <label>الشركة المصنعة <input type="text" id="f-manufacturer" maxlength="100" placeholder="مثال: John Deere، كوبوتا"></label>
+                <label>الموديل <input type="text" id="f-model" maxlength="100" placeholder="مثال: 6120M"></label>
+                <label>سنة الصنع <input type="number" id="f-model-year" min="1950" max="2035" placeholder="مثال: 2022"></label>
+                <label>الرقم التسلسلي <input type="text" id="f-serial-number" maxlength="100" placeholder="اختياري"></label>
+                <label>بلد المنشأ <input type="text" id="f-origin-country" maxlength="100" placeholder="مثال: USA، Japan، Germany"></label>
+                <label>ساعات التشغيل <input type="number" id="f-operating-hours" min="0" step="1" placeholder="عدد الساعات الكلية"></label>
+                <label>نوع الوقود / مصدر الطاقة
+                  <select id="f-fuel-type">
+                    <option value="">-- اختر --</option>
+                    <option value="diesel">ديزل</option>
+                    <option value="gasoline">بنزين</option>
+                    <option value="electric">كهرباء</option>
+                    <option value="hybrid">هجين</option>
+                    <option value="gas">غاز طبيعي</option>
+                  </select>
+                </label>
+              </div>
+
+              <p class="specs-sub"><i class="fas fa-ruler-combined"></i> المواصفات الفنية</p>
+              <div class="form-grid">
+                <label>القدرة المحركية (HP) <input type="number" id="f-engine-power" min="0" step="0.1" placeholder="مثال: 120"></label>
+                <label>الوزن الإجمالي (كجم) <input type="number" id="f-weight" min="0" step="1" placeholder="مثال: 4200"></label>
+                <label>الحمولة القصوى (كجم) <input type="number" id="f-load-capacity" min="0" step="1" placeholder="مثال: 2000"></label>
+                <label>الطول (سم) <input type="number" id="f-dim-length" min="0" step="1" placeholder="سم"></label>
+                <label>العرض (سم) <input type="number" id="f-dim-width" min="0" step="1" placeholder="سم"></label>
+                <label>الارتفاع (سم) <input type="number" id="f-dim-height" min="0" step="1" placeholder="سم"></label>
+              </div>
+
+              <p class="specs-sub"><i class="fas fa-wrench"></i> سجل الصيانة</p>
+              <div class="form-grid">
+                <label>تاريخ آخر صيانة <input type="date" id="f-last-maint-date"></label>
+                <label>نوع الصيانة <input type="text" id="f-maint-type" maxlength="200" placeholder="مثال: دورية شاملة، تغيير زيت"></label>
+                <label>الجهة المنفذة <input type="text" id="f-maint-by" maxlength="200" placeholder="مثال: وكالة الشركة، ورشة معتمدة"></label>
+                <label>موعد الصيانة القادمة <input type="date" id="f-next-maint-date"></label>
+              </div>
+
+              <p class="specs-sub"><i class="fas fa-shield-alt"></i> الضمان والشهادات</p>
+              <div class="form-grid">
+                <label>معلومات الضمان <input type="text" id="f-warranty-info" maxlength="300" placeholder="مثال: ضمان سنة من الشركة"></label>
+                <label>شهادة الفحص الفني <input type="text" id="f-inspection-cert" maxlength="300" placeholder="مثال: موثق — رقم الشهادة 12345"></label>
+              </div>
+
+              <p class="specs-sub"><i class="fas fa-file-pdf"></i> ملف PDF الرسمي (اختياري)</p>
+              <div class="pdf-drop">
+                <small style="color:#666;display:block;margin-bottom:8px">ارفع كتالوج الشركة أو دليل التشغيل أو الملف التقني الرسمي (PDF حتى 20 ميجابايت)</small>
+                <input type="file" id="f-datasheet-pdf" accept="application/pdf">
+                <div id="pdf-upload-info" style="display:none" class="pdf-file-info">
+                  <i class="fas fa-file-pdf"></i>
+                  <span id="pdf-upload-name"></span>
+                  <span id="pdf-upload-size" style="color:#888;margin-inline-start:auto"></span>
+                </div>
+                <input type="hidden" id="f-datasheet-pdf-url">
+                <div id="pdf-current-link" class="pdf-current-link"></div>
+              </div>
+
+            </div><!-- /acc-body -->
+          </details>
+
+          <!-- Image upload -->
+          <div style="margin-top: 12px">
+            <label style="display: block; margin-bottom: 6px; color: #333">
+              الصور (يمكن إضافة حتى 10 صور)
+            </label>
+            <input
+              type="file"
+              id="f-images"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              multiple
+            />
+            <div id="image-preview" class="image-preview"></div>
+            <small style="color: #666"
+              >اضغط على صورة لجعلها الصورة الرئيسية</small
+            >
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-save" id="btn-save">
+              <i class="fas fa-save"></i> حفظ
+            </button>
+            <button
+              type="button"
+              class="btn-cancel hidden"
+              id="btn-cancel-edit"
+            >
+              إلغاء التعديل
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- My equipment list -->
+
+      <div class="dash-card">
+        <h2><i class="fas fa-list"></i> معدّاتي</h2>
+        <div class="filter-bar">
+          <input
+            type="search"
+            id="filter-search"
+            placeholder="بحث بالاسم..."
+            style="min-width: 200px; flex: 1"
+          />
+          <select id="filter-status">
+            <option value="">كل الحالات</option>
+            <option value="available">متاح</option>
+            <option value="rented">مؤجر</option>
+            <option value="maintenance">صيانة</option>
+            <option value="sold">مباع</option>
+            <option value="hidden">مخفي</option>
+          </select>
+          <button
+            id="filter-refresh"
+            style="
+              padding: 6px 14px;
+              border: 1px solid #6ab04c;
+              background: #fff;
+              color: #2d5016;
+              border-radius: 6px;
+              cursor: pointer;
+            "
+          >
+            <i class="fas fa-sync"></i> تحديث
+          </button>
+        </div>
+        <div id="equip-list" class="dash-grid"></div>
+        <div id="equip-empty" class="hs-empty hidden">
+          <div class="hs-empty__art">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 28C18.2091 28 20 26.2091 20 24C20 21.7909 18.2091 20 16 20C13.7909 20 12 21.7909 12 24C12 26.2091 13.7909 28 16 28Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M34 32C36.2091 32 38 30.2091 38 28C38 25.7909 36.2091 24 34 24C31.7909 24 30 25.7909 30 28C30 30.2091 31.7909 32 34 32Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M20 24H30M20 24L18 16H10M30 28L34 24H42" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="hs-empty__title">لا توجد معدات بعد</h3>
+          <p class="hs-empty__desc">أضف أول معدة لك من النموذج أعلاه لتظهر للمشترين والمستأجرين على المنصة.</p>
+        </div>
+        <div id="pagination" class="pagination"></div>
+      </div>
+    </main>
+
+    <div id="toast"></div>
+
+    <script src="equipment-pdf.js"></script>
+    <script src="unified-nav.js"></script>
+    <script src="design-system.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+      // =================================================================
+      // Owner Dashboard — talks only to /api/v1/*.
+      // All data lives in Postgres via the backend; nothing is hardcoded.
+      // =================================================================
+      (function () {
+        "use strict";
+
+        const API_BASE = "/api/v1";
+        const TOKEN_KEY = "token";
+        const USER_KEY = "user";
+
+        // Local in-memory state for the form
+        let currentImages = []; // [{ url, filename }]
+        let primaryImageUrl = null;
+        let editingId = null;
+
+        const GOV_LABELS = {
+          muscat: "مسقط", dhofar: "ظفار", musandam: "مسندم",
+          buraimi: "البريمي", dakhiliyah: "الداخلية",
+          north_batinah: "شمال الباطنة", south_batinah: "جنوب الباطنة",
+          south_sharqiyah: "جنوب الشرقية", north_sharqiyah: "شمال الشرقية",
+          dhahirah: "الظاهرة", wusta: "الوسطى",
+        };
+
+        // Pagination state
+        const PAGE_SIZE = 12;
+        let currentPage = 1;
+
+        // ---------- tiny helpers ----------
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => document.querySelectorAll(sel);
+
+        function showToast(msg, isError = false) {
+          const t = $("#toast");
+          t.textContent = msg;
+          t.classList.toggle("error", isError);
+          t.classList.add("show");
+          setTimeout(() => t.classList.remove("show"), 3200);
+        }
+
+        function getToken() {
+          return localStorage.getItem(TOKEN_KEY);
+        }
+        function setAuth(token, user) {
+          localStorage.setItem(TOKEN_KEY, token);
+          localStorage.setItem(USER_KEY, JSON.stringify(user));
+        }
+        function clearAuth() {
+          localStorage.removeItem(TOKEN_KEY);
+          localStorage.removeItem(USER_KEY);
+        }
+        function getUser() {
+          try {
+            return JSON.parse(localStorage.getItem(USER_KEY));
+          } catch {
+            return null;
+          }
+        }
+
+        /**
+         * Centralised API caller. Handles auth header, JSON body,
+         * consistent error surfacing.
+         */
+        async function api(path, opts = {}) {
+          const headers = { ...(opts.headers || {}) };
+          const token = getToken();
+          if (token) headers["Authorization"] = `Bearer ${token}`;
+          if (opts.body && !(opts.body instanceof FormData)) {
+            headers["Content-Type"] = "application/json";
+            opts.body = JSON.stringify(opts.body);
+          }
+          const res = await fetch(API_BASE + path, { ...opts, headers });
+          let data;
+          try {
+            data = await res.json();
+          } catch {
+            data = null;
+          }
+          if (!res.ok) {
+            const msg =
+              (data && data.error && data.error.message) ||
+              `Request failed (${res.status})`;
+            const err = new Error(msg);
+            err.status = res.status;
+            err.details = data && data.error && data.error.details;
+            // Auto-logout on 401
+            if (res.status === 401) {
+              clearAuth();
+              showLogin();
+            }
+            throw err;
+          }
+          return data;
+        }
+
+        // ---------- view switching ----------
+        function showLogin() {
+          // Full logout: send the user to the main login page so the rest of
+          // the app (basket, tools, track, header) also sees a logged-out
+          // state. Staying on this page with a hidden dashboard left users
+          // confused because script.js elsewhere still thought they were
+          // logged in from a stale localStorage entry.
+          clearAuth();
+          window.location.href = "register.html";
+        }
+        function showDashboard(user) {
+          $("#login-section").classList.add("hidden");
+          $("#dashboard-section").classList.remove("hidden");
+          $("#welcome-text").textContent = `مرحباً، ${user.name || user.email}`;
+          renderStatusBanner(user);
+          renderTrustBanner(user);
+        }
+
+        function escapeHtml(s) {
+          if (s == null) return "";
+          return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+        }
+
+        // Trust nudge: a single banner that lists what's still TODO for this
+        // owner to earn the "موثَّق" badge. Hidden once everything's done.
+        // Admins see no banner — they don't need to verify themselves.
+        function renderTrustBanner(user) {
+          const banner = $("#trust-banner");
+          if (!banner) return;
+          if (user.role === "admin") {
+            banner.classList.add("hidden");
+            return;
+          }
+          const todo = [];
+          // Email verification was removed as a feature, so we no
+          // longer push "email" into the todo list. Only KYC remains.
+          // identity_verified / identity_status come back from /auth/me. If
+          // both are missing (older sessions) we fall through and don't
+          // pester the user — the next /auth/me will populate them.
+          const idStatus = user.identity_status || "none";
+          if (idStatus === "none") todo.push("kyc_submit");
+          else if (idStatus === "rejected") todo.push("kyc_resubmit");
+          else if (idStatus === "pending") todo.push("kyc_pending"); // info only
+
+          if (!todo.length) {
+            banner.classList.add("hidden");
+            return;
+          }
+
+          // Compose a single coherent message from the todos.
+          const msgParts = [];
+          if (todo.includes("kyc_submit")) {
+            msgParts.push("لم تُقدّم وثائق التحقّق من الهوية.");
+          }
+          if (todo.includes("kyc_resubmit")) {
+            msgParts.push(
+              "تم رفض وثائق التحقّق السابقة — يمكنك إعادة الإرسال بصور أوضح.",
+            );
+          }
+          if (todo.includes("kyc_pending")) {
+            msgParts.push("وثائق التحقّق قيد المراجعة من قِبل الإدارة.");
+          }
+          $("#trust-banner-msg").textContent =
+            "إكمال هذه الخطوات يضيف علامة ✓ موثَّق على ملفك ومعداتك. " +
+            msgParts.join(" ");
+
+          // Render action buttons.
+          const actions = $("#trust-banner-actions");
+          actions.innerHTML = "";
+          if (todo.includes("kyc_submit") || todo.includes("kyc_resubmit")) {
+            const link = document.createElement("a");
+            link.href = "kyc.html";
+            link.className = "btn-save";
+            link.style.cssText = "padding:8px 14px;border-radius:6px;text-decoration:none";
+            link.innerHTML =
+              '<i class="fas fa-id-card"></i> ' +
+              (todo.includes("kyc_resubmit") ? "إعادة إرسال الوثائق" : "تقديم وثائق التحقّق");
+            actions.appendChild(link);
+          }
+          banner.classList.remove("hidden");
+        }
+
+        function actionButton(label, onClick) {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "btn-save";
+          b.style.cssText = "padding:8px 14px";
+          b.textContent = label;
+          b.addEventListener("click", onClick);
+          return b;
+        }
+
+        // (Email verification flow was removed — see auth.controller.js.
+        //  The function previously here is no longer needed.)
+
+        async function reloadUser() {
+          try {
+            const r = await api("/auth/me");
+            setAuth(getToken(), r.user);
+            renderStatusBanner(r.user);
+            renderTrustBanner(r.user);
+          } catch (e) { /* ignore */ }
+        }
+
+        // Show/hide the account-approval banner and toggle the create-equipment
+        // form so non-approved farmers can't fill out a form whose POST will
+        // be rejected by the API anyway.
+        function renderStatusBanner(user) {
+          const banner = $("#status-banner");
+          const formCard = $("#equip-form-card");
+          if (!banner) return;
+
+          // Admins always have full power on this page.
+          if (user.role === "admin" || user.account_status === "approved") {
+            banner.classList.add("hidden");
+            if (formCard) formCard.classList.remove("hidden");
+            return;
+          }
+
+          let title, msg, color;
+          if (user.account_status === "pending") {
+            color = "#f1c40f"; // amber
+            title = "حسابك قيد المراجعة";
+            msg = "حسابك كمزارع قيد المراجعة من قِبل الإدارة. ستُفعَّل صلاحية إضافة المعدات للبيع/الإيجار بعد الموافقة. يمكنك في هذه الأثناء تصفّح وشراء المنتجات من المتجر.";
+          } else if (user.account_status === "rejected") {
+            color = "#e74c3c";
+            title = "تم رفض تفعيل صلاحيات حسابك";
+            msg = (user.status_reason ? `السبب: ${user.status_reason}. ` : "") +
+              "لا يمكنك حالياً إضافة معدات للبيع أو الإيجار. للتواصل مع الإدارة لإعادة المراجعة، يُرجى التواصل مع الدعم.";
+          } else {
+            // blocked/deleted users wouldn't reach here (auth blocks them),
+            // but render a generic message just in case.
+            color = "#e74c3c";
+            title = "حسابك غير مفعّل";
+            msg = "تواصل مع الإدارة لمزيد من المعلومات.";
+          }
+
+          banner.style.borderColor = color;
+          banner.style.background = `${color}1f`; // ~12% alpha hex suffix
+          $("#status-banner-icon").style.color = color;
+          $("#status-banner-title").textContent = title;
+          $("#status-banner-msg").textContent = msg;
+          banner.classList.remove("hidden");
+
+          // Hide the create form so they don't try to use it.
+          if (formCard) formCard.classList.add("hidden");
+        }
+
+        // ---------- login flow ----------
+        async function handleLogin(e) {
+          e && e.preventDefault();
+          const email = $("#login-email").value.trim();
+          const password = $("#login-password").value;
+          if (!email || !password) {
+            showToast("أدخل البريد وكلمة المرور", true);
+            return;
+          }
+          try {
+            const res = await api("/auth/login", {
+              method: "POST",
+              body: { email, password },
+            });
+            if (!["owner", "admin"].includes(res.user.role)) {
+              showToast(
+                "هذا الحساب ليس مالكاً — استخدم صفحة التسجيل لإنشاء حساب مالك",
+                true,
+              );
+              return;
+            }
+            setAuth(res.token, res.user);
+            showDashboard(res.user);
+            await refreshEquipment();
+          } catch (err) {
+            showToast(err.message || "فشل تسجيل الدخول", true);
+          }
+        }
+
+        // ---------- init / session check ----------
+        async function init() {
+          if (!getToken()) return showLogin();
+          try {
+            const res = await api("/auth/me");
+            if (!["owner", "admin"].includes(res.user.role)) {
+              clearAuth();
+              showLogin();
+              showToast("هذه اللوحة للمالكين فقط", true);
+              return;
+            }
+            setAuth(getToken(), res.user); // refresh cached user
+            showDashboard(res.user);
+            await refreshEquipment();
+          } catch (err) {
+            showLogin();
+          }
+        }
+
+        // ---------- image upload ----------
+        async function handleImageFiles(files) {
+          if (!files || !files.length) return;
+          const fd = new FormData();
+          for (const f of files) fd.append("images", f);
+          try {
+            const res = await api("/uploads/images", {
+              method: "POST",
+              body: fd,
+            });
+            for (const f of res.files) {
+              if (currentImages.length >= 10) {
+                showToast("الحد الأقصى 10 صور", true);
+                break;
+              }
+              currentImages.push({ url: f.url, filename: f.filename });
+            }
+            if (!primaryImageUrl && currentImages.length) {
+              primaryImageUrl = currentImages[0].url;
+            }
+            renderImagePreview();
+          } catch (err) {
+            showToast(err.message || "فشل رفع الصورة", true);
+          }
+        }
+
+        function renderImagePreview() {
+          const wrap = $("#image-preview");
+          wrap.innerHTML = "";
+          for (const img of currentImages) {
+            const div = document.createElement("div");
+            div.className =
+              "thumb" + (img.url === primaryImageUrl ? " primary" : "");
+            div.title = "اضغط لجعلها الصورة الرئيسية";
+            div.innerHTML = `
+              <img src="${img.url}" alt="" />
+              ${img.url === primaryImageUrl ? '<div class="primary-badge">رئيسية</div>' : ""}
+              <div class="x" data-url="${img.url}">×</div>
+            `;
+            div.addEventListener("click", (ev) => {
+              if (ev.target.classList.contains("x")) return;
+              primaryImageUrl = img.url;
+              renderImagePreview();
+            });
+            div.querySelector(".x").addEventListener("click", (ev) => {
+              ev.stopPropagation();
+              currentImages = currentImages.filter((i) => i.url !== img.url);
+              if (primaryImageUrl === img.url) {
+                primaryImageUrl = currentImages[0]?.url || null;
+              }
+              renderImagePreview();
+            });
+            wrap.appendChild(div);
+          }
+        }
+
+        // ---------- form helpers ----------
+        function resetForm() {
+          editingId = null;
+          currentImages = [];
+          primaryImageUrl = null;
+          $("#equip-form").reset();
+          $("#equip-id").value = "";
+          $("#f-status").value = "available";
+          $("#f-listing-type").value = "rent";
+          $("#f-stock").value = "1";
+          // Clear specs fields and PDF state
+          const pdfUrlEl = $("#f-datasheet-pdf-url");
+          const pdfInfoEl = $("#pdf-upload-info");
+          const pdfLinkEl = $("#pdf-current-link");
+          if (pdfUrlEl) pdfUrlEl.value = "";
+          if (pdfInfoEl) pdfInfoEl.style.display = "none";
+          if (pdfLinkEl) pdfLinkEl.innerHTML = "";
+          const acc = document.getElementById("tech-specs-acc");
+          if (acc) acc.open = false;
+          renderImagePreview();
+          updateFormMode();
+          toggleListingPriceFields();
+        }
+
+        function updateFormMode() {
+          if (editingId) {
+            $("#form-title").innerHTML =
+              '<i class="fas fa-edit"></i> تعديل معدة';
+            $("#btn-cancel-edit").classList.remove("hidden");
+          } else {
+            $("#form-title").innerHTML =
+              '<i class="fas fa-plus-circle"></i> إضافة معدة جديدة';
+            $("#btn-cancel-edit").classList.add("hidden");
+          }
+        }
+
+        function toggleListingPriceFields() {
+          const t = $("#f-listing-type").value;
+          const daily = $("#f-daily-price");
+          const sale = $("#f-sale-price");
+          const depositWrap = $("#f-deposit-wrap");
+          const depositInput = $("#f-deposit-amount");
+          if (t === "rent") {
+            daily.required = true;
+            sale.required = false;
+            sale.value = "";
+          } else if (t === "sale") {
+            daily.required = false;
+            sale.required = true;
+            daily.value = "";
+          } else {
+            daily.required = true;
+            sale.required = true;
+          }
+          // Deposits only make sense for rentals (or 'both' which can be
+          // rented). Hide it on sale-only and clear the field so the value
+          // doesn't carry over silently.
+          if (t === "sale") {
+            depositWrap.style.display = "none";
+            depositInput.value = "";
+          } else {
+            depositWrap.style.display = "";
+          }
+        }
+
+        // ---------- submit (create or update) ----------
+        async function handleSubmit(e) {
+          e.preventDefault();
+          const payload = {
+            name: $("#f-name").value.trim(),
+            category: $("#f-category").value,
+            listing_type: $("#f-listing-type").value,
+            status: $("#f-status").value,
+            description: $("#f-description").value.trim() || null,
+            stock: parseInt($("#f-stock").value, 10) || 0,
+            governorate: $("#f-governorate").value || null,
+            images: currentImages.map((i) => i.url),
+            primary_image_url: primaryImageUrl,
+          };
+
+          const daily = $("#f-daily-price").value;
+          const sale = $("#f-sale-price").value;
+          payload.daily_price = daily === "" ? null : Number(daily);
+          payload.sale_price = sale === "" ? null : Number(sale);
+
+          // Optional deposit. Empty string = no deposit (null), preserving
+          // the difference between "owner explicitly set 0" and "owner
+          // hasn't configured a deposit". Server treats both the same for
+          // booking math but we keep the distinction.
+          const dep = $("#f-deposit-amount").value;
+          payload.deposit_amount = dep === "" ? null : Number(dep);
+
+          // Collect optional technical specs from the accordion section
+          const specs = {};
+          const specStrFields = {
+            manufacturer:         "#f-manufacturer",
+            model:                "#f-model",
+            serial_number:        "#f-serial-number",
+            origin_country:       "#f-origin-country",
+            fuel_type:            "#f-fuel-type",
+            maintenance_type:     "#f-maint-type",
+            maintenance_by:       "#f-maint-by",
+            last_maintenance_date:"#f-last-maint-date",
+            next_maintenance_date:"#f-next-maint-date",
+            warranty_info:        "#f-warranty-info",
+            inspection_cert:      "#f-inspection-cert",
+          };
+          const specNumFields = {
+            model_year:         "#f-model-year",
+            operating_hours:    "#f-operating-hours",
+            engine_power_hp:    "#f-engine-power",
+            weight_kg:          "#f-weight",
+            load_capacity_kg:   "#f-load-capacity",
+            dimension_length:   "#f-dim-length",
+            dimension_width:    "#f-dim-width",
+            dimension_height:   "#f-dim-height",
+          };
+          for (const [key, sel] of Object.entries(specStrFields)) {
+            const el = $(sel); if (!el) continue;
+            const v = el.value.trim();
+            if (v) specs[key] = v;
+          }
+          for (const [key, sel] of Object.entries(specNumFields)) {
+            const el = $(sel); if (!el) continue;
+            const v = el.value;
+            if (v !== "") specs[key] = Number(v);
+          }
+          const pdfUrl = $("#f-datasheet-pdf-url")?.value;
+          if (pdfUrl) specs.datasheet_pdf_url = pdfUrl;
+          if (Object.keys(specs).length > 0) payload.specs = specs;
+
+          try {
+            if (editingId) {
+              await api(`/equipment/${editingId}`, {
+                method: "PATCH",
+                body: payload,
+              });
+              showToast("تم تحديث المعدة بنجاح");
+            } else {
+              await api("/equipment", { method: "POST", body: payload });
+              showToast("تمت إضافة المعدة بنجاح");
+            }
+            resetForm();
+            await refreshEquipment();
+          } catch (err) {
+            if (err.details && Array.isArray(err.details)) {
+              showToast(err.details[0].msg || err.message, true);
+            } else {
+              showToast(err.message, true);
+            }
+          }
+        }
+
+        // ---------- list / edit / delete ----------
+        async function refreshEquipment() {
+          const params = new URLSearchParams({
+            page: String(currentPage),
+            limit: String(PAGE_SIZE),
+          });
+          try {
+            const res = await api(`/equipment/mine?${params}`);
+            renderEquipmentList(res.items);
+            updateStats(res.items, res.pagination.total);
+            renderPagination(res.pagination);
+            applyClientFilters(); // apply search + status filter on rendered items
+          } catch (err) {
+            showToast(err.message, true);
+          }
+        }
+
+        function updateStats(items, total) {
+          // These counts are for the *current page* slice when counting by status,
+          // except for total which is the real total. For truly accurate status
+          // counts you'd need a dedicated /stats endpoint — good enough for now.
+          $("#stat-total").textContent = total;
+          $("#stat-available").textContent = items.filter(
+            (i) => i.status === "available",
+          ).length;
+          $("#stat-rented").textContent = items.filter(
+            (i) => i.status === "rented",
+          ).length;
+          $("#stat-hidden").textContent = items.filter(
+            (i) => i.status === "hidden",
+          ).length;
+        }
+
+        function badgeFor(status) {
+          const labels = {
+            available: "متاح",
+            rented: "مؤجر",
+            sold: "مباع",
+            maintenance: "صيانة",
+            hidden: "مخفي",
+          };
+          return `<span class="badge badge-${status}">${labels[status] || status}</span>`;
+        }
+
+        function priceLabel(eq) {
+          const parts = [];
+          if (eq.daily_price != null && eq.daily_price !== "")
+            parts.push(`${eq.daily_price} ر.ع / يوم`);
+          if (eq.sale_price != null && eq.sale_price !== "")
+            parts.push(`بيع: ${eq.sale_price} ر.ع`);
+          return parts.join(" · ") || "بدون سعر";
+        }
+
+        function escapeHtml(s) {
+          if (s == null) return "";
+          return String(s).replace(
+            /[&<>"']/g,
+            (c) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;",
+              })[c],
+          );
+        }
+
+        const CAT_LABELS = {
+          tractor:"جرارات", sprayer:"مرشات", harvester:"حصادات",
+          tools:"أدوات", seeds:"بذور", fertilizer:"أسمدة",
+          pesticide:"مبيدات", other:"أخرى",
+        };
+        const STATUS_LABELS = {
+          available:"متاح", rented:"مؤجر", maintenance:"صيانة",
+          sold:"مباع", hidden:"مخفي",
+        };
+        const STATUS_ICONS = {
+          available:"fa-check-circle", rented:"fa-key",
+          maintenance:"fa-tools", sold:"fa-handshake", hidden:"fa-eye-slash",
+        };
+
+        // Cache for PDF generation (keyed by equipment id)
+        const ownerEquipCache = {};
+
+        function renderEquipmentList(items) {
+          const wrap = $("#equip-list");
+          wrap.innerHTML = "";
+          if (!items.length) {
+            $("#equip-empty").classList.remove("hidden");
+            return;
+          }
+          $("#equip-empty").classList.add("hidden");
+
+          const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+
+          for (const eq of items) {
+            ownerEquipCache[eq.id] = eq;
+            const img = eq.primary_image_url || (Array.isArray(eq.images) && eq.images[0]) || "";
+            const isNew = eq.created_at && new Date(eq.created_at).getTime() > sevenDaysAgo;
+            const isHidden = eq.status === "hidden";
+
+            const typeBadge = eq.listing_type === "sale"
+              ? `<span class="eq-badge eq-badge--sale"><i class="fas fa-tag"></i> للبيع</span>`
+              : eq.listing_type === "both"
+              ? `<span class="eq-badge eq-badge--both"><i class="fas fa-exchange-alt"></i> بيع وإيجار</span>`
+              : `<span class="eq-badge eq-badge--rent"><i class="fas fa-key"></i> للإيجار</span>`;
+
+            // Price row
+            let priceHtml = "";
+            if (eq.daily_price != null && eq.daily_price !== "") {
+              priceHtml += `<span class="eq-price-main">${Number(eq.daily_price).toFixed(2)}</span><span class="eq-price-unit">ر.ع / يوم</span>`;
+            }
+            if (eq.sale_price != null && eq.sale_price !== "") {
+              priceHtml += `<span class="eq-price-extra">${eq.daily_price ? " · " : ""}بيع: ${Number(eq.sale_price).toFixed(2)} ر.ع</span>`;
+            }
+            if (!priceHtml) priceHtml = `<span class="eq-price-unit" style="color:#aaa">بدون سعر</span>`;
+
+            const card = document.createElement("div");
+            card.className = "equip-card";
+            card.dataset.status = eq.status;
+            card.dataset.name = (eq.name || "").toLowerCase();
+            card.innerHTML = `
+              <div class="eq-media">
+                ${img
+                  ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(eq.name)}" loading="lazy" />`
+                  : `<div class="eq-placeholder"><i class="fas fa-tractor"></i></div>`
+                }
+                <div class="eq-badges">
+                  ${isNew ? `<span class="eq-badge eq-badge--new"><i class="fas fa-star"></i> جديد</span>` : ""}
+                  ${typeBadge}
+                </div>
+                <span class="eq-status-pill eq-s-${eq.status}">
+                  <i class="fas ${STATUS_ICONS[eq.status] || "fa-circle"}"></i>
+                  ${STATUS_LABELS[eq.status] || eq.status}
+                </span>
+              </div>
+              <div class="eq-body">
+                <div class="eq-cat"><i class="fas fa-tag"></i> ${escapeHtml(CAT_LABELS[eq.category] || eq.category)}</div>
+                <h3 class="eq-name">${escapeHtml(eq.name)}</h3>
+                <div class="eq-price-row">${priceHtml}</div>
+                <div class="eq-meta-row">
+                  ${eq.governorate ? `<span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(GOV_LABELS[eq.governorate] || eq.governorate)}</span>` : ""}
+                  ${eq.stock != null ? `<span><i class="fas fa-cubes"></i> الكمية: ${eq.stock}</span>` : ""}
+                  ${eq.deposit_amount ? `<span><i class="fas fa-shield-alt"></i> تأمين: ${Number(eq.deposit_amount).toFixed(0)} ر.ع</span>` : ""}
+                </div>
+                <div class="eq-actions">
+                  <button class="eq-btn eq-btn--edit" data-id="${eq.id}">
+                    <i class="fas fa-edit"></i> تعديل
+                  </button>
+                  <button class="eq-btn ${isHidden ? "eq-btn--show" : "eq-btn--hide"}"
+                          data-id="${eq.id}" data-cur="${eq.status}">
+                    <i class="fas ${isHidden ? "fa-eye" : "fa-eye-slash"}"></i>
+                    ${isHidden ? "تفعيل" : "إيقاف"}
+                  </button>
+                  <button class="eq-btn eq-btn--pdf" data-id="${eq.id}" title="عرض الملف الفني PDF">
+                    <i class="fas fa-file-pdf"></i>
+                  </button>
+                  <button class="eq-btn eq-btn--del" data-id="${eq.id}" title="حذف">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            `;
+            wrap.appendChild(card);
+          }
+
+          wrap.querySelectorAll(".eq-btn--edit").forEach((b) =>
+            b.addEventListener("click", () => loadForEdit(b.dataset.id))
+          );
+          wrap.querySelectorAll(".eq-btn--hide, .eq-btn--show").forEach((b) =>
+            b.addEventListener("click", () => toggleEquipmentStatus(b.dataset.id, b.dataset.cur))
+          );
+          wrap.querySelectorAll(".eq-btn--del").forEach((b) =>
+            b.addEventListener("click", () => deleteEquipment(b.dataset.id))
+          );
+          wrap.querySelectorAll(".eq-btn--pdf").forEach((b) =>
+            b.addEventListener("click", () => {
+              const cached = ownerEquipCache[b.dataset.id];
+              if (cached && window.generateEquipmentPDF) generateEquipmentPDF(cached);
+              else showToast("بيانات المعدة غير متاحة", true);
+            })
+          );
+        }
+
+        function renderPagination(p) {
+          const wrap = $("#pagination");
+          wrap.innerHTML = "";
+          if (p.pages <= 1) return;
+
+          const mk = (label, pageNum, opts = {}) => {
+            const b = document.createElement("button");
+            b.textContent = label;
+            if (opts.active) b.classList.add("active");
+            if (opts.disabled) b.disabled = true;
+            b.addEventListener("click", () => {
+              currentPage = pageNum;
+              refreshEquipment();
+            });
+            return b;
+          };
+
+          wrap.appendChild(
+            mk("السابق", Math.max(1, p.page - 1), { disabled: p.page === 1 }),
+          );
+          for (let i = 1; i <= p.pages; i++) {
+            wrap.appendChild(mk(String(i), i, { active: i === p.page }));
+          }
+          wrap.appendChild(
+            mk("التالي", Math.min(p.pages, p.page + 1), {
+              disabled: p.page === p.pages,
+            }),
+          );
+        }
+
+        async function loadForEdit(id) {
+          try {
+            const res = await api(`/equipment/${id}`);
+            const eq = res.item;
+            editingId = id;
+            $("#equip-id").value = id;
+            $("#f-name").value = eq.name || "";
+            $("#f-category").value = eq.category || "other";
+            $("#f-listing-type").value = eq.listing_type || "rent";
+            $("#f-status").value = eq.status || "available";
+            $("#f-daily-price").value = eq.daily_price ?? "";
+            $("#f-sale-price").value = eq.sale_price ?? "";
+            $("#f-deposit-amount").value = eq.deposit_amount ?? "";
+            $("#f-stock").value = eq.stock ?? 1;
+            $("#f-governorate").value = eq.governorate || "";
+            $("#f-description").value = eq.description || "";
+
+            currentImages = (Array.isArray(eq.images) ? eq.images : []).map(
+              (u) => ({
+                url: u,
+                filename: u.split("/").pop(),
+              }),
+            );
+            primaryImageUrl = eq.primary_image_url || currentImages[0]?.url || null;
+            renderImagePreview();
+            toggleListingPriceFields();
+            updateFormMode();
+
+            // Populate technical specs fields
+            const specs = (typeof eq.specs === "object" && eq.specs !== null) ? eq.specs : {};
+            const specAllFields = {
+              manufacturer:          "#f-manufacturer",
+              model:                 "#f-model",
+              model_year:            "#f-model-year",
+              serial_number:         "#f-serial-number",
+              origin_country:        "#f-origin-country",
+              operating_hours:       "#f-operating-hours",
+              fuel_type:             "#f-fuel-type",
+              engine_power_hp:       "#f-engine-power",
+              weight_kg:             "#f-weight",
+              load_capacity_kg:      "#f-load-capacity",
+              dimension_length:      "#f-dim-length",
+              dimension_width:       "#f-dim-width",
+              dimension_height:      "#f-dim-height",
+              maintenance_type:      "#f-maint-type",
+              maintenance_by:        "#f-maint-by",
+              last_maintenance_date: "#f-last-maint-date",
+              next_maintenance_date: "#f-next-maint-date",
+              warranty_info:         "#f-warranty-info",
+              inspection_cert:       "#f-inspection-cert",
+            };
+            for (const [key, sel] of Object.entries(specAllFields)) {
+              const el = $(sel);
+              if (el && specs[key] != null) el.value = specs[key];
+            }
+            // Restore uploaded PDF link
+            const pdfUrlEl = $("#f-datasheet-pdf-url");
+            const pdfLinkEl = $("#pdf-current-link");
+            if (pdfUrlEl) pdfUrlEl.value = specs.datasheet_pdf_url || "";
+            if (pdfLinkEl && specs.datasheet_pdf_url) {
+              pdfLinkEl.innerHTML = `<a href="${escapeHtml(specs.datasheet_pdf_url)}" target="_blank"><i class="fas fa-file-pdf"></i> عرض الملف المرفوع الحالي</a>`;
+            } else if (pdfLinkEl) {
+              pdfLinkEl.innerHTML = "";
+            }
+            // Auto-open accordion if specs exist
+            if (Object.keys(specs).length > 0) {
+              const acc = document.getElementById("tech-specs-acc");
+              if (acc) acc.open = true;
+            }
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          } catch (err) {
+            showToast(err.message, true);
+          }
+        }
+
+        async function deleteEquipment(id) {
+          if (!confirm("هل تريد حذف هذه المعدة نهائياً؟")) return;
+          try {
+            await api(`/equipment/${id}`, { method: "DELETE" });
+            showToast("تم الحذف");
+            await refreshEquipment();
+          } catch (err) {
+            showToast(err.message, true);
+          }
+        }
+
+        async function toggleEquipmentStatus(id, currentStatus) {
+          const newStatus = currentStatus === "hidden" ? "available" : "hidden";
+          try {
+            await api(`/equipment/${id}`, { method: "PATCH", body: { status: newStatus } });
+            showToast(newStatus === "hidden" ? "تم الإيقاف المؤقت" : "تم تفعيل المعدة");
+            await refreshEquipment();
+          } catch (err) {
+            showToast(err.message, true);
+          }
+        }
+
+        // ---------- client-side filters on rendered cards ----------
+        function applyClientFilters() {
+          const q = $("#filter-search").value.trim().toLowerCase();
+          const s = $("#filter-status").value;
+          $$("#equip-list .equip-card").forEach((c) => {
+            const nameMatch = !q || c.dataset.name.includes(q);
+            const statusMatch = !s || c.dataset.status === s;
+            c.style.display = nameMatch && statusMatch ? "" : "none";
+          });
+        }
+
+        // ---------- wiring ----------
+        document.addEventListener("DOMContentLoaded", () => {
+          $("#login-submit").addEventListener("click", handleLogin);
+          $("#login-password").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") handleLogin(e);
+          });
+          $("#equip-form").addEventListener("submit", handleSubmit);
+          $("#btn-cancel-edit").addEventListener("click", resetForm);
+          $("#f-listing-type").addEventListener("change", toggleListingPriceFields);
+          $("#f-images").addEventListener("change", (e) => {
+            handleImageFiles(e.target.files);
+            e.target.value = ""; // allow selecting the same file again
+          });
+          $("#filter-search").addEventListener("input", applyClientFilters);
+          $("#filter-status").addEventListener("change", applyClientFilters);
+          $("#filter-refresh").addEventListener("click", refreshEquipment);
+
+          // PDF file upload handler
+          const pdfInput = $("#f-datasheet-pdf");
+          if (pdfInput) {
+            pdfInput.addEventListener("change", async (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+              const infoEl = $("#pdf-upload-info");
+              const nameEl = $("#pdf-upload-name");
+              const sizeEl = $("#pdf-upload-size");
+              const urlEl  = $("#f-datasheet-pdf-url");
+              const linkEl = $("#pdf-current-link");
+              if (infoEl) { infoEl.style.display = "flex"; }
+              if (nameEl) nameEl.textContent = file.name;
+              if (sizeEl) sizeEl.textContent = (file.size / 1024 / 1024).toFixed(2) + " MB";
+              try {
+                const form = new FormData();
+                form.append("pdf", file);
+                const token = localStorage.getItem("token");
+                const res = await fetch(`${window.API_BASE || "/api/v1"}/uploads/pdf`, {
+                  method: "POST",
+                  headers: token ? { Authorization: "Bearer " + token } : {},
+                  body: form,
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error?.message || "فشل الرفع");
+                if (urlEl) urlEl.value = data.url;
+                if (linkEl) linkEl.innerHTML = `<a href="${escapeHtml(data.url)}" target="_blank"><i class="fas fa-file-pdf"></i> عرض الملف المرفوع</a>`;
+                showToast("تم رفع ملف PDF بنجاح");
+              } catch (err) {
+                showToast(err.message || "فشل رفع الملف", true);
+              }
+            });
+          }
+
+          init();
+        });
+      })();
+    </script>
+  
+    <!-- HARTH-RESPONSIVE-JS -->
+    <script src="responsive.js" defer></script>
+  </body>
+</html>

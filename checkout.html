@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>سلة المبيعات - حرث</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="design-system.css" />
+
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Cairo", sans-serif;
+        background:
+          linear-gradient(rgba(15, 25, 15, 0.75), rgba(15, 25, 15, 0.85)),
+          url("https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=1920&q=80")
+          no-repeat center center fixed;
+        background-size: cover;
+        color: #fff;
+        min-height: 100vh;
+        padding-bottom: 50px;
+      }
+
+      .header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .logo {
+        font-size: 26px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .back-btn {
+        background: rgba(106, 176, 76, 0.8);
+        color: #fff;
+        padding: 8px 20px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .cart-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+      .cart-title {
+        font-size: 30px;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
+      }
+      .cart-title span {
+        color: #6ab04c;
+      }
+
+      .cart-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .cart-table thead {
+        background: rgba(106, 176, 76, 0.4);
+      }
+      .cart-table th,
+      .cart-table td {
+        padding: 12px;
+        text-align: right;
+      }
+      .cart-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .cart-img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+      .qty-ctl {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 4px 6px;
+        border-radius: 6px;
+      }
+      .qty-ctl button {
+        background: rgba(106, 176, 76, 0.5);
+        color: #fff;
+        border: none;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .remove-btn {
+        background: #c0392b;
+        color: #fff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .warnings {
+        color: #ffb3b3;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+
+      .empty-cart {
+        text-align: center;
+        padding: 60px 20px;
+      }
+      .empty-cart i {
+        font-size: 72px;
+        color: #6ab04c;
+        margin-bottom: 20px;
+      }
+      .empty-cart a {
+        display: inline-block;
+        margin-top: 16px;
+        background: #6ab04c;
+        color: #fff;
+        padding: 10px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      @media (max-width: 768px) {
+        .summary-grid { grid-template-columns: 1fr; }
+        .cart-table thead { display: none; }
+        .cart-table, .cart-table tbody, .cart-table tr, .cart-table td { display: block; width: 100%; }
+        .cart-table tr {
+          background: rgba(255, 255, 255, 0.05);
+          margin-bottom: 10px;
+          border-radius: 8px;
+          padding: 10px;
+        }
+        .cart-table td { text-align: right; padding: 6px 0; }
+        .rental-checkout-form > div[style*="grid-template-columns"] {
+          grid-template-columns: 1fr !important;
+        }
+      }
+
+      .totals-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+      }
+      .totals-row.grand {
+        font-size: 22px;
+        font-weight: 700;
+        color: #6ab04c;
+        border-top: 2px solid #6ab04c;
+        padding-top: 14px;
+        margin-top: 10px;
+        border-bottom: none;
+      }
+
+      .form-group {
+        margin-bottom: 14px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+      .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-family: inherit;
+        font-size: 15px;
+      }
+      .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .form-control:focus {
+        outline: 2px solid #6ab04c;
+      }
+
+      .promo-row {
+        display: flex;
+        gap: 8px;
+      }
+      .promo-row .form-control {
+        flex: 1;
+      }
+      .btn-promo {
+        background: #f1c40f;
+        color: #1a1a1a;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .btn-primary {
+        width: 100%;
+        background: #6ab04c;
+        color: #fff;
+        border: none;
+        padding: 14px;
+        border-radius: 10px;
+        font-size: 17px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 12px;
+      }
+      .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+      .payment-radio {
+        display: flex;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .payment-radio label {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        padding: 10px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.2s;
+      }
+      .payment-radio label.selected {
+        border-color: #6ab04c;
+        background: rgba(106, 176, 76, 0.2);
+      }
+      .payment-radio input { display: none; }
+
+      #toast {
+        position: fixed;
+        bottom: 24px;
+        inset-inline-start: 50%;
+        transform: translateX(-50%);
+        background: #2d5016;
+        color: #fff;
+        padding: 12px 22px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        z-index: 2000;
+        opacity: 0;
+        transition: opacity 0.25s;
+        pointer-events: none;
+      }
+      #toast.show { opacity: 1; }
+      #toast.error { background: #c0392b; }
+
+      .promo-feedback {
+        font-size: 13px;
+        margin-top: 6px;
+        min-height: 18px;
+      }
+      .promo-feedback.ok { color: #6ab04c; }
+      .promo-feedback.bad { color: #ffb3b3; }
+
+      /* ─── Rental Cart Section ─── */
+      .rental-section {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(241, 196, 15, 0.35);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .rental-section h3 {
+        font-size: 20px;
+        margin: 0 0 14px;
+        color: #f1c40f;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .rental-item {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px dashed rgba(255,255,255,0.12);
+      }
+      .rental-item:last-child { border-bottom: none; }
+      .rental-item img {
+        width: 68px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+      .rental-item-no-img {
+        width: 68px;
+        height: 68px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: rgba(255,255,255,0.4);
+        font-size: 26px;
+      }
+      .rental-item-info { flex: 1; }
+      .rental-item-info h4 { margin: 0 0 6px; font-size: 16px; }
+      .rental-item-info .rental-dates {
+        font-size: 13px;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 4px;
+      }
+      .rental-item-info .rental-price {
+        font-weight: 700;
+        color: #6ab04c;
+        font-size: 15px;
+      }
+      .rental-item-info .rental-deposit {
+        font-size: 12px;
+        color: #f1c40f;
+        margin-top: 2px;
+      }
+      .rental-remove-btn {
+        background: rgba(231, 76, 60, 0.2);
+        border: 1px solid rgba(231, 76, 60, 0.4);
+        color: #ffb3b3;
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        flex-shrink: 0;
+        transition: all 0.2s;
+      }
+      .rental-remove-btn:hover { background: rgba(231,76,60,0.4); }
+      .rental-totals {
+        background: rgba(106, 176, 76, 0.1);
+        border: 1px solid rgba(106, 176, 76, 0.3);
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-top: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+        font-size: 17px;
+      }
+      .btn-confirm-rental {
+        width: 100%;
+        background: #f1c40f;
+        color: #1a1a1a;
+        border: none;
+        padding: 13px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 14px;
+        transition: all 0.2s;
+      }
+      .btn-confirm-rental:hover { background: #d4ac0d; transform: translateY(-1px); }
+      .btn-confirm-rental:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+      #loading {
+        text-align: center;
+        padding: 80px;
+      }
+      .spin {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #6ab04c;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+  
+    <!-- HARTH-RESPONSIVE-CSS -->
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo">🌿 حرث</div>
+      <a href="basket.html" class="back-btn">
+        <i class="fas fa-arrow-right"></i> العودة للمتجر
+      </a>
+    </header>
+
+    <div class="cart-container">
+      <h1 class="cart-title">سلة <span>الطلبات</span></h1>
+
+      <div id="loading">
+        <div class="spin"></div>
+        <div style="margin-top: 12px">جارٍ تحميل سلتك...</div>
+      </div>
+
+      <div id="content" style="display: none">
+        <!-- Cart items -->
+        <div class="cart-card">
+          <table class="cart-table">
+            <thead>
+              <tr>
+                <th>المنتج</th>
+                <th>السعر</th>
+                <th>الكمية</th>
+                <th>الإجمالي</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="cart-items"></tbody>
+          </table>
+        </div>
+
+        <!-- Empty state -->
+        <div id="empty-cart" class="empty-cart" style="display: none">
+          <i class="fas fa-shopping-basket"></i>
+          <h2>سلتك فارغة</h2>
+          <p>تصفّح المنتجات وأضف ما يعجبك.</p>
+          <a href="basket.html">تصفح المنتجات</a>
+        </div>
+
+        <!-- Summary + checkout -->
+        <div class="summary-grid" id="checkout-section" style="display: none">
+          <div class="cart-card">
+            <h3 style="margin-bottom: 14px">ملخص الطلب</h3>
+
+            <div class="form-group">
+              <label for="promo-code">كود الخصم</label>
+              <div class="promo-row">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="promo-code"
+                  placeholder="مثال: HARTH10"
+                />
+                <button class="btn-promo" id="apply-promo">تطبيق</button>
+              </div>
+              <div id="promo-feedback" class="promo-feedback"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="loyalty-points">نقاط الولاء (اختياري)</label>
+              <input
+                type="number"
+                class="form-control"
+                id="loyalty-points"
+                min="0"
+                step="1"
+                value="0"
+                placeholder="أدخل عدد النقاط"
+              />
+              <small style="color: rgba(255, 255, 255, 0.6)">
+                رصيدك: <span id="loyalty-balance">0</span> نقطة (حد أقصى 50% من الطلب)
+              </small>
+            </div>
+
+            <div id="totals">
+              <div class="totals-row">
+                <span>المشتريات</span>
+                <span id="tot-subtotal">0.00 ر.ع</span>
+              </div>
+              <div class="totals-row" id="tot-rental-row" style="display:none">
+                <span>الإيجار <span id="tot-rental-days" style="font-size:12px;color:rgba(255,255,255,0.6)"></span></span>
+                <span id="tot-rental" style="color:#f1c40f">0.00 ر.ع</span>
+              </div>
+              <div class="totals-row" id="tot-discount-row" style="display: none">
+                <span>الخصم</span>
+                <span id="tot-discount" style="color: #f1c40f">-0.00 ر.ع</span>
+              </div>
+              <div class="totals-row">
+                <span>الضريبة (10%)</span>
+                <span id="tot-tax">0.00 ر.ع</span>
+              </div>
+              <div class="totals-row" id="tot-loyalty-row" style="display: none">
+                <span>نقاط الولاء</span>
+                <span id="tot-loyalty" style="color: #f1c40f">-0 نقطة</span>
+              </div>
+              <div class="totals-row grand">
+                <span>الإجمالي</span>
+                <span id="tot-grand">0.00 ر.ع</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="cart-card">
+            <h3 style="margin-bottom: 14px">بيانات التوصيل والدفع</h3>
+            <form id="checkout-form">
+              <div class="form-group">
+                <label for="f-name">الاسم الكامل</label>
+                <input type="text" class="form-control" id="f-name" required />
+              </div>
+              <div class="form-group">
+                <label for="f-phone">رقم الهاتف</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="f-phone"
+                  placeholder="+968..."
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="f-city">المحافظة / الولاية</label>
+                <input type="text" class="form-control" id="f-city" required />
+              </div>
+              <div class="form-group">
+                <label for="f-street">العنوان التفصيلي</label>
+                <input type="text" class="form-control" id="f-street" />
+              </div>
+
+              <div class="form-group">
+                <label>طريقة الدفع</label>
+                <div class="payment-radio">
+                  <label data-method="card" class="selected">
+                    <input type="radio" name="pm" value="card" checked />
+                    <i class="fas fa-credit-card"></i>
+                    <div>بطاقة</div>
+                  </label>
+                  <label data-method="cash_on_delivery">
+                    <input type="radio" name="pm" value="cash_on_delivery" />
+                    <i class="fas fa-money-bill-wave"></i>
+                    <div>عند الاستلام</div>
+                  </label>
+                </div>
+              </div>
+
+              <button type="submit" class="btn-primary" id="submit-btn">
+                <i class="fas fa-check-circle"></i> تأكيد وإرسال الطلب
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="design-system.js"></script>
+    <script src="script.js"></script>
+    <script>
+      // =================================================================
+      // checkout.html — سلة موحّدة: بيع (DB) + إيجار (localStorage)
+      // فورم واحد وزر واحد يعالج كلا النوعين.
+      // =================================================================
+      (function () {
+        "use strict";
+
+        const RENTAL_KEY = "harth_rental_cart";
+        function getRentalCart() {
+          try { return JSON.parse(localStorage.getItem(RENTAL_KEY) || "[]"); }
+          catch (_) { return []; }
+        }
+        function clearRentalCart() { localStorage.removeItem(RENTAL_KEY); }
+        function removeRentalItem(equipmentId) {
+          const updated = getRentalCart().filter((r) => r.equipment_id !== equipmentId);
+          localStorage.setItem(RENTAL_KEY, JSON.stringify(updated));
+        }
+        function fmtDate(d) {
+          if (!d) return "";
+          const p = d.split("-");
+          return `${p[2]}/${p[1]}/${p[0]}`;
+        }
+
+        let currentCart = null;          // last /cart response
+        let validatedPromo = null;       // { code } when user applied one
+        let loyaltyBalance = 0;
+
+        const $ = (s) => document.querySelector(s);
+
+        function showToast(msg, isError = false) {
+          const t = $("#toast");
+          t.textContent = msg;
+          t.classList.toggle("error", isError);
+          t.classList.add("show");
+          setTimeout(() => t.classList.remove("show"), 3200);
+        }
+
+        function escapeHtml(s) {
+          if (s == null) return "";
+          return String(s).replace(/[&<>"']/g, (c) => ({
+            "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+          })[c]);
+        }
+
+        function money(n) {
+          return Number(n || 0).toFixed(2) + " ر.ع";
+        }
+
+        async function requireAuthOrRedirect() {
+          if (!getToken || !getToken()) {
+            showToast("يجب تسجيل الدخول أولاً", true);
+            setTimeout(() => (window.location.href = "register.html"), 1200);
+            return false;
+          }
+          return true;
+        }
+
+        // ---------- Load cart + totals from server ----------
+        async function loadCart() {
+          $("#loading").style.display = "block";
+          $("#content").style.display = "none";
+
+          try {
+            const res = await apiFetch("/cart");
+            if (!res || !res.success) {
+              throw new Error((res && res.error && res.error.message) || "فشل تحميل السلة");
+            }
+            currentCart = res;
+            renderCart(res);
+
+            // Load loyalty balance in parallel
+            try {
+              const l = await apiFetch("/loyalty?limit=1");
+              if (l && l.success) {
+                loyaltyBalance = Number(l.balance || 0);
+                $("#loyalty-balance").textContent = loyaltyBalance;
+                $("#loyalty-points").max = loyaltyBalance;
+              }
+            } catch (_e) {
+              // non-fatal
+            }
+
+            // Prefill name/phone from user profile
+            const user = typeof getUser === "function" ? getUser() : null;
+            if (user) {
+              if (!$("#f-name").value && user.name) $("#f-name").value = user.name;
+              if (!$("#f-phone").value && user.phone) $("#f-phone").value = user.phone;
+            }
+          } catch (err) {
+            $("#loading").innerHTML = `<p style="color:#ffb3b3">${escapeHtml(err.message)}</p>`;
+            showToast(err.message, true);
+          }
+        }
+
+        function renderCart(res) {
+          $("#loading").style.display = "none";
+          $("#content").style.display = "block";
+          const tbody = $("#cart-items");
+          tbody.innerHTML = "";
+
+          const rentals = getRentalCart();
+          const hasItems = res.items.length || rentals.length;
+
+          if (!hasItems) {
+            $("#empty-cart").style.display = "block";
+            $("#checkout-section").style.display = "none";
+            document.querySelector(".cart-table").parentElement.style.display = "none";
+            return;
+          }
+
+          $("#empty-cart").style.display = "none";
+          $("#checkout-section").style.display = "grid";
+          document.querySelector(".cart-table").parentElement.style.display = "block";
+
+          // ─── Sale items (from DB cart) ───
+          for (const it of res.items) {
+            const tr = document.createElement("tr");
+            const img = it.primary_image_url || "";
+            const warningsHtml = (it.warnings && it.warnings.length)
+              ? `<div class="warnings">${it.warnings.map(escapeHtml).join(" · ")}</div>`
+              : "";
+            tr.innerHTML = `
+              <td data-label="المنتج">
+                ${img
+                  ? `<img src="${escapeHtml(img)}" class="cart-img" alt="" />`
+                  : `<div class="cart-img" style="background:#333"></div>`}
+                <div style="display:inline-block;margin-inline-start:10px;vertical-align:middle">
+                  <div>${escapeHtml(it.name)}</div>
+                  <span style="font-size:11px;background:rgba(106,176,76,0.3);padding:2px 6px;border-radius:4px">شراء</span>
+                  ${warningsHtml}
+                </div>
+              </td>
+              <td data-label="السعر">${money(it.unit_price)}</td>
+              <td data-label="الكمية">
+                <div class="qty-ctl">
+                  <button type="button" class="qty-dec" data-id="${it.cart_item_id}">−</button>
+                  <span>${it.quantity}</span>
+                  <button type="button" class="qty-inc" data-id="${it.cart_item_id}">+</button>
+                </div>
+              </td>
+              <td data-label="الإجمالي">${money(it.line_total)}</td>
+              <td><button class="remove-btn" data-id="${it.cart_item_id}"><i class="fas fa-trash"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+            tr.querySelector(".qty-dec").addEventListener("click", () => updateQty(it.cart_item_id, it.quantity - 1));
+            tr.querySelector(".qty-inc").addEventListener("click", () => updateQty(it.cart_item_id, it.quantity + 1));
+            tr.querySelector(".remove-btn").addEventListener("click", () => removeItem(it.cart_item_id));
+          }
+
+          // ─── Rental items (from localStorage) ───
+          for (const r of rentals) {
+            const tr = document.createElement("tr");
+            const img = r.primary_image_url || "";
+            const depNote = r.deposit_amount > 0
+              ? `<div style="font-size:11px;color:#f1c40f;margin-top:2px">تأمين: ${Number(r.deposit_amount).toFixed(2)} ر.ع</div>`
+              : "";
+            tr.style.borderRight = "3px solid rgba(241,196,15,0.6)";
+            tr.innerHTML = `
+              <td data-label="المنتج">
+                ${img
+                  ? `<img src="${escapeHtml(img)}" class="cart-img" alt="" />`
+                  : `<div class="cart-img" style="background:#333;display:inline-flex;align-items:center;justify-content:center"><i class="fas fa-tractor" style="color:#555"></i></div>`}
+                <div style="display:inline-block;margin-inline-start:10px;vertical-align:middle">
+                  <div>${escapeHtml(r.name)}</div>
+                  <span style="font-size:11px;background:rgba(241,196,15,0.2);color:#f1c40f;padding:2px 6px;border-radius:4px">إيجار</span>
+                  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px">
+                    ${fmtDate(r.start_date)} ← ${fmtDate(r.end_date)}
+                  </div>
+                  ${depNote}
+                </div>
+              </td>
+              <td data-label="السعر">${Number(r.daily_price).toFixed(2)} ر.ع/يوم</td>
+              <td data-label="الكمية">${r.days} يوم</td>
+              <td data-label="الإجمالي">${Number(r.grand_total || r.rental_cost).toFixed(2)} ر.ع</td>
+              <td><button class="remove-btn" data-rental-id="${escapeHtml(r.equipment_id)}"><i class="fas fa-trash"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+            tr.querySelector(".remove-btn").addEventListener("click", () => {
+              removeRentalItem(r.equipment_id);
+              renderCart(currentCart);
+            });
+          }
+
+          // Reset promo feedback on reload
+          validatedPromo = null;
+          $("#promo-feedback").textContent = "";
+          $("#promo-feedback").className = "promo-feedback";
+          $("#tot-discount-row").style.display = "none";
+          $("#tot-loyalty-row").style.display = "none";
+
+          renderTotals(res.totals);
+        }
+
+        function renderTotals(t) {
+          const rentals = getRentalCart();
+          const rentalTotal = rentals.reduce((s, r) => s + Number(r.grand_total || r.rental_cost || 0), 0);
+          const totalDays = rentals.reduce((s, r) => s + Number(r.days || 0), 0);
+
+          $("#tot-subtotal").textContent = money(t.subtotal);
+          $("#tot-tax").textContent = money(t.tax);
+
+          if (rentalTotal > 0) {
+            $("#tot-rental-row").style.display = "flex";
+            $("#tot-rental").textContent = rentalTotal.toFixed(2) + " ر.ع";
+            $("#tot-rental-days").textContent = `(${totalDays} يوم)`;
+          } else {
+            $("#tot-rental-row").style.display = "none";
+          }
+
+          if (t.discount > 0) {
+            $("#tot-discount-row").style.display = "flex";
+            $("#tot-discount").textContent = "-" + money(t.discount);
+          } else {
+            $("#tot-discount-row").style.display = "none";
+          }
+          if (t.loyalty_points_used > 0) {
+            $("#tot-loyalty-row").style.display = "flex";
+            $("#tot-loyalty").textContent = `-${t.loyalty_points_used} نقطة`;
+          } else {
+            $("#tot-loyalty-row").style.display = "none";
+          }
+
+          // Grand total = sale total (server) + rental total (localStorage)
+          const serverGrand = Number(t.total || 0);
+          $("#tot-grand").textContent = (serverGrand + rentalTotal).toFixed(2) + " ر.ع";
+        }
+
+        async function updateQty(cartItemId, newQty) {
+          if (newQty < 0) newQty = 0;
+          try {
+            const res = await apiFetch(`/cart/items/${cartItemId}`, {
+              method: "PATCH",
+              body: JSON.stringify({ quantity: newQty }),
+            });
+            if (!res || !res.success) {
+              throw new Error((res && res.error && res.error.message) || "فشل التحديث");
+            }
+            await loadCart();
+          } catch (err) {
+            showToast(err.message, true);
+          }
+        }
+
+        async function removeItem(cartItemId) {
+          try {
+            const res = await apiFetch(`/cart/items/${cartItemId}`, { method: "DELETE" });
+            if (!res || !res.success) {
+              throw new Error((res && res.error && res.error.message) || "فشل الحذف");
+            }
+            await loadCart();
+          } catch (err) {
+            showToast(err.message, true);
+          }
+        }
+
+        // ---------- Promo validation ----------
+        async function applyPromo() {
+          const code = $("#promo-code").value.trim();
+          const fb = $("#promo-feedback");
+          if (!code) {
+            fb.textContent = "أدخل كوداً أولاً";
+            fb.className = "promo-feedback bad";
+            return;
+          }
+          try {
+            const res = await apiFetch("/promos/validate", {
+              method: "POST",
+              body: JSON.stringify({ code }),
+            });
+            if (!res || !res.success) {
+              throw new Error((res && res.error && res.error.message) || "الكود غير صالح");
+            }
+            if (!res.valid) {
+              fb.textContent = res.reason || "الكود غير مؤهّل لهذا الطلب";
+              fb.className = "promo-feedback bad";
+              validatedPromo = null;
+              renderTotals(currentCart.totals);
+              return;
+            }
+            validatedPromo = { code };
+            fb.textContent = `✓ تم تطبيق الخصم — وفّرت ${res.totals.discount} ر.ع`;
+            fb.className = "promo-feedback ok";
+            renderTotals(res.totals);
+          } catch (err) {
+            fb.textContent = err.message;
+            fb.className = "promo-feedback bad";
+            validatedPromo = null;
+          }
+        }
+
+        // ---------- Submit order (sale + rental) ----------
+        async function submitOrder(e) {
+          e.preventDefault();
+          const name = $("#f-name").value.trim();
+          const phone = $("#f-phone").value.trim();
+          const city = $("#f-city").value.trim();
+          const street = $("#f-street").value.trim();
+          const loyaltyUsed = parseInt($("#loyalty-points").value, 10) || 0;
+          const paymentMethod = document.querySelector('input[name="pm"]:checked').value;
+
+          if (!name || !phone || !city) {
+            showToast("أكمل البيانات المطلوبة (الاسم والهاتف والمحافظة)", true);
+            return;
+          }
+
+          const rentals = getRentalCart();
+          const hasSale = currentCart && currentCart.items.length;
+          if (!hasSale && !rentals.length) {
+            showToast("السلة فارغة", true);
+            return;
+          }
+
+          const btn = $("#submit-btn");
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ المعالجة...';
+
+          const shippingAddress = { name, city, street: street || null, phone };
+          let trackingNumber = null;
+
+          try {
+            // ─── 1. Submit sale order (if any) ───
+            if (hasSale) {
+              const payload = {
+                shipping_address: shippingAddress,
+                payment_method: paymentMethod,
+                loyalty_points: loyaltyUsed,
+              };
+              if (validatedPromo) payload.promo_code = validatedPromo.code;
+
+              const res = await apiFetch("/orders", {
+                method: "POST",
+                body: JSON.stringify(payload),
+              });
+              if (!res || !res.success) {
+                throw new Error((res && res.error && res.error.message) || "فشل إنشاء طلب الشراء");
+              }
+              trackingNumber = res.order.tracking_number;
+
+              // Mock Stripe webhook for demo
+              if (res.payment && res.payment.mock && res.payment.payment_intent_id) {
+                fetch(`${API_BASE_URL}/payments/webhook`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    type: "payment_intent.succeeded",
+                    data: { object: { id: res.payment.payment_intent_id } },
+                  }),
+                }).catch(() => {});
+              }
+            }
+
+            // ─── 2. Submit rental requests (if any) ───
+            const rentalErrors = [];
+            for (const r of rentals) {
+              try {
+                const res = await apiFetch("/rentals", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    equipment_id: r.equipment_id,
+                    start_date: r.start_date,
+                    end_date: r.end_date,
+                    renter_notes: r.notes || null,
+                    delivery_address: shippingAddress,
+                    payment_method: paymentMethod,
+                  }),
+                });
+                if (!res || !res.success) throw new Error(res?.error?.message || "فشل");
+              } catch (err) {
+                rentalErrors.push(`${r.name}: ${err.message}`);
+              }
+            }
+
+            if (rentalErrors.length) {
+              showToast("بعض طلبات الإيجار فشلت: " + rentalErrors.join(" | "), true);
+              btn.disabled = false;
+              btn.innerHTML = '<i class="fas fa-check-circle"></i> تأكيد وإرسال الطلب';
+              return;
+            }
+
+            // ─── 3. Clear rental cart & redirect ───
+            clearRentalCart();
+            const successMsg = [
+              hasSale ? `تم إنشاء طلب الشراء` : "",
+              rentals.length ? `تم إرسال ${rentals.length} طلب إيجار` : "",
+            ].filter(Boolean).join(" + ");
+            showToast(`✓ ${successMsg}`);
+
+            setTimeout(() => {
+              window.location.href = trackingNumber
+                ? `track.html?t=${trackingNumber}`
+                : "my-orders.html";
+            }, 1800);
+
+          } catch (err) {
+            showToast(err.message, true);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> تأكيد وإرسال الطلب';
+          }
+        }
+
+        // ---------- Wire up ----------
+        document.addEventListener("DOMContentLoaded", async () => {
+          const ok = await requireAuthOrRedirect();
+          if (!ok) return;
+
+          await loadCart();
+
+          $("#apply-promo").addEventListener("click", applyPromo);
+          $("#checkout-form").addEventListener("submit", submitOrder);
+
+          document.querySelectorAll(".payment-radio label").forEach((lbl) => {
+            lbl.addEventListener("click", () => {
+              document.querySelectorAll(".payment-radio label").forEach((x) =>
+                x.classList.remove("selected"),
+              );
+              lbl.classList.add("selected");
+            });
+          });
+
+          $("#loyalty-points").addEventListener("change", () => {
+            if (validatedPromo) applyPromo();
+          });
+        });
+      })();
+    </script>
+  
+    <!-- HARTH-RESPONSIVE-JS -->
+    <script src="responsive.js" defer></script>
+  </body>
+</html>

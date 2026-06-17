@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تسجيل الدخول | منصة حرث</title>
+    <link rel="stylesheet" href="design-system.css" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      .form-msg {
+        min-height: 22px;
+        margin: 10px 0;
+        padding: 8px;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 14px;
+      }
+      .form-msg.err {
+        background: rgba(192, 57, 43, 0.25);
+        color: #ffb3b3;
+      }
+      .form-msg.ok {
+        background: rgba(106, 176, 76, 0.25);
+        color: #a9dc98;
+      }
+      .form-msg:empty {
+        display: none;
+      }
+      .login-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      /* OTP code input — six digits, big, monospace. We render a single
+         numeric input rather than 6 boxes; six boxes look fancier but break
+         autofill from the native "from messages" suggestion on iOS/Android. */
+      .otp-input {
+        width: 100%;
+        padding: 14px 18px;
+        font-size: 28px;
+        text-align: center;
+        letter-spacing: 0.5em;
+        font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+        direction: ltr;
+        background: rgba(255, 255, 255, 0.95);
+        color: #1a1a1a;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+      }
+      .otp-help {
+        font-size: 13px;
+        color: #ccc;
+        margin: 8px 0 14px;
+        text-align: center;
+      }
+      .otp-resend {
+        background: none;
+        border: none;
+        color: #6ab04c;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 13px;
+        text-decoration: underline;
+        padding: 0;
+      }
+      .otp-resend:disabled {
+        color: #888;
+        cursor: not-allowed;
+        text-decoration: none;
+      }
+    </style>
+  
+    <!-- HARTH-RESPONSIVE-CSS -->
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+
+  <body>
+    <div class="login-page">
+      <div class="login-card">
+        <div class="logo-area">
+          <h2>مَنْصَةُ حَرْثْ</h2>
+        </div>
+
+        <h3 id="page-title">تسجيل الدخول</h3>
+        <p id="page-sub">مرحباً بك مجدداً في مجتمعنا الزراعي</p>
+
+        <!-- LOGIN FORM -->
+        <form id="loginForm">
+          <div class="input-field">
+            <input
+              type="email"
+              id="login-email"
+              placeholder="البريد الإلكتروني"
+              required
+              autocomplete="email"
+            />
+          </div>
+          <div class="input-field">
+            <input
+              type="password"
+              id="login-password"
+              placeholder="كلمة المرور"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+          <div id="login-msg" class="form-msg"></div>
+          <button type="submit" class="login-btn" id="login-btn">
+            تسجيل الدخول
+          </button>
+        </form>
+
+        <!-- REGISTER FORM (initially hidden, toggled by the link below) -->
+        <div
+          id="createAccountSection"
+          style="
+            display: none;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid rgba(255, 255, 255, 0.15);
+          "
+        >
+          <h4 style="color: #6ab04c; margin-bottom: 20px">إنشاء حساب جديد</h4>
+          <form id="registerForm">
+            <div class="input-field">
+              <input type="text" id="reg-name" placeholder="الاسم الكامل" required />
+            </div>
+            <div class="input-field">
+              <input
+                type="email"
+                id="reg-email"
+                placeholder="البريد الإلكتروني"
+                required
+                autocomplete="email"
+              />
+            </div>
+            <div class="input-field">
+              <input
+                type="password"
+                id="reg-password"
+                placeholder="كلمة المرور (8 أحرف أو أكثر)"
+                minlength="8"
+                required
+                autocomplete="new-password"
+              />
+            </div>
+            <div class="input-field">
+              <input type="text" id="reg-identity" placeholder="رقم الهوية (اختياري)" />
+            </div>
+            <div class="input-field">
+              <input
+                type="tel"
+                id="reg-phone"
+                placeholder="رقم الهاتف (مثال: +96899999999)"
+              />
+            </div>
+            <div class="input-field">
+              <select
+                id="reg-governorate"
+                style="
+                  width: 100%;
+                  padding: 12px 15px;
+                  border-radius: 10px;
+                  border: 1px solid rgba(255, 255, 255, 0.2);
+                  background: rgba(255, 255, 255, 0.1);
+                  color: #fff;
+                  font-family: inherit;
+                  font-size: 14px;
+                "
+              >
+                <option value="">اختر المحافظة (اختياري)</option>
+                <option value="muscat">مسقط</option>
+                <option value="dhofar">ظفار</option>
+                <option value="musandam">مسندم</option>
+                <option value="buraimi">البريمي</option>
+                <option value="dakhiliyah">الداخلية</option>
+                <option value="north_batinah">شمال الباطنة</option>
+                <option value="south_batinah">جنوب الباطنة</option>
+                <option value="south_sharqiyah">جنوب الشرقية</option>
+                <option value="north_sharqiyah">شمال الشرقية</option>
+                <option value="dhahirah">الظاهرة</option>
+                <option value="wusta">الوسطى</option>
+              </select>
+            </div>
+
+            <label
+              style="
+                color: #fff;
+                font-weight: 700;
+                display: block;
+                margin: 12px 0 8px;
+              "
+              >نوع الحساب:</label
+            >
+            <div
+              class="radio-group"
+              style="display: flex; flex-direction: column; gap: 8px"
+            >
+              <label
+                class="radio-container"
+                style="
+                  background: rgba(255, 255, 255, 0.05);
+                  padding: 10px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                "
+              >
+                <input type="radio" name="role" value="renter" checked />
+                <span class="checkmark"></span>
+                <strong>مستهلك</strong>
+                <div
+                  style="
+                    font-size: 12px;
+                    color: #ccc;
+                    margin-top: 4px;
+                    font-weight: 400;
+                  "
+                >
+                  تصفّح وشراء المنتجات والمعدات. تفعيل فوري.
+                </div>
+              </label>
+
+              <label
+                class="radio-container"
+                style="
+                  background: rgba(255, 255, 255, 0.05);
+                  padding: 10px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                "
+              >
+                <input type="radio" name="role" value="owner" />
+                <span class="checkmark"></span>
+                <strong>مزارع</strong>
+                <div
+                  style="
+                    font-size: 12px;
+                    color: #ccc;
+                    margin-top: 4px;
+                    font-weight: 400;
+                  "
+                >
+                  عرض منتجاتك ومعداتك للبيع أو للإيجار، إضافةً إلى الشراء.
+                  <br /><span style="color: #f1c40f"
+                    >يتطلّب الحساب موافقة الإدارة قبل تفعيل صلاحية البيع/التأجير.</span
+                  >
+                </div>
+              </label>
+
+              <label
+                class="radio-container"
+                style="
+                  background: rgba(255, 255, 255, 0.05);
+                  padding: 10px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                "
+              >
+                <input type="radio" name="role" value="delivery" />
+                <span class="checkmark"></span>
+                <strong>مندوب توصيل</strong>
+                <div
+                  style="
+                    font-size: 12px;
+                    color: #ccc;
+                    margin-top: 4px;
+                    font-weight: 400;
+                  "
+                >
+                  قبول وتنفيذ طلبات التوصيل، إضافةً إلى الشراء.
+                  <br /><span style="color: #f1c40f"
+                    >يتطلّب الحساب موافقة الإدارة قبل قبول طلبات التوصيل.</span
+                  >
+                </div>
+              </label>
+            </div>
+
+            <div id="register-msg" class="form-msg"></div>
+            <button
+              type="submit"
+              id="register-btn"
+              class="login-btn"
+              style="background: #6ab04c; margin-top: 10px"
+            >
+              إنشاء الحساب
+            </button>
+          </form>
+        </div>
+
+        <!-- OTP STEP — shown after a successful register, replaces the
+             register/login forms while the user types the 6-digit code. -->
+        <div id="otpSection" style="display: none; margin-top: 20px">
+          <h4 style="color: #6ab04c; margin-bottom: 8px; text-align: center">
+            <i class="fas fa-shield-alt"></i> تأكيد البريد الإلكتروني
+          </h4>
+          <p class="otp-help">
+            أرسلنا رمزاً مكوناً من 6 أرقام إلى
+            <strong id="otp-email-label" style="color: #fff"></strong>.
+            الرمز صالح لمدة 10 دقائق.
+          </p>
+          <form id="otpForm">
+            <input
+              type="text"
+              id="otp-code"
+              class="otp-input"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              maxlength="6"
+              pattern="\d{6}"
+              required
+              placeholder="------"
+            />
+            <div id="otp-msg" class="form-msg"></div>
+            <button type="submit" class="login-btn" id="otp-submit-btn">
+              تأكيد
+            </button>
+            <p style="margin-top: 14px; text-align: center; font-size: 13px">
+              لم يصلك الرمز؟
+              <button
+                type="button"
+                id="otp-resend-btn"
+                class="otp-resend"
+                disabled
+              >
+                إعادة الإرسال
+              </button>
+              <span id="otp-resend-timer" style="color: #888"></span>
+            </p>
+            <p style="margin-top: 8px; text-align: center; font-size: 12px">
+              <a
+                href="#"
+                id="otp-skip"
+                style="color: #ccc"
+                title="يمكنك إكمال التحقّق لاحقاً من إعدادات الحساب"
+              >
+                تخطّي الآن — أكمل لاحقاً
+              </a>
+            </p>
+          </form>
+        </div>
+
+        <p
+          id="toggle-row"
+          style="
+            font-size: 14px;
+            color: #dcdde1;
+            margin-top: 40px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+          "
+        >
+          <span id="toggle-text">ليس لديك حساب؟</span>
+          <a
+            href="#"
+            id="toggle-mode"
+            style="color: #6ab04c; font-weight: bold"
+            >إنشاء حساب جديد</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <div class="top-navigation">
+      <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-right"></i> التراجع
+      </a>
+    </div>
+
+    <script src="design-system.js"></script>
+    <script src="script.js"></script>
+    <script>
+      // =========================================================
+      // register.html — login + register + email-verification OTP.
+      // Roles sent to backend: renter | owner | delivery
+      // (admin accounts are bootstrapped in env, never self-registered.)
+      // =========================================================
+      (function () {
+        "use strict";
+
+        const $ = (s) => document.querySelector(s);
+
+        function showMsg(el, text, isError = false) {
+          const box = $(el);
+          box.textContent = text;
+          box.className = "form-msg " + (isError ? "err" : "ok");
+        }
+
+        // Where to send the user after a successful auth. We keep pending
+        // farmers/delivery agents on the storefront — they can still browse/
+        // buy while admin reviews their account.
+        function landingFor(user) {
+          if (user.account_status === "pending") return "tools.html";
+          return (
+            {
+              admin: "admin-dashboard.html",
+              owner: "owner-dashboard.html",
+              delivery: "delivery.html",
+              renter: "basket.html",
+            }[user.role] || "index.html"
+          );
+        }
+
+        // Mode state. Three modes: "login", "register", "otp".
+        let mode = "login";
+
+        function setMode(next) {
+          mode = next;
+          $("#loginForm").style.display = mode === "login" ? "block" : "none";
+          $("#createAccountSection").style.display =
+            mode === "register" ? "block" : "none";
+          $("#otpSection").style.display = mode === "otp" ? "block" : "none";
+          $("#toggle-row").style.display = mode === "otp" ? "none" : "block";
+
+          if (mode === "login") {
+            $("#page-title").textContent = "تسجيل الدخول";
+            $("#page-sub").textContent = "مرحباً بك مجدداً في مجتمعنا الزراعي";
+            $("#toggle-text").textContent = "ليس لديك حساب؟";
+            $("#toggle-mode").textContent = "إنشاء حساب جديد";
+          } else if (mode === "register") {
+            $("#page-title").textContent = "إنشاء حساب جديد";
+            $("#page-sub").textContent = "أدخل بياناتك للبدء";
+            $("#toggle-text").textContent = "عندك حساب؟";
+            $("#toggle-mode").textContent = "تسجيل دخول";
+          } else if (mode === "otp") {
+            $("#page-title").textContent = "تأكيد البريد";
+            $("#page-sub").textContent = "خطوة أخيرة لتأمين حسابك";
+          }
+        }
+
+        // Toggle login ↔ register
+        $("#toggle-mode").addEventListener("click", (e) => {
+          e.preventDefault();
+          setMode(mode === "login" ? "register" : "login");
+        });
+
+        // ─── Login ──────────────────────────────────────────────────
+        $("#loginForm").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = $("#login-email").value.trim();
+          const password = $("#login-password").value;
+          const btn = $("#login-btn");
+
+          btn.disabled = true;
+          btn.textContent = "جارٍ التحقق...";
+          showMsg("#login-msg", "");
+
+          try {
+            const res = await apiFetch("/auth/login", {
+              method: "POST",
+              body: JSON.stringify({ email, password }),
+            });
+            if (!res || !res.success) {
+              throw new Error(
+                (res && res.error && res.error.message) || "فشل تسجيل الدخول",
+              );
+            }
+            localStorage.setItem("token", res.token);
+            localStorage.setItem("user", JSON.stringify(res.user));
+            showMsg("#login-msg", "✓ تم تسجيل الدخول، جارٍ التحويل...");
+            setTimeout(() => {
+              window.location.href = landingFor(res.user);
+            }, 700);
+          } catch (err) {
+            showMsg("#login-msg", err.message || "خطأ", true);
+            btn.disabled = false;
+            btn.textContent = "تسجيل الدخول";
+          }
+        });
+
+        // ─── Register ──────────────────────────────────────────────
+        $("#registerForm").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const name = $("#reg-name").value.trim();
+          const email = $("#reg-email").value.trim();
+          const password = $("#reg-password").value;
+          const identity = $("#reg-identity").value.trim();
+          const phone = $("#reg-phone").value.trim();
+          const governorate = $("#reg-governorate").value;
+          const role = document.querySelector(
+            'input[name="role"]:checked',
+          ).value;
+          const btn = $("#register-btn");
+
+          if (password.length < 8) {
+            showMsg("#register-msg", "كلمة المرور يجب 8 أحرف على الأقل", true);
+            return;
+          }
+
+          btn.disabled = true;
+          btn.textContent = "جارٍ الإنشاء...";
+          showMsg("#register-msg", "");
+
+          const body = { email, password, name, role };
+          if (identity) body.identity = identity;
+          if (phone) body.phone = phone;
+          if (governorate) body.governorate = governorate;
+
+          try {
+            const res = await apiFetch("/auth/register", {
+              method: "POST",
+              body: JSON.stringify(body),
+            });
+            if (!res || !res.success) {
+              throw new Error(
+                (res && res.error && res.error.message) || "فشل التسجيل",
+              );
+            }
+            // Email verification was removed — registration succeeds and
+            // we're logged in immediately. Skip the OTP step entirely
+            // and go straight to the role-appropriate landing page. We
+            // keep the OTP DOM around (hidden) for backwards-compat with
+            // any in-flight tabs the user might have, but the flow no
+            // longer routes through it.
+            localStorage.setItem("token", res.token);
+            localStorage.setItem("user", JSON.stringify(res.user));
+
+            const isPending = res.user.account_status === "pending";
+            if (isPending) {
+              showMsg(
+                "#register-msg",
+                "✓ تم إنشاء الحساب. حسابك قيد المراجعة من الإدارة. يمكنك التصفّح والشراء الآن.",
+              );
+            } else {
+              showMsg("#register-msg", "✓ تم إنشاء الحساب، جارٍ التحويل...");
+            }
+            setTimeout(() => {
+              window.location.href = landingFor(res.user);
+            }, 1200);
+          } catch (err) {
+            showMsg("#register-msg", err.message || "خطأ", true);
+            btn.disabled = false;
+            btn.textContent = "إنشاء الحساب";
+          }
+        });
+
+        // ─── OTP step (DISABLED) ───────────────────────────────────
+        //
+        // Email verification was removed as a feature. The OTP form
+        // markup is kept in the page (hidden) for layout stability, but
+        // its event listeners and resend timer are gone — they would do
+        // nothing useful now.
+
+        // No-op stubs so any leftover references in code that hasn't
+        // been touched yet don't throw. Safe to delete in a future
+        // cleanup pass.
+        function startResendCooldown() { /* no-op */ }
+      })();
+    </script>
+  
+    <!-- HARTH-RESPONSIVE-JS -->
+    <script src="responsive.js" defer></script>
+  </body>
+</html>

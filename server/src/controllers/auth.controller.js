@@ -1,0 +1,440 @@
+const crypto = require("crypto");
+const knex = require("../db");
+const { hashPassword, verifyPassword } = require("../utils/password");
+const { signToken } = require("../utils/jwt");
+const { AppError, asyncHandler } = require("../middleware/errorHandler");
+const { SELF_REGISTER_ROLES } = require("../validators/auth.validator");
+const notificationService = require("../services/notification.service");
+const otpService = require("../services/otp.service");
+const loyaltyRepo = require("../repositories/loyalty.repository");
+
+/**
+ * Generate a short, unambiguous referral code.
+ * 8 chars from Crockford's alphabet (no 0/O/1/I/L) to avoid mistyping.
+ */
+function generateReferralCode() {
+  const alphabet = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+  let code = "";
+  const bytes = crypto.randomBytes(8);
+  for (let i = 0; i < 8; i++) code += alphabet[bytes[i] % alphabet.length];
+  return code;
+}
+
+/**
+ * Fields we're willing to return about a user. Never include password_hash.
+ *
+ * Trust-related fields are included so the client can decide whether to
+ * show the verified badge / KYC reminder banners without an extra round
+ * trip.
+ */
+const PUBLIC_USER_FIELDS = [
+  "id",
+  "email",
+  "phone",
+  "role",
+  "name",
+  "location",
+  "governorate",
+  "referral_code",
+  "loyalty_points",
+  "is_pro",
+  "pro_expires_at",
+  "is_active",
+  "account_status",
+  "status_reason",
+  "email_verified",
+  "email_verified_at",
+  "identity_status",
+  "identity_verified",
+  "created_at",
+];
+
+/**
+ * Default account status for a new self-registered user.
+ *   - renter (consumer)        → approved (only buys; nothing to review)
+ *   - owner (farmer)           → pending  (must be approved before selling)
+ *   - delivery (delivery agent) → pending (must be approved before accepting jobs)
+ */
+function defaultStatusForRole(role) {
+  return role === "renter" ? "approved" : "pending";
+}
+
+const checkEmail = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const row = await knex("users")
+    .where({ email })
+    .andWhere({ is_active: true })
+    .first("id");
+  res.json({ exists: !!row });
+});
+
+const register = asyncHandler(async (req, res) => {
+  const {
+    email,
+    password,
+    name,
+    role,
+    phone = null,
+    identity = null,
+    location = null,
+    governorate = null,
+    referral_code: referredByCode = null,
+  } = req.body;
+
+  // Hard block: server-side admin creation is off limits here.
+  // SELF_REGISTER_ROLES excludes 'admin', so this is a belt-and-suspenders check.
+  if (role === "admin" || !SELF_REGISTER_ROLES.includes(role)) {
+    throw new AppError("Role not allowed", 400);
+  }
+
+  // Resolve referrer (if any) *before* insertion so a bad code fails fast.
+  let referredBy = null;
+  if (referredByCode) {
+    const referrer = await knex("users")
+      .where({ referral_code: referredByCode, is_active: true })
+      .first("id");
+    if (!referrer) throw new AppError("Invalid referral code", 400);
+    referredBy = referrer.id;
+  }
+
+  const passwordHash = await hashPassword(password);
+
+  // Try up to 3 times in case of referral_code collision. Cheap retry.
+  let inserted;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const referralCode = generateReferralCode();
+    try {
+      const rows = await knex("users")
+        .insert({
+          email,
+          phone,
+          password_hash: passwordHash,
+          role,
+          name,
+          identity,
+          location: location ? JSON.stringify(location) : null,
+          governorate,
+          referral_code: referralCode,
+          referred_by: referredBy,
+          is_active: true,
+          account_status: defaultStatusForRole(role),
+          status_changed_at: knex.fn.now(),
+          // Email verification was removed as a feature — see auth.routes.js.
+          // We default new accounts to verified=true so the existing trust
+          // badge logic (in trust.repository.js) continues to grant the
+          // verified mark based on KYC + approval, without requiring an
+          // email-verified flag the user has no way to flip.
+          email_verified: true,
+          email_verified_at: knex.fn.now(),
+        })
+        .returning(PUBLIC_USER_FIELDS);
+      inserted = rows[0];
+      break;
+    } catch (err) {
+      // 23505 = unique violation. If it's on referral_code, retry. If on email/phone, bubble up.
+      if (err.code === "23505" && /referral_code/.test(err.detail || err.message)) {
+        continue;
+      }
+      if (err.code === "23505" && /email/.test(err.detail || err.message)) {
+        throw new AppError("Email already registered", 409);
+      }
+      if (err.code === "23505" && /phone/.test(err.detail || err.message)) {
+        throw new AppError("Phone already registered", 409);
+      }
+      throw err;
+    }
+  }
+  if (!inserted) throw new AppError("Could not generate referral code", 500);
+
+  // Referral bonus: award both the referrer and the new user. Synchronous
+  // since it's part of the registration outcome and the user likely wants
+  // to see their bonus immediately.
+  if (referredBy) {
+    try {
+      await knex.transaction(async (trx) => {
+        await loyaltyRepo.credit({
+          userId: referredBy,
+          kind: "referral_bonus",
+          amount: loyaltyRepo.REFERRER_BONUS,
+          referredUserId: inserted.id,
+          notes: `Referral bonus — ${inserted.name} joined using your code`,
+          trx,
+        });
+        await loyaltyRepo.credit({
+          userId: inserted.id,
+          kind: "referral_bonus",
+          amount: loyaltyRepo.REFERRED_BONUS,
+          referredUserId: referredBy,
+          notes: "Welcome bonus for joining via a referral",
+          trx,
+        });
+      });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("[referral bonus failed]", e.message);
+    }
+  }
+
+  // Email verification was removed as a feature. We still return the
+  // `email_verification` block in the response so any older client code
+  // doesn't crash on missing fields — but with `required: false` and
+  // `already_verified: true` so any verification UI hides itself.
+  notificationService.events.registered(inserted.id, inserted.name).catch((e) => {
+    // eslint-disable-next-line no-console
+    console.error("[register notify failed]", e.message);
+  });
+
+  const token = signToken(inserted);
+  res.status(201).json({
+    success: true,
+    token,
+    user: inserted,
+    email_verification: {
+      required: false,
+      already_verified: true,
+      otp_sent: false,
+      reason: null,
+      expires_at: null,
+    },
+  });
+});
+
+const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await knex("users")
+    .where({ email, is_active: true })
+    .first();
+
+  // Constant-ish error to avoid leaking which part failed.
+  if (!user || !(await verifyPassword(password, user.password_hash))) {
+    throw new AppError("Invalid credentials", 401);
+  }
+
+  // Hard block for suspended/removed accounts. Pending/rejected users CAN
+  // still log in — they just can't sell or accept deliveries (enforced at
+  // the action endpoints via requireApprovedAccount).
+  if (user.account_status === "blocked") {
+    throw new AppError(
+      "تم إيقاف حسابك من قِبل الإدارة. الرجاء التواصل مع الدعم.",
+      403,
+    );
+  }
+  if (user.account_status === "deleted") {
+    throw new AppError("هذا الحساب لم يعد متاحاً.", 403);
+  }
+
+  // Strip password_hash from returned user
+  const { password_hash: _ph, ...safeUser } = user;
+  const token = signToken(safeUser);
+  res.json({ success: true, token, user: safeUser });
+});
+
+const me = asyncHandler(async (req, res) => {
+  // req.user is set by auth middleware. Fetch fresh to include latest fields.
+  const user = await knex("users")
+    .where({ id: req.user.id })
+    .first(PUBLIC_USER_FIELDS);
+  if (!user) throw new AppError("User not found", 404);
+  res.json({ success: true, user });
+});
+
+const logout = asyncHandler(async (_req, res) => {
+  // Stateless JWT: actual invalidation happens client-side by deleting the token.
+  res.json({ success: true, message: "Logged out" });
+});
+
+// ─── Email verification ─────────────────────────────────────────────────
+//
+// Email verification was removed as a feature. The endpoints below are
+// kept as no-ops so any older client (an out-of-date page still in a
+// browser tab) doesn't see a 404 when it calls them — instead it gets a
+// success response that tells it the email is already verified, and the
+// client UI hides itself. Removing the endpoints outright would break
+// those tabs; making them harmless is the safer compatibility path.
+
+/**
+ * POST /auth/verify-email/send
+ * No-op since email verification was removed. Always returns
+ * already_verified=true so the caller's UI moves on.
+ */
+const sendEmailVerificationOtp = asyncHandler(async (req, res) => {
+  // Defensive: if the user record exists, make sure the column reflects
+  // verified=true so any "verified" badge query is consistent. Cheap
+  // single-row update; safe to no-op if the row is already true.
+  if (req.user && req.user.id) {
+    await knex("users")
+      .where({ id: req.user.id, email_verified: false })
+      .update({
+        email_verified: true,
+        email_verified_at: knex.fn.now(),
+      });
+  }
+  res.json({ success: true, already_verified: true });
+});
+
+/**
+ * POST /auth/verify-email
+ * No-op since email verification was removed. Always returns success
+ * with already_verified=true. Body (if any) is ignored.
+ */
+const verifyEmail = asyncHandler(async (req, res) => {
+  let updated = null;
+  if (req.user && req.user.id) {
+    const rows = await knex("users")
+      .where({ id: req.user.id })
+      .update({
+        email_verified: true,
+        email_verified_at: knex.fn.now(),
+      })
+      .returning(PUBLIC_USER_FIELDS);
+    updated = rows[0] || null;
+  }
+  res.json({ success: true, already_verified: true, user: updated });
+});
+
+// ─── Password reset (forgot password — anonymous) ─────────────────────
+
+/**
+ * POST /auth/password/request-reset
+ * Body: { email }
+ * Anonymous endpoint. Always responds the same way regardless of whether
+ * the email exists in the DB so we don't leak account presence.
+ */
+const requestPasswordReset = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const user = await knex("users")
+    .where({ email, is_active: true })
+    .first("id", "email", "account_status");
+
+  // Refuse to recover blocked/deleted accounts. Don't leak that fact —
+  // respond with the same shape regardless.
+  if (user && !["blocked", "deleted"].includes(user.account_status)) {
+    try {
+      await otpService.issueOtp({
+        email: user.email,
+        userId: user.id,
+        purpose: "password_reset",
+        requesterIp: req.ip,
+      });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("[password reset] OTP issue failed:", e.message);
+    }
+  }
+
+  res.json({
+    success: true,
+    message:
+      "إذا كان البريد مسجَّلاً، فقد أرسلنا رمز إعادة تعيين كلمة المرور إليه.",
+  });
+});
+
+/**
+ * POST /auth/password/reset
+ * Body: { email, code, new_password }
+ * Anonymous. Verifies the OTP and sets a new password.
+ */
+const resetPassword = asyncHandler(async (req, res) => {
+  const { email, code, new_password } = req.body;
+
+  const user = await knex("users")
+    .where({ email, is_active: true })
+    .first("id", "email", "account_status");
+
+  // Constant-ish error so we don't leak existence.
+  if (!user) {
+    throw new AppError("الرمز غير صحيح أو انتهت صلاحيته", 400);
+  }
+  if (["blocked", "deleted"].includes(user.account_status)) {
+    throw new AppError("هذا الحساب لم يعد متاحاً.", 403);
+  }
+
+  await otpService.verifyOtp({
+    email: user.email,
+    code: String(code),
+    purpose: "password_reset",
+  });
+
+  const newHash = await hashPassword(new_password);
+  await knex("users")
+    .where({ id: user.id })
+    .update({ password_hash: newHash, updated_at: knex.fn.now() });
+
+  res.json({
+    success: true,
+    message: "تم تحديث كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.",
+  });
+});
+
+// ─── Password change (logged-in user) ─────────────────────────────────
+
+/**
+ * POST /auth/password/request-change
+ * Authenticated. Sends an OTP to confirm the password change.
+ */
+const requestPasswordChange = asyncHandler(async (req, res) => {
+  const user = await knex("users")
+    .where({ id: req.user.id })
+    .first("id", "email");
+  if (!user) throw new AppError("User not found", 404);
+
+  const result = await otpService.issueOtp({
+    email: user.email,
+    userId: user.id,
+    purpose: "password_change",
+    requesterIp: req.ip,
+  });
+  res.json({
+    success: true,
+    otp_sent: result.sent,
+    reason: result.reason,
+    expires_at: result.expires_at,
+  });
+});
+
+/**
+ * POST /auth/password/change
+ * Body: { current_password, new_password, code }
+ * Authenticated. Requires BOTH the current password AND the OTP — losing
+ * one of them shouldn't let someone change the password.
+ */
+const changePassword = asyncHandler(async (req, res) => {
+  const { current_password, new_password, code } = req.body;
+
+  const user = await knex("users")
+    .where({ id: req.user.id })
+    .first("id", "email", "password_hash");
+  if (!user) throw new AppError("User not found", 404);
+
+  const ok = await verifyPassword(current_password, user.password_hash);
+  if (!ok) throw new AppError("كلمة المرور الحالية غير صحيحة", 401);
+
+  await otpService.verifyOtp({
+    email: user.email,
+    code: String(code),
+    purpose: "password_change",
+  });
+
+  const newHash = await hashPassword(new_password);
+  await knex("users")
+    .where({ id: user.id })
+    .update({ password_hash: newHash, updated_at: knex.fn.now() });
+
+  res.json({ success: true, message: "تم تحديث كلمة المرور بنجاح." });
+});
+
+module.exports = {
+  checkEmail,
+  register,
+  login,
+  me,
+  logout,
+  // OTP / verification flows
+  sendEmailVerificationOtp,
+  verifyEmail,
+  requestPasswordReset,
+  resetPassword,
+  requestPasswordChange,
+  changePassword,
+};

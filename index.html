@@ -1,0 +1,1413 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>حرث — منصة الزراعة الذكية</title>
+    <meta name="description" content="منصة حرث للزراعة الذكية - تأجير وبيع المعدات الزراعية، خدمات التوصيل، ونظام إدارة المزارع الشامل" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="design-system.css" />
+    <link rel="stylesheet" href="style.css" />
+  
+    <!-- HARTH-RESPONSIVE-CSS -->
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+
+  <body data-hs-page>
+    <!-- Modern Header -->
+    <header class="header-container">
+      <div class="header-capsule">
+        <div class="section right">
+          <div class="site-brand">
+            <img src="شعار حرث.jpeg" alt="شعار حرث" />
+            <h1>حــرث</h1>
+          </div>
+        </div>
+
+        <nav class="section center">
+          <ul class="nav-links">
+            <li><a href="track.html" class="nav-item">تتبع الطلبات</a></li>
+            <li><a href="delivery.html" class="nav-item">التوصيل</a></li>
+            <li><a href="basket.html" class="nav-item">بيع المعدات</a></li>
+            <li><a href="tools.html" class="nav-item">تأجير المعدات</a></li>
+            <li><a href="index.html" class="nav-item nav-item--active">الرئيسية</a></li>
+          </ul>
+        </nav>
+
+        <div class="section left" id="auth-header">
+          <a href="register.html" class="hs-btn hs-btn--ghost hs-btn--sm" id="login-link">
+            تسجيل دخول
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+
+      <!-- Global top strip — admin-controlled site-wide announcement.
+           Hidden until /public/banners?placement=global_top_strip returns
+           something. -->
+      <div id="banner-global-strip" style="display: none"></div>
+
+      <!-- Stories strip — circular avatars with farmer's name. Same UX
+           as Instagram. Hidden when nobody has live stories. -->
+      <section id="stories-strip-wrap" style="display: none">
+        <div class="container">
+          <div class="stories-strip">
+            <div class="stories-strip-header">
+              <h3>
+                <i class="fas fa-camera"></i> صور اليوم من المزارع
+              </h3>
+              <span class="stories-hint">تختفي بعد 24 ساعة</span>
+            </div>
+            <div class="stories-rail" id="stories-rail">
+              <!-- Owner shortcut: only injected when the visitor is an
+                   owner with an approved account. -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hero Section: now driven by /public/banners?placement=home_hero
+           when banners exist; otherwise falls back to the static hero
+           copy below so first-time visitors with no banners still see
+           something compelling. -->
+      <section class="hero-section" id="hero-section">
+        <!-- Banner carousel slot — populated by JS if banners exist. -->
+        <div id="hero-carousel" style="display: none"></div>
+
+        <!-- Static fallback. Hidden by JS when banners take over. -->
+        <div class="container" id="hero-static">
+          <div class="hero-content">
+            <h1 class="hero-title">
+              معاً نحو <span class="text-accent">حصادٍ أذكى</span>
+              <br />ونماءٍ مستدام
+            </h1>
+            <p class="hero-description">
+              "حرث" تضع أحدث الخدمات والتقنيات الزراعية بين يديك.
+              منصة شاملة لتأجير وبيع المعدات الزراعية مع شبكة توصيل موثوقة عبر جميع محافظات السلطنة.
+            </p>
+            <div class="hero-actions">
+              <a href="tools.html" class="hs-btn hs-btn--lg">
+                <i class="fas fa-tractor"></i>
+                تصفح المعدات
+              </a>
+              <a href="register.html" class="hs-btn hs-btn--secondary hs-btn--lg">
+                <i class="fas fa-user-plus"></i>
+                انضم الآن
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Secondary banner strip — sits under the hero, used for
+           seasonal offers ("Ramadan deals", "Spring planting") that
+           don't deserve the full hero. -->
+      <section id="banner-secondary-section" style="display: none">
+        <div class="container" id="banner-secondary-wrap"></div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="features-section">
+        <div class="container">
+          <h2 class="section-title">لماذا تختار حرث؟</h2>
+          <div class="features-grid">
+            <div class="hs-card">
+              <div class="card__body">
+                <div class="feature-icon">
+                  <i class="fas fa-seedling"></i>
+                </div>
+                <h3 class="feature-title">تنوع المعدات</h3>
+                <p class="feature-description">
+                  مجموعة واسعة من المعدات الزراعية الحديثة للإيجار والبيع من مزارعين موثوقين
+                </p>
+              </div>
+            </div>
+
+            <div class="hs-card">
+              <div class="card__body">
+                <div class="feature-icon">
+                  <i class="fas fa-shipping-fast"></i>
+                </div>
+                <h3 class="feature-title">توصيل سريع</h3>
+                <p class="feature-description">
+                  شبكة توصيل متطورة تغطي جميع محافظات عُمان مع تتبع لحظي للطلبات
+                </p>
+              </div>
+            </div>
+
+            <div class="hs-card">
+              <div class="card__body">
+                <div class="feature-icon">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">موثوقية عالية</h3>
+                <p class="feature-description">
+                  نظام توثيق متقدم للمزارعين وضمان جودة لكل معدة مع خدمة عملاء على مدار الساعة
+                </p>
+              </div>
+            </div>
+
+            <div class="hs-card">
+              <div class="card__body">
+                <div class="feature-icon">
+                  <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3 class="feature-title">تجربة متطورة</h3>
+                <p class="feature-description">
+                  واجهة سهلة الاستخدام مع إشعارات فورية وأدوات إدارة متقدمة للمزارعين
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Section
+        ─────────────────────────────────────────────────────────────────
+        لتعديل هذه الأرقام:
+        ▸ الطريقة الأولى (تلقائية): الأرقام تُجلب من قاعدة البيانات تلقائياً
+          عبر /api/v1/public/stats. لا تحتاج لتعديل أي شيء — كلما زادت
+          المعدات والمزارعون، يتحدّث العرض من تلقاء نفسه.
+        ▸ الطريقة الثانية (تعديل القيم الافتراضية الظاهرة قبل التحميل):
+          غيِّر الرقم في data-count="..." في كل بطاقة أدناه.
+        ▸ الطريقة الثالثة (تجاوز نهائي عبر env vars في الخادم):
+          STATS_OVERRIDE_EQUIPMENT=500
+          STATS_OVERRIDE_FARMERS=150
+          STATS_OVERRIDE_ORDERS=1200
+          STATS_OVERRIDE_REGIONS=11
+        ▸ الطريقة الرابعة (حد أدنى — يستخدم الأكبر بين الواقعي والمحدَّد):
+          STATS_MIN_EQUIPMENT=100
+          STATS_MIN_FARMERS=50
+          STATS_MIN_ORDERS=500
+        ───────────────────────────────────────────────────────────────── -->
+      <section class="stats-section">
+        <div class="container">
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-number" id="stat-equipment" data-count="500">0</div>
+              <div class="stat-label">معدة متاحة</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number" id="stat-farmers" data-count="150">0</div>
+              <div class="stat-label">مزارع مسجل</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number" id="stat-regions" data-count="11">0</div>
+              <div class="stat-label">محافظة مخدومة</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number" id="stat-orders" data-count="1200">0</div>
+              <div class="stat-label">طلب مكتمل</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="cta-section">
+        <div class="container">
+          <div class="hs-card hs-card--featured">
+            <div class="card__body">
+              <h2 class="cta-title">هل أنت مزارع؟</h2>
+              <p class="cta-description">
+                انضم لشبكة المزارعين في حرث وابدأ بتأجير معداتك أو بيع منتجاتك للمزارعين في جميع أنحاء السلطنة
+              </p>
+              <div class="cta-actions">
+                <a href="register.html?role=owner" class="hs-btn hs-btn--accent hs-btn--lg">
+                  <i class="fas fa-store"></i>
+                  سجل كمزارع
+                </a>
+                <a href="basket.html" class="hs-btn hs-btn--ghost hs-btn--lg">
+                  تصفح المعدات المعروضة
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer-modern">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <img src="شعار حرث.jpeg" class="footer-logo" alt="شعار حرث" />
+            <h3>حــرث</h3>
+            <p>منصة الزراعة الذكية</p>
+          </div>
+
+          <div class="footer-links">
+            <div class="footer-section">
+              <h4>الخدمات</h4>
+              <ul>
+                <li><a href="tools.html">تأجير المعدات</a></li>
+                <li><a href="basket.html">بيع المعدات</a></li>
+                <li><a href="delivery.html">خدمات التوصيل</a></li>
+                <li><a href="track.html">تتبع الطلبات</a></li>
+              </ul>
+            </div>
+
+            <div class="footer-section">
+              <h4>الحساب</h4>
+              <ul>
+                <li><a href="register.html">تسجيل / دخول</a></li>
+                <li><a href="owner-dashboard.html">لوحة المزارع</a></li>
+                <li><a href="delivery.html">لوحة المندوب</a></li>
+              </ul>
+            </div>
+
+            <div class="footer-section">
+              <h4>تواصل معنا</h4>
+              <div class="contact-info">
+                <div class="contact-item">
+                  <i class="fas fa-phone"></i>
+                  <span>77556094</span>
+                </div>
+                <div class="social-links-footer">
+                  <a href="https://www.instagram.com/harth_oman?igsh=ZnpodHd4bTdieXBq&utm_source=qr" 
+                     class="social-link" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                  </a>
+                  <a href="https://wa.me/96877556094" class="social-link" title="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div class="footer-bottom-content">
+            <p>&copy; 2026 جميع الحقوق محفوظة لفريق حرث</p>
+            <p class="dev-credit">تطوير: الخليل الهاشمي</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Floating Cart (نفس الزر المُستخدم في باقي الصفحات) -->
+    <a href="checkout.html" class="basket-floating-button" title="سلة المبيعات">🛒</a>
+
+    <script src="design-system.js"></script>
+    <script src="unified-nav.js"></script>
+    <script src="script.js"></script>
+    
+    <!-- Enhanced Index Page Scripts -->
+    <script>
+      // ─── Animated counters for stats section ─────────────────────────
+      // Counts up smoothly from 0 to the target value over ~1.2 seconds.
+      // Uses easeOutQuad for a natural deceleration — feels less robotic
+      // than a linear count.
+      function animateCounter(element, target) {
+        const duration = 1200;
+        const start = performance.now();
+        const easeOut = (t) => 1 - (1 - t) * (1 - t);
+
+        function tick(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const value = Math.floor(target * easeOut(progress));
+          element.textContent = value.toLocaleString('ar');
+          if (progress < 1) {
+            requestAnimationFrame(tick);
+          } else {
+            element.textContent = target.toLocaleString('ar');
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+
+      // Start counter animation when stats become visible. We track this
+      // separately so we can run it twice safely: once when the stats are
+      // hardcoded defaults, and once when fresh values arrive from the API.
+      let statsAnimated = false;
+      function runCounters() {
+        if (statsAnimated) return;
+        statsAnimated = true;
+        document.querySelectorAll('.stat-number').forEach(counter => {
+          const target = parseInt(counter.dataset.count, 10) || 0;
+          animateCounter(counter, target);
+        });
+      }
+
+      const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            runCounters();
+            statsObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3, rootMargin: '0px 0px -50px 0px' });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) statsObserver.observe(statsSection);
+
+        // Pull real numbers from the public stats endpoint. We fire this
+        // in parallel with the observer so:
+        //  - if the API responds BEFORE the user scrolls to the stats,
+        //    we update data-count and the counter animates with real
+        //    numbers.
+        //  - if the user scrolls first, the counter runs with the
+        //    hardcoded defaults and updates silently when the API
+        //    responds (next refresh will animate to the new target).
+        fetch('/api/v1/public/stats')
+          .then(r => r.ok ? r.json() : null)
+          .then(data => {
+            if (!data || !data.success || !data.stats) return;
+            const map = {
+              'stat-equipment': data.stats.equipment_available,
+              'stat-farmers':   data.stats.farmers_active,
+              'stat-orders':    data.stats.orders_completed,
+              'stat-regions':   data.stats.regions_served,
+            };
+            for (const [id, value] of Object.entries(map)) {
+              const el = document.getElementById(id);
+              if (!el || !Number.isFinite(value)) continue;
+              el.dataset.count = value;
+              // If counters already ran, snap the displayed value
+              // without re-animating — feels more natural.
+              if (statsAnimated) el.textContent = value.toLocaleString('ar');
+            }
+          })
+          .catch(() => { /* keep hardcoded defaults if API is unreachable */ });
+      });
+
+      // Smooth scroll for internal links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+    </script>
+
+    <!-- ============================================================
+         Stories strip + dynamic banners.
+         Both are public reads: anyone (logged-in or not) sees them.
+         Failures are silent — the rest of the homepage works without
+         either.
+    ============================================================== -->
+    <script>
+      (function () {
+        "use strict";
+
+        // We use the same API_BASE_URL convention as script.js: localhost
+        // gets the absolute http://localhost:3000 endpoint, everywhere
+        // else hits the same-origin /api/v1 path.
+        const API =
+          window.location.hostname === "localhost"
+            ? "http://localhost:3000/api/v1"
+            : "/api/v1";
+
+        async function getJson(path, headers = {}) {
+          try {
+            const r = await fetch(API + path, { headers });
+            if (!r.ok) return null;
+            return await r.json();
+          } catch (_e) {
+            return null;
+          }
+        }
+
+        // ─── Banners ──────────────────────────────────────────────
+        // Three placements live on the homepage: global_top_strip
+        // (thin announcement above the header content), home_hero
+        // (replaces the static hero), home_secondary (under the hero).
+        getJson("/public/banners")
+          .then((res) => {
+            if (!res || !res.success) return;
+            const items = res.items || [];
+            const byPlacement = (p) => items.filter((b) => b.placement === p);
+
+            renderTopStrip(byPlacement("global_top_strip"));
+            renderHero(byPlacement("home_hero"));
+            renderSecondary(byPlacement("home_secondary"));
+          });
+
+        function renderTopStrip(banners) {
+          if (!banners.length) return;
+          const wrap = document.getElementById("banner-global-strip");
+          if (!wrap) return;
+          // Pick the first active banner — strip is single-message.
+          const b = banners[0];
+          const bg = b.background_color || "#2d5016";
+          const text = b.text_color || "#ffffff";
+          const cta = b.cta_url
+            ? `<a href="${escapeAttr(b.cta_url)}" style="color:${text};text-decoration:underline;margin-inline-start:10px">${escapeHtml(b.cta_label || "اعرف المزيد")} ←</a>`
+            : "";
+          wrap.innerHTML = `
+            <div style="background:${bg};color:${text};padding:8px 16px;text-align:center;font-size:14px">
+              <i class="fas fa-bullhorn" style="margin-inline-end:6px"></i>
+              <strong>${escapeHtml(b.title)}</strong>
+              ${b.subtitle ? `<span style="opacity:0.9;margin-inline-start:8px">${escapeHtml(b.subtitle)}</span>` : ""}
+              ${cta}
+            </div>
+          `;
+          wrap.style.display = "block";
+        }
+
+        function renderHero(banners) {
+          if (!banners.length) return; // keep static fallback visible
+          const carousel = document.getElementById("hero-carousel");
+          const staticHero = document.getElementById("hero-static");
+          if (!carousel || !staticHero) return;
+          staticHero.style.display = "none";
+          carousel.style.display = "block";
+          carousel.innerHTML = `
+            <div class="hero-banner-list" id="hero-banner-list">
+              ${banners.map(heroBannerHtml).join("")}
+            </div>
+            ${banners.length > 1 ? heroDotsHtml(banners.length) : ""}
+          `;
+          if (banners.length > 1) wireHeroAutoRotate(banners.length);
+        }
+
+        function heroBannerHtml(b) {
+          const bg = b.background_color || "#2d5016";
+          const fg = b.text_color || "#ffffff";
+          const bgImage = b.image_url
+            ? `background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url('${escapeAttr(b.image_url)}'); background-size: cover; background-position: center;`
+            : `background: linear-gradient(135deg, ${bg}, rgba(0,0,0,0.6));`;
+          const cta = b.cta_url && b.cta_label
+            ? `<a href="${escapeAttr(b.cta_url)}" class="hs-btn hs-btn--lg" style="background:${fg};color:${bg}">
+                 ${escapeHtml(b.cta_label)} →
+               </a>`
+            : "";
+          return `
+            <div class="hero-banner-slide" style="${bgImage}">
+              <div class="container hero-content" style="color:${fg}">
+                <h1 class="hero-title" style="color:${fg}">${escapeHtml(b.title)}</h1>
+                ${b.subtitle ? `<p class="hero-description" style="color:${fg};opacity:0.95">${escapeHtml(b.subtitle)}</p>` : ""}
+                ${cta ? `<div class="hero-actions">${cta}</div>` : ""}
+              </div>
+            </div>
+          `;
+        }
+
+        function heroDotsHtml(count) {
+          return `
+            <div class="hero-dots" id="hero-dots">
+              ${Array.from({ length: count })
+                .map((_, i) => `<button data-slide="${i}" class="hero-dot ${i === 0 ? "active" : ""}" aria-label="عرض شريحة ${i + 1}"></button>`)
+                .join("")}
+            </div>
+          `;
+        }
+
+        // Auto-rotate every 7 seconds. Pauses on hover so a reader who
+        // wants to dwell isn't yanked away.
+        function wireHeroAutoRotate(count) {
+          const list = document.getElementById("hero-banner-list");
+          if (!list) return;
+          let active = 0;
+          const dots = list.parentElement.querySelectorAll(".hero-dot");
+          const setActive = (i) => {
+            active = (i + count) % count;
+            list.style.transform = `translateX(${active * 100}%)`; // RTL: positive moves right
+            dots.forEach((d, idx) => d.classList.toggle("active", idx === active));
+          };
+          let timer = setInterval(() => setActive(active + 1), 7000);
+          const wrap = document.getElementById("hero-carousel");
+          wrap.addEventListener("mouseenter", () => clearInterval(timer));
+          wrap.addEventListener("mouseleave", () => {
+            timer = setInterval(() => setActive(active + 1), 7000);
+          });
+          dots.forEach((d) =>
+            d.addEventListener("click", () => setActive(parseInt(d.dataset.slide, 10) || 0)),
+          );
+        }
+
+        function renderSecondary(banners) {
+          if (!banners.length) return;
+          const section = document.getElementById("banner-secondary-section");
+          const wrap = document.getElementById("banner-secondary-wrap");
+          if (!section || !wrap) return;
+          section.style.display = "block";
+          wrap.innerHTML = `
+            <div class="secondary-banner-grid">
+              ${banners.map(secondaryBannerHtml).join("")}
+            </div>
+          `;
+        }
+
+        function secondaryBannerHtml(b) {
+          const bg = b.background_color || "#6ab04c";
+          const fg = b.text_color || "#ffffff";
+          const cta = b.cta_url && b.cta_label
+            ? `<a href="${escapeAttr(b.cta_url)}" class="secondary-banner-cta">${escapeHtml(b.cta_label)} →</a>`
+            : "";
+          return `
+            <div class="secondary-banner-card" style="background:${bg};color:${fg}">
+              ${b.image_url ? `<img src="${escapeAttr(b.image_url)}" alt="" />` : ""}
+              <div class="secondary-banner-body">
+                <h3 style="color:${fg}">${escapeHtml(b.title)}</h3>
+                ${b.subtitle ? `<p>${escapeHtml(b.subtitle)}</p>` : ""}
+                ${cta}
+              </div>
+            </div>
+          `;
+        }
+
+        // ─── Stories ──────────────────────────────────────────────
+        // Pull the live grouped feed and render circular avatars.
+        // Tap an avatar → open a fullscreen viewer with auto-advance.
+        // We supply an x-anon-session header so anonymous viewers get
+        // counted as one viewer per browser instead of per request.
+        function getAnonSession() {
+          let s = localStorage.getItem("anon_session_id");
+          if (!s) {
+            // Cheap stable random id; the Cookie header would be more
+            // proper but avoiding cookies keeps the homepage cacheable.
+            s = "anon-" + Math.random().toString(36).slice(2, 12) + "-" +
+                Date.now().toString(36);
+            localStorage.setItem("anon_session_id", s);
+          }
+          return s;
+        }
+
+        let storyGroups = [];
+        getJson("/stories")
+          .then((res) => {
+            if (!res || !res.success) return;
+            storyGroups = res.groups || [];
+
+            // Show the strip only if there's something to show OR the
+            // visitor is an owner (so they can still post their first
+            // story).
+            const me = (() => {
+              try { return JSON.parse(localStorage.getItem("user") || "null"); }
+              catch (_e) { return null; }
+            })();
+            const isOwner = me && me.role === "owner" && me.account_status === "approved";
+
+            if (!storyGroups.length && !isOwner) return;
+
+            const wrap = document.getElementById("stories-strip-wrap");
+            const rail = document.getElementById("stories-rail");
+            if (!wrap || !rail) return;
+
+            const ownerCard = isOwner
+              ? `
+                <a href="post-story.html" class="story-bubble story-bubble-add" title="انشر قصة">
+                  <div class="story-ring story-ring-add">
+                    <div class="story-avatar story-avatar-add">
+                      <i class="fas fa-plus"></i>
+                    </div>
+                  </div>
+                  <span class="story-author">قصتك</span>
+                </a>
+              `
+              : "";
+
+            rail.innerHTML = ownerCard + storyGroups
+              .map((g, idx) => storyBubbleHtml(g, idx))
+              .join("");
+            wrap.style.display = "block";
+
+            // Wire taps.
+            rail.querySelectorAll("[data-story-group]").forEach((el) =>
+              el.addEventListener("click", (e) => {
+                e.preventDefault();
+                openStoryViewer(parseInt(el.dataset.storyGroup, 10));
+              }),
+            );
+          });
+
+        function storyBubbleHtml(g, idx) {
+          // Use the first story's image as the avatar — it's literally
+          // the freshest content the farmer posted.
+          const firstImg = g.stories[0]?.image_url || "";
+          const verified = g.author_verified
+            ? '<i class="fas fa-check-circle story-verified" title="مزارع موثَّق"></i>'
+            : "";
+          return `
+            <a href="#" class="story-bubble" data-story-group="${idx}">
+              <div class="story-ring">
+                <div class="story-avatar" style="background-image:url('${escapeAttr(firstImg)}')"></div>
+              </div>
+              <span class="story-author">${escapeHtml(g.author_name || "—")}${verified}</span>
+            </a>
+          `;
+        }
+
+        // Simple full-screen viewer.
+        function openStoryViewer(groupIdx) {
+          if (!storyGroups[groupIdx]) return;
+
+          // Two-level state: which group, which story within that group.
+          let gIdx = groupIdx;
+          let sIdx = 0;
+          let progressInterval = null;
+          const STORY_DURATION = 5000; // 5s per story
+
+          // Build overlay.
+          const overlay = document.createElement("div");
+          overlay.className = "story-viewer-overlay";
+          overlay.innerHTML = `
+            <div class="story-viewer-card">
+              <div class="story-viewer-progress" id="sv-progress"></div>
+              <div class="story-viewer-header">
+                <div class="story-viewer-author">
+                  <span class="story-viewer-name" id="sv-name"></span>
+                  <span class="story-viewer-time" id="sv-time"></span>
+                </div>
+                <button class="story-viewer-close" id="sv-close" aria-label="إغلاق">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <img class="story-viewer-image" id="sv-image" alt="" />
+              <div class="story-viewer-caption" id="sv-caption"></div>
+              <div class="story-viewer-tap-zones">
+                <button class="story-tap-prev" id="sv-prev" aria-label="السابق"></button>
+                <button class="story-tap-next" id="sv-next" aria-label="التالي"></button>
+              </div>
+              <div class="story-viewer-cta" id="sv-cta"></div>
+            </div>
+          `;
+          document.body.appendChild(overlay);
+          document.body.style.overflow = "hidden";
+
+          const close = () => {
+            clearInterval(progressInterval);
+            overlay.remove();
+            document.body.style.overflow = "";
+          };
+          overlay.querySelector("#sv-close").addEventListener("click", close);
+          overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) close();
+          });
+          // Keyboard nav.
+          const onKey = (e) => {
+            if (e.key === "Escape") close();
+            else if (e.key === "ArrowRight") prev(); // RTL: right = previous
+            else if (e.key === "ArrowLeft") next();
+          };
+          document.addEventListener("keydown", onKey);
+          overlay.addEventListener("DOMNodeRemoved", () =>
+            document.removeEventListener("keydown", onKey),
+          );
+
+          overlay.querySelector("#sv-prev").addEventListener("click", prev);
+          overlay.querySelector("#sv-next").addEventListener("click", next);
+
+          function prev() {
+            if (sIdx > 0) { sIdx--; show(); return; }
+            if (gIdx > 0) { gIdx--; sIdx = storyGroups[gIdx].stories.length - 1; show(); return; }
+            // First story of first group → close.
+            close();
+          }
+          function next() {
+            const group = storyGroups[gIdx];
+            if (sIdx < group.stories.length - 1) { sIdx++; show(); return; }
+            if (gIdx < storyGroups.length - 1) { gIdx++; sIdx = 0; show(); return; }
+            close();
+          }
+
+          // Render the current story + start the progress timer + record
+          // a view. Recording is fire-and-forget; failures don't break
+          // the UX.
+          function show() {
+            const group = storyGroups[gIdx];
+            const s = group.stories[sIdx];
+            overlay.querySelector("#sv-name").textContent = group.author_name;
+            overlay.querySelector("#sv-time").textContent = relativeTime(s.created_at);
+            overlay.querySelector("#sv-image").src = s.image_url;
+            overlay.querySelector("#sv-caption").textContent = s.caption || "";
+            const ctaWrap = overlay.querySelector("#sv-cta");
+            ctaWrap.innerHTML = s.equipment_id
+              ? `<a href="tools.html#eq-${s.equipment_id}" class="hs-btn hs-btn--lg story-cta-btn">
+                   <i class="fas fa-tractor"></i> اعرض المعدة
+                 </a>`
+              : "";
+
+            renderProgressBars(group.stories.length, sIdx);
+            // Reset progress animation.
+            clearInterval(progressInterval);
+            const fill = overlay.querySelector(`.sv-prog-active`);
+            const startedAt = Date.now();
+            progressInterval = setInterval(() => {
+              const t = Math.min((Date.now() - startedAt) / STORY_DURATION, 1);
+              if (fill) fill.style.width = t * 100 + "%";
+              if (t >= 1) {
+                clearInterval(progressInterval);
+                next();
+              }
+            }, 50);
+
+            // View tracking — best-effort.
+            const token = localStorage.getItem("token");
+            const headers = token
+              ? { Authorization: "Bearer " + token, "Content-Type": "application/json" }
+              : { "x-anon-session": getAnonSession(), "Content-Type": "application/json" };
+            fetch(API + `/stories/${s.id}/view`, { method: "POST", headers }).catch(
+              () => {},
+            );
+          }
+
+          function renderProgressBars(count, active) {
+            const wrap = overlay.querySelector("#sv-progress");
+            wrap.innerHTML = Array.from({ length: count })
+              .map((_, i) => {
+                const cls = i < active ? "sv-prog-done" : i === active ? "sv-prog-active" : "";
+                return `<div class="sv-prog-bar"><div class="sv-prog-fill ${cls}" style="${i < active ? "width:100%" : ""}"></div></div>`;
+              })
+              .join("");
+          }
+
+          show();
+        }
+
+        // Friendly "before X" relative timestamps. Story TTL is 24h, so we
+        // never render anything weirder than "before 23 hours".
+        function relativeTime(iso) {
+          const d = new Date(iso);
+          const diff = (Date.now() - d.getTime()) / 1000;
+          if (diff < 60) return "قبل ثوانٍ";
+          if (diff < 3600) return `قبل ${Math.floor(diff / 60)} دقيقة`;
+          return `قبل ${Math.floor(diff / 3600)} ساعة`;
+        }
+
+        function escapeHtml(s) {
+          if (s == null) return "";
+          return String(s).replace(/[&<>"']/g, (c) =>
+            ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]),
+          );
+        }
+        function escapeAttr(s) {
+          if (s == null) return "";
+          return String(s).replace(/"/g, "&quot;");
+        }
+      })();
+    </script>
+
+    <style>
+      /* Landing Page Specific Styles */
+      .main-content {
+        margin-top: 0;
+      }
+
+      .hero-section {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        padding: var(--sp-8) 0;
+      }
+
+      .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .hero-title {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: var(--sp-6);
+        color: var(--color-text);
+      }
+
+      .text-accent {
+        color: var(--color-accent-500);
+        background: linear-gradient(45deg, var(--color-accent-500), var(--color-brand-500));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-description {
+        font-size: var(--fs-lg);
+        color: var(--color-text-muted);
+        line-height: var(--lh-relaxed);
+        margin-bottom: var(--sp-8);
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: var(--sp-4);
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .features-section,
+      .stats-section,
+      .cta-section {
+        padding: var(--sp-16) 0;
+      }
+
+      .section-title {
+        font-size: var(--fs-2xl);
+        font-weight: 700;
+        text-align: center;
+        color: var(--color-text);
+        margin-bottom: var(--sp-12);
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--sp-6);
+        margin-top: var(--sp-8);
+      }
+
+      .feature-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 4rem;
+        height: 4rem;
+        background: var(--color-brand-500);
+        border-radius: var(--r-xl);
+        color: white;
+        font-size: var(--fs-xl);
+        margin-bottom: var(--sp-4);
+      }
+
+      .feature-title {
+        font-size: var(--fs-lg);
+        font-weight: 600;
+        color: var(--color-text);
+        margin-bottom: var(--sp-3);
+      }
+
+      .feature-description {
+        color: var(--color-text-muted);
+        line-height: var(--lh-relaxed);
+      }
+
+      .stats-section {
+        background: var(--surface-2);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--sp-8);
+        text-align: center;
+      }
+
+      .stat-item {
+        padding: var(--sp-4);
+      }
+
+      .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--color-accent-500);
+        display: block;
+        margin-bottom: var(--sp-2);
+      }
+
+      .stat-label {
+        font-size: var(--fs-base);
+        color: var(--color-text-muted);
+        font-weight: 500;
+      }
+
+      .cta-section .hs-card {
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .cta-title {
+        font-size: var(--fs-2xl);
+        font-weight: 700;
+        color: var(--color-text);
+        margin-bottom: var(--sp-4);
+      }
+
+      .cta-description {
+        color: var(--color-text-muted);
+        line-height: var(--lh-relaxed);
+        margin-bottom: var(--sp-6);
+      }
+
+      .cta-actions {
+        display: flex;
+        gap: var(--sp-4);
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      /* Footer Styles */
+      .footer-modern {
+        background: var(--surface-modal);
+        padding: var(--sp-16) 0 var(--sp-8);
+        margin-top: var(--sp-16);
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: var(--sp-12);
+        margin-bottom: var(--sp-8);
+      }
+
+      .footer-brand h3 {
+        font-size: var(--fs-xl);
+        color: var(--color-text);
+        margin: var(--sp-2) 0;
+      }
+
+      .footer-brand p {
+        color: var(--color-text-muted);
+      }
+
+      .footer-logo {
+        width: 3rem;
+        height: 3rem;
+        border-radius: var(--r-lg);
+        object-fit: cover;
+      }
+
+      .footer-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: var(--sp-8);
+      }
+
+      .footer-section h4 {
+        color: var(--color-text);
+        font-weight: 600;
+        margin-bottom: var(--sp-4);
+      }
+
+      .footer-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .footer-section li {
+        margin-bottom: var(--sp-2);
+      }
+
+      .footer-section a {
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: color var(--dur-fast);
+      }
+
+      .footer-section a:hover {
+        color: var(--color-text);
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-3);
+        color: var(--color-text-muted);
+      }
+
+      .social-links-footer {
+        display: flex;
+        gap: var(--sp-3);
+        margin-top: var(--sp-4);
+      }
+
+      .social-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        background: var(--surface-2);
+        color: var(--color-text-muted);
+        border-radius: var(--r-lg);
+        text-decoration: none;
+        transition: all var(--dur-fast);
+      }
+
+      .social-link:hover {
+        background: var(--color-brand-500);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .footer-bottom {
+        padding-top: var(--sp-8);
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .footer-bottom-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--sp-4);
+        color: var(--color-text-soft);
+        font-size: var(--fs-sm);
+      }
+
+      .dev-credit {
+        font-style: italic;
+        opacity: 0.8;
+      }
+
+      .nav-item--active {
+        background: var(--surface-2);
+        color: var(--color-brand-500) !important;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .hero-actions {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .hero-actions .hs-btn {
+          min-width: 200px;
+        }
+
+        .footer-content {
+          grid-template-columns: 1fr;
+          gap: var(--sp-8);
+        }
+
+        .footer-bottom-content {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+      /* ===== Stories strip ============================================
+         Instagram-style horizontal rail of circular avatars at the top of
+         the homepage. Each avatar has a gradient ring to signal "live
+         story". Tap → fullscreen viewer. */
+      .stories-strip {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 14px 18px;
+        margin: 18px 0 6px;
+      }
+      .stories-strip-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .stories-strip-header h3 {
+        margin: 0;
+        font-size: 16px;
+        color: var(--color-text);
+      }
+      .stories-strip-header .stories-hint {
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        opacity: 0.75;
+      }
+      .stories-rail {
+        display: flex;
+        gap: 14px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        padding-bottom: 4px;
+      }
+      .stories-rail::-webkit-scrollbar { height: 4px; }
+      .stories-rail::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 2px; }
+
+      .story-bubble {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-shrink: 0;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        width: 78px;
+      }
+      .story-ring {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        padding: 3px;
+        background: linear-gradient(45deg, #f1c40f, #6ab04c, #3498db);
+      }
+      .story-ring-add {
+        background: linear-gradient(45deg, #6ab04c, #2d5016);
+      }
+      .story-avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        background-color: #1f2a1f;
+        border: 2px solid var(--color-bg, #0e1410);
+      }
+      .story-avatar-add {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 22px;
+      }
+      .story-author {
+        font-size: 11px;
+        margin-top: 6px;
+        text-align: center;
+        max-width: 78px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--color-text);
+      }
+      .story-verified {
+        color: #3498db;
+        font-size: 10px;
+        margin-inline-start: 2px;
+      }
+
+      /* ===== Story viewer (fullscreen overlay) =========================
+         Layered above everything; tap-zones along the right/left edges
+         (RTL) advance/rewind. Auto-advance after 5 s per story. */
+      .story-viewer-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: svFade 0.18s ease-out;
+      }
+      @keyframes svFade { from { opacity: 0 } to { opacity: 1 } }
+
+      .story-viewer-card {
+        position: relative;
+        width: min(420px, 95vw);
+        height: min(720px, 90vh);
+        background: #000;
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .story-viewer-progress {
+        display: flex;
+        gap: 4px;
+        padding: 10px;
+        position: absolute;
+        top: 0;
+        inset-inline: 0;
+        z-index: 3;
+      }
+      .sv-prog-bar {
+        flex: 1;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .sv-prog-fill {
+        height: 100%;
+        background: #fff;
+        width: 0;
+      }
+      .sv-prog-fill.sv-prog-done {
+        width: 100%;
+      }
+      .story-viewer-header {
+        position: absolute;
+        top: 22px;
+        inset-inline: 0;
+        z-index: 3;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 14px;
+      }
+      .story-viewer-author {
+        color: #fff;
+        font-size: 13px;
+      }
+      .story-viewer-name {
+        font-weight: 700;
+        margin-inline-end: 8px;
+      }
+      .story-viewer-time {
+        opacity: 0.7;
+        font-size: 11px;
+      }
+      .story-viewer-close {
+        background: rgba(0, 0, 0, 0.4);
+        border: none;
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .story-viewer-image {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .story-viewer-caption {
+        position: absolute;
+        bottom: 80px;
+        inset-inline: 14px;
+        z-index: 2;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.65));
+        color: #fff;
+        padding: 16px 14px 12px;
+        border-radius: 10px;
+        font-size: 14px;
+        line-height: 1.5;
+        max-height: 35%;
+        overflow: auto;
+      }
+      .story-viewer-caption:empty {
+        display: none;
+      }
+      .story-viewer-cta {
+        position: absolute;
+        bottom: 16px;
+        inset-inline: 14px;
+        z-index: 4;
+        text-align: center;
+      }
+      .story-cta-btn {
+        background: rgba(255, 255, 255, 0.95);
+        color: #2d5016;
+        border-radius: 999px;
+        padding: 10px 20px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      /* Invisible tap zones — left half = next, right half = prev (RTL). */
+      .story-viewer-tap-zones {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: flex;
+      }
+      .story-tap-prev,
+      .story-tap-next {
+        flex: 1;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+      }
+
+      /* ===== Hero banner carousel ====================================== */
+      #hero-carousel {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+      }
+      .hero-banner-list {
+        display: flex;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        /* RTL: slides flow visually right-to-left in the source order;
+           translateX(N * 100%) is correct for both directions because
+           flex follows writing-mode. */
+      }
+      .hero-banner-slide {
+        flex: 0 0 100%;
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+      }
+      .hero-banner-slide .hero-content {
+        max-width: 720px;
+        text-align: center;
+        margin: 0 auto;
+      }
+      .hero-dots {
+        position: absolute;
+        bottom: 20px;
+        inset-inline: 0;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        z-index: 2;
+      }
+      .hero-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.45);
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        transition: background 0.2s;
+      }
+      .hero-dot.active {
+        background: #fff;
+      }
+
+      /* ===== Secondary banner cards ==================================== */
+      .secondary-banner-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 14px;
+        padding: 24px 0;
+      }
+      .secondary-banner-card {
+        border-radius: 14px;
+        overflow: hidden;
+        position: relative;
+        min-height: 160px;
+        display: flex;
+        align-items: stretch;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+      }
+      .secondary-banner-card img {
+        width: 130px;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+      .secondary-banner-body {
+        padding: 16px;
+        flex: 1;
+      }
+      .secondary-banner-body h3 {
+        margin: 0 0 6px;
+        font-size: 17px;
+      }
+      .secondary-banner-body p {
+        margin: 0 0 10px;
+        font-size: 13px;
+        opacity: 0.92;
+        line-height: 1.6;
+      }
+      .secondary-banner-cta {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.95);
+        color: #2d5016;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 13px;
+        text-decoration: none;
+      }
+    </style>
+  
+    <!-- HARTH-RESPONSIVE-JS -->
+    <script src="responsive.js" defer></script>
+  </body>
+</html>

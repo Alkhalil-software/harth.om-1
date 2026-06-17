@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>برنامج الولاء | منصة حرث</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="design-system.css" />
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+      .loyalty-shell {
+        max-width: 880px;
+        margin: 24px auto;
+        padding: 0 16px 48px;
+      }
+
+      /* ===== The hero card ============================================
+         The headline summary: tier name, badge, balance. Background uses
+         a gradient that subtly reflects the active tier color. */
+      .tier-hero {
+        background: linear-gradient(
+          135deg,
+          var(--tier-color, #6ab04c) 0%,
+          rgba(0, 0, 0, 0.4) 80%
+        );
+        border-radius: 18px;
+        padding: 28px 26px;
+        color: #fff;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+        margin-bottom: 22px;
+      }
+      .tier-hero h1 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        opacity: 0.85;
+        letter-spacing: 0.05em;
+      }
+      .tier-hero .tier-name {
+        font-size: 36px;
+        font-weight: 800;
+        margin: 6px 0 4px;
+      }
+      .tier-hero .tier-icon {
+        font-size: 30px;
+        margin-inline-end: 8px;
+        vertical-align: -3px;
+      }
+      .tier-hero .balance-line {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+        font-size: 14px;
+        opacity: 0.92;
+      }
+      .tier-hero .balance-amount {
+        font-size: 30px;
+        font-weight: 800;
+        margin-inline-end: 6px;
+      }
+
+      /* ===== Progress to next tier ==================================== */
+      .progress-card {
+        background: rgba(255, 255, 255, 0.95);
+        color: #1a1a1a;
+        border-radius: 14px;
+        padding: 22px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+        margin-bottom: 22px;
+      }
+      .progress-card h2 {
+        font-size: 16px;
+        margin: 0 0 12px;
+        color: #2d5016;
+      }
+      .progress-bar {
+        background: #eee;
+        height: 14px;
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 12px 0 8px;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #6ab04c, #f1c40f);
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .progress-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #555;
+      }
+
+      /* ===== Tier comparison cards ==================================== */
+      .tiers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+      .tier-card {
+        background: rgba(255, 255, 255, 0.92);
+        color: #1a1a1a;
+        border-radius: 14px;
+        padding: 18px;
+        border: 2px solid transparent;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .tier-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+      }
+      .tier-card.current {
+        border-color: var(--tier-color, #6ab04c);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+      }
+      .tier-card .tier-card-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+      .tier-card .tier-card-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        background: var(--tier-color);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+      .tier-card h3 {
+        margin: 0;
+        font-size: 18px;
+        color: var(--tier-color);
+      }
+      .tier-card .tier-min {
+        font-size: 12px;
+        color: #777;
+      }
+      .tier-card ul {
+        margin: 10px 0 0;
+        padding-inline-start: 20px;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #333;
+      }
+      .tier-card .current-pill {
+        display: inline-block;
+        margin-top: 8px;
+        background: var(--tier-color);
+        color: #fff;
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+      }
+
+      /* ===== Recent activity ========================================== */
+      .ledger-card {
+        background: rgba(255, 255, 255, 0.95);
+        color: #1a1a1a;
+        border-radius: 14px;
+        padding: 18px;
+      }
+      .ledger-card h2 {
+        margin: 0 0 12px;
+        font-size: 16px;
+        color: #2d5016;
+      }
+      .ledger-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+      }
+      .ledger-row:last-child {
+        border-bottom: none;
+      }
+      .ledger-amount.positive {
+        color: #2d8a3e;
+        font-weight: 700;
+      }
+      .ledger-amount.negative {
+        color: #c0392b;
+        font-weight: 700;
+      }
+      .ledger-when {
+        color: #888;
+        font-size: 12px;
+      }
+    </style>
+  
+    <!-- HARTH-RESPONSIVE-CSS -->
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+
+  <body>
+    <header class="header-container">
+      <div class="header-capsule">
+        <div class="section right">
+          <div class="site-brand">
+            <img src="شعار حرث.jpeg" alt="شعار حرث" />
+            <h1>حــرث</h1>
+          </div>
+        </div>
+        <nav class="section center">
+          <ul class="nav-links"></ul>
+        </nav>
+        <div class="section left" id="auth-header">
+          <a href="register.html" class="hs-btn hs-btn--ghost hs-btn--sm" id="login-link">
+            تسجيل دخول
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="loyalty-shell">
+      <!-- Hero summary card -->
+      <div class="tier-hero" id="tier-hero" style="--tier-color:#6ab04c">
+        <h1>برنامج ولاء حرث</h1>
+        <div class="tier-name">
+          <i class="fas fa-medal tier-icon" id="hero-icon"></i>
+          <span id="hero-tier-name">جارٍ التحميل...</span>
+        </div>
+        <div class="balance-line">
+          <div>
+            <span class="balance-amount" id="hero-balance">—</span>
+            نقطة قابلة للاستخدام
+          </div>
+          <div>
+            <span class="balance-amount" id="hero-lifetime">—</span>
+            مجموع النقاط المكتسبة
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-card">
+        <h2 id="progress-title">جارٍ تحميل التقدّم...</h2>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="progress-meta">
+          <span id="progress-now">0 نقطة</span>
+          <span id="progress-target">—</span>
+        </div>
+      </div>
+
+      <!-- Tier comparison -->
+      <div class="tiers-grid" id="tiers-grid"></div>
+
+      <!-- Recent ledger -->
+      <div class="ledger-card">
+        <h2><i class="fas fa-history" style="color: #6ab04c"></i> آخر العمليات</h2>
+        <div id="ledger-list">
+          <div style="padding: 14px; color: #888; text-align: center">
+            <i class="fas fa-spinner fa-spin"></i> جارٍ التحميل...
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="design-system.js"></script>
+    <script src="unified-nav.js"></script>
+    <script src="script.js"></script>
+    <script>
+      // Loyalty page — fetches the user's tier and ledger and renders the
+      // gradient hero, progress bar, and ledger. The tiers grid shows all
+      // tiers side-by-side with the current one highlighted.
+      (function () {
+        "use strict";
+        const $ = (s) => document.querySelector(s);
+
+        if (!localStorage.getItem("token")) {
+          // Anonymous → bounce to login. Loyalty data is per-user.
+          window.location.href = "register.html";
+          return;
+        }
+
+        const KIND_LABELS = {
+          earn: { ar: "ربح من طلب", positive: true },
+          referral_bonus: { ar: "مكافأة إحالة", positive: true },
+          admin_adjust: { ar: "تعديل من الإدارة", positive: null }, // depends on amount sign
+          spend: { ar: "استخدام", positive: false },
+          expire: { ar: "انتهاء صلاحية", positive: false },
+        };
+
+        function fmt(n) {
+          // The number itself; styling decides + or −.
+          return Math.abs(parseInt(n, 10) || 0).toLocaleString("ar");
+        }
+
+        async function load() {
+          try {
+            const [tier, ledger] = await Promise.all([
+              apiFetch("/loyalty/me/tier"),
+              apiFetch("/loyalty?limit=10"),
+            ]);
+            if (!tier?.success) throw new Error(tier?.error?.message || "خطأ");
+            renderTier(tier);
+            renderLedger(ledger);
+          } catch (e) {
+            $("#hero-tier-name").textContent = "تعذّر تحميل البيانات";
+            $("#progress-title").textContent = e.message || "خطأ";
+          }
+        }
+
+        function renderTier(t) {
+          // Hero
+          const cur = t.current_tier;
+          $("#tier-hero").style.setProperty("--tier-color", cur.color);
+          $("#hero-icon").className = `fas ${cur.icon} tier-icon`;
+          $("#hero-tier-name").textContent = cur.name;
+          $("#hero-balance").textContent = fmt(t.balance);
+          $("#hero-lifetime").textContent = fmt(t.lifetime_earned);
+
+          // Progress bar
+          const pct = Math.round(t.progress_to_next * 100);
+          $("#progress-fill").style.width = pct + "%";
+          if (t.next_tier) {
+            $("#progress-title").innerHTML =
+              `طريقك إلى المستوى <strong style="color:${t.next_tier.color}">${t.next_tier.name}</strong>`;
+            $("#progress-now").textContent = `${fmt(t.lifetime_earned)} نقطة`;
+            $("#progress-target").textContent =
+              `${fmt(t.next_tier.min)} نقطة (متبقّي ${fmt(t.points_to_next)})`;
+          } else {
+            $("#progress-title").innerHTML =
+              `🎉 وصلت لأعلى مستوى! <strong style="color:${cur.color}">${cur.name}</strong>`;
+            $("#progress-now").textContent = `${fmt(t.lifetime_earned)} نقطة`;
+            $("#progress-target").textContent = "أعلى مستوى — استمتع بالامتيازات الكاملة";
+            $("#progress-fill").style.width = "100%";
+          }
+
+          // Tiers comparison: render all three side-by-side. We pull the
+          // static list from /loyalty/tiers (cached) so the same numbers
+          // appear here as the server uses for tier assignment.
+          apiFetch("/loyalty/tiers")
+            .then((r) => {
+              if (!r?.success) return;
+              $("#tiers-grid").innerHTML = r.tiers
+                .map((tier) => {
+                  const isCurrent = tier.key === cur.key;
+                  const perks = tier.perks
+                    .map((p) => `<li>${escapeHtml(p)}</li>`)
+                    .join("");
+                  return `
+                    <div class="tier-card ${isCurrent ? "current" : ""}"
+                         style="--tier-color:${tier.color}">
+                      <div class="tier-card-head">
+                        <div class="tier-card-icon">
+                          <i class="fas ${tier.icon}"></i>
+                        </div>
+                        <div>
+                          <h3>${escapeHtml(tier.name)}</h3>
+                          <div class="tier-min">يبدأ من ${tier.min.toLocaleString("ar")} نقطة</div>
+                        </div>
+                      </div>
+                      <ul>${perks}</ul>
+                      ${isCurrent ? '<div class="current-pill">مستواك الحالي</div>' : ""}
+                    </div>
+                  `;
+                })
+                .join("");
+            })
+            .catch(() => {});
+        }
+
+        function renderLedger(res) {
+          const items = (res && res.items) || [];
+          if (!items.length) {
+            $("#ledger-list").innerHTML =
+              '<div style="padding:18px;text-align:center;color:#888">لا توجد عمليات بعد. ابدأ بالتسوّق لتجمع نقاطك الأولى!</div>';
+            return;
+          }
+          $("#ledger-list").innerHTML = items
+            .map((it) => {
+              const meta = KIND_LABELS[it.kind] || { ar: it.kind, positive: it.amount > 0 };
+              const positive = meta.positive == null ? it.amount > 0 : meta.positive;
+              const cls = positive ? "positive" : "negative";
+              const sign = positive ? "+" : "−";
+              const when = new Date(it.created_at).toLocaleDateString("ar");
+              return `
+                <div class="ledger-row">
+                  <div>
+                    <div>${escapeHtml(meta.ar)}</div>
+                    ${it.notes ? `<div class="ledger-when">${escapeHtml(it.notes)}</div>` : ""}
+                    <div class="ledger-when">${when}</div>
+                  </div>
+                  <div class="ledger-amount ${cls}">${sign}${fmt(it.amount)} نقطة</div>
+                </div>
+              `;
+            })
+            .join("");
+        }
+
+        function escapeHtml(s) {
+          if (s == null) return "";
+          return String(s).replace(/[&<>"']/g, (c) =>
+            ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]),
+          );
+        }
+
+        load();
+      })();
+    </script>
+  
+    <!-- HARTH-RESPONSIVE-JS -->
+    <script src="responsive.js" defer></script>
+  </body>
+</html>

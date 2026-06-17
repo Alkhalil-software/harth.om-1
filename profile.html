@@ -1,0 +1,1241 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الملف الشخصي — حرث</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="design-system.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────── */
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:"Cairo",sans-serif;direction:rtl;background:#0a1a0a;min-height:100vh;color:#fff;padding-bottom:80px}
+
+    /* ── Layout ───────────────────────────────────────────────── */
+    .pf-wrap{display:grid;grid-template-columns:260px 1fr;gap:24px;max-width:1120px;margin:24px auto;padding:0 16px;align-items:start}
+    @media(max-width:900px){.pf-wrap{grid-template-columns:1fr;gap:16px}}
+
+    /* ── Sidebar ──────────────────────────────────────────────── */
+    .pf-sidebar{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;overflow:hidden;position:sticky;top:20px}
+    .pf-user-card{background:linear-gradient(135deg,#0d2010,#1a3a12);padding:24px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08)}
+    .pf-avatar-wrap{position:relative;width:80px;height:80px;margin:0 auto 12px;cursor:pointer}
+    .pf-avatar{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #6ab04c}
+    .pf-avatar-ph{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#6ab04c,#4ab625);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:#fff;border:3px solid rgba(255,255,255,.3)}
+    .pf-avatar-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s;font-size:18px;color:#fff}
+    .pf-avatar-wrap:hover .pf-avatar-overlay{opacity:1}
+    .pf-uname{font-size:16px;font-weight:700;margin-bottom:2px}
+    .pf-uemail{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:8px}
+    .pf-role-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(106,176,76,.2);border:1px solid rgba(106,176,76,.4);color:#a8e090}
+    .pf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.08);border-top:1px solid rgba(255,255,255,.08)}
+    .pf-stat{padding:10px 6px;text-align:center;background:#0a1a0a}
+    .pf-stat-num{font-size:18px;font-weight:800;color:#6ab04c}
+    .pf-stat-lbl{font-size:10px;color:rgba(255,255,255,.45)}
+
+    /* Sidebar nav */
+    .pf-nav{padding:8px}
+    .pf-nav-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;cursor:pointer;transition:.18s;font-size:14px;font-weight:600;color:rgba(255,255,255,.75);margin-bottom:2px;user-select:none}
+    .pf-nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .pf-nav-item.active{background:rgba(106,176,76,.18);color:#6ab04c;border:1px solid rgba(106,176,76,.3)}
+    .pf-nav-item .nav-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;background:rgba(255,255,255,.06);flex-shrink:0}
+    .pf-nav-item.active .nav-ico{background:rgba(106,176,76,.2)}
+    .pf-nav-item .nav-badge{margin-inline-start:auto;background:#e74c3c;color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700}
+    .pf-nav-sep{height:1px;background:rgba(255,255,255,.07);margin:6px 14px}
+
+    /* Mobile tab nav */
+    .pf-tabs-mobile{display:none;overflow-x:auto;gap:6px;padding:12px 16px;scrollbar-width:none;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08)}
+    .pf-tabs-mobile::-webkit-scrollbar{display:none}
+    .pf-tab-btn{flex-shrink:0;padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.7);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+    .pf-tab-btn.active{background:rgba(106,176,76,.2);border-color:#6ab04c;color:#6ab04c}
+    @media(max-width:900px){.pf-sidebar{display:none}.pf-tabs-mobile{display:flex}}
+
+    /* ── Main Content ─────────────────────────────────────────── */
+    .pf-main{display:flex;flex-direction:column;gap:0}
+
+    /* Search bar */
+    .pf-search-wrap{position:relative;margin-bottom:20px;display:none}
+    @media(max-width:900px){.pf-search-wrap{display:block}}
+    .pf-search-wrap input{width:100%;padding:11px 42px 11px 16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:12px;font-family:inherit;font-size:14px;transition:.2s}
+    .pf-search-wrap input:focus{outline:none;border-color:#6ab04c}
+    .pf-search-wrap .s-ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4)}
+
+    /* Panel */
+    .pf-panel{display:none;animation:fadeUp .22s ease both}
+    .pf-panel.active{display:block}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .panel-header{margin-bottom:20px}
+    .panel-header h2{font-size:22px;font-weight:800;margin-bottom:4px}
+    .panel-header p{font-size:13px;color:rgba(255,255,255,.5)}
+
+    /* Card */
+    .pf-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:22px;margin-bottom:16px}
+    .pf-card-title{font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;color:#a8e090}
+    .pf-card-title i{color:#6ab04c}
+
+    /* Form */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+    .form-full{grid-column:1/-1}
+    .f-label{font-size:12px;font-weight:700;color:rgba(255,255,255,.65);margin-bottom:6px;display:block}
+    .f-input{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;padding:10px 14px;border-radius:10px;font-family:inherit;font-size:14px;transition:.2s}
+    .f-input:focus{outline:none;border-color:#6ab04c;background:rgba(255,255,255,.11)}
+    .f-input::placeholder{color:rgba(255,255,255,.35)}
+    .f-input:disabled,.f-input[readonly]{opacity:.55;cursor:not-allowed}
+    .f-input[type="date"]{color-scheme:dark}
+    .f-select{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;padding:10px 14px;border-radius:10px;font-family:inherit;font-size:14px;transition:.2s;cursor:pointer}
+    .f-select:focus{outline:none;border-color:#6ab04c}
+    .f-select option{background:#0d2010;color:#fff}
+    textarea.f-input{min-height:90px;resize:vertical}
+    .f-hint{font-size:11px;color:rgba(255,255,255,.4);margin-top:4px}
+
+    /* Password strength */
+    .pwd-wrap{position:relative}
+    .pwd-toggle{position:absolute;left:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:15px}
+    .strength-bar{height:4px;border-radius:2px;margin-top:6px;background:rgba(255,255,255,.1);overflow:hidden}
+    .strength-fill{height:100%;border-radius:2px;transition:width .4s, background .4s;width:0}
+
+    /* Buttons */
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;border:none;white-space:nowrap}
+    .btn-primary{background:linear-gradient(135deg,#6ab04c,#4ab625);color:#fff}
+    .btn-primary:hover{background:linear-gradient(135deg,#5a9a3c,#3da01a);transform:translateY(-1px)}
+    .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .btn-ghost{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.8)}
+    .btn-ghost:hover{background:rgba(255,255,255,.14);color:#fff}
+    .btn-danger{background:rgba(231,76,60,.14);border:1px solid rgba(231,76,60,.35);color:#ff7675}
+    .btn-danger:hover{background:rgba(231,76,60,.24)}
+    .btn-sm{padding:7px 14px;font-size:13px}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+
+    /* Toggle switch */
+    .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+    .toggle-row:last-child{border-bottom:none}
+    .toggle-info .toggle-lbl{font-size:14px;font-weight:600}
+    .toggle-info .toggle-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
+    .sw{position:relative;width:46px;height:25px;flex-shrink:0}
+    .sw input{opacity:0;width:0;height:0}
+    .sw-slider{position:absolute;inset:0;background:rgba(255,255,255,.15);border-radius:25px;cursor:pointer;transition:.3s}
+    .sw-slider:before{content:"";position:absolute;width:19px;height:19px;background:#fff;border-radius:50%;bottom:3px;right:3px;transition:.3s;box-shadow:0 2px 5px rgba(0,0,0,.3)}
+    .sw input:checked+.sw-slider{background:#6ab04c}
+    .sw input:checked+.sw-slider:before{transform:translateX(-21px)}
+
+    /* Session card */
+    .session-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+    .session-card.current{border-color:rgba(106,176,76,.35);background:rgba(106,176,76,.06)}
+    .session-ico{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .session-info{flex:1;min-width:0}
+    .session-name{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+    .session-current-badge{background:rgba(106,176,76,.2);color:#6ab04c;font-size:10px;padding:1px 8px;border-radius:8px;font-weight:700}
+    .session-meta{font-size:12px;color:rgba(255,255,255,.45);margin-top:2px}
+
+    /* Activity log */
+    .activity-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+    .activity-row:last-child{border-bottom:none}
+    .act-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+    .act-ico.low{background:rgba(106,176,76,.15);color:#6ab04c}
+    .act-ico.medium{background:rgba(241,196,15,.15);color:#f1c40f}
+    .act-ico.high{background:rgba(231,76,60,.15);color:#ff7675}
+    .act-info{flex:1;min-width:0}
+    .act-label{font-size:13px;font-weight:700}
+    .act-meta{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+    .act-time{font-size:11px;color:rgba(255,255,255,.35);white-space:nowrap;margin-top:2px}
+
+    /* Plan card */
+    .plan-card{background:linear-gradient(135deg,rgba(106,176,76,.18),rgba(74,182,37,.08));border:1px solid rgba(106,176,76,.35);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:16px}
+    .plan-ico{width:52px;height:52px;border-radius:14px;background:rgba(106,176,76,.2);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+    .plan-name{font-size:20px;font-weight:800;color:#6ab04c}
+    .plan-meta{font-size:12px;color:rgba(255,255,255,.5);margin-top:3px}
+
+    /* Invoice row */
+    .inv-row{display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;margin-bottom:8px}
+    .inv-row:hover{background:rgba(255,255,255,.07)}
+    .inv-icon{width:38px;height:38px;background:rgba(231,76,60,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#ff7675;flex-shrink:0}
+    .inv-info{flex:1;min-width:0}
+    .inv-num{font-size:13px;font-weight:700}
+    .inv-date{font-size:11px;color:rgba(255,255,255,.45)}
+    .inv-amount{font-size:14px;font-weight:700;color:#6ab04c}
+
+    /* Delete account steps */
+    .danger-step{display:none}
+    .danger-step.active{display:block;animation:fadeUp .2s ease}
+    .danger-card{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.25);border-radius:14px;padding:20px;margin-bottom:14px}
+    .danger-card h4{color:#ff7675;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .danger-card p{font-size:13px;color:rgba(255,255,255,.7);line-height:1.8}
+    .confirm-input{background:rgba(231,76,60,.1);border:1.5px solid rgba(231,76,60,.35);color:#fff;padding:10px 14px;border-radius:10px;font-family:inherit;font-size:14px;width:100%;margin-top:10px;transition:.2s}
+    .confirm-input:focus{outline:none;border-color:#e74c3c}
+    .confirm-input::placeholder{color:rgba(255,255,255,.3)}
+
+    /* Support quick links */
+    .sup-link{display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:.18s;text-decoration:none;color:#fff}
+    .sup-link:hover{background:rgba(106,176,76,.1);border-color:rgba(106,176,76,.3)}
+    .sup-link .sl-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+    .sup-link .sl-txt{flex:1}
+    .sup-link .sl-lbl{font-size:14px;font-weight:700}
+    .sup-link .sl-sub{font-size:12px;color:rgba(255,255,255,.45)}
+    .sup-link .sl-arr{color:rgba(255,255,255,.3);font-size:12px}
+
+    /* Toast */
+    #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a3a0a;color:#fff;padding:11px 22px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.5);z-index:3000;opacity:0;transition:opacity .25s;pointer-events:none;text-align:center;font-size:14px;max-width:90vw;border:1px solid rgba(106,176,76,.3)}
+    #toast.show{opacity:1}
+    #toast.err{background:#3a0a0a;border-color:rgba(231,76,60,.4)}
+
+    /* Spinner */
+    .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Avatar file input hidden */
+    #avatar-file-input{display:none}
+
+    /* 2FA Setup */
+    .twofa-qr{background:#fff;padding:10px;border-radius:10px;display:inline-block;margin:10px 0}
+    .backup-codes{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:10px 0}
+    .backup-code{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:8px 12px;font-family:monospace;font-size:14px;letter-spacing:2px;text-align:center}
+
+    /* Deactivate confirm */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:#0d2010;border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:28px;max-width:440px;width:100%;animation:fadeUp .2s ease}
+    .modal-box h3{font-size:19px;font-weight:800;margin-bottom:10px}
+    .modal-box p{font-size:13px;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:16px}
+    .modal-btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
+    /* Stat badge */
+    .stat-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+    .sp-verified{background:rgba(106,176,76,.2);color:#6ab04c;border:1px solid rgba(106,176,76,.3)}
+    .sp-pro{background:rgba(241,196,15,.2);color:#f1c40f;border:1px solid rgba(241,196,15,.3)}
+
+    /* Search highlight */
+    mark{background:rgba(106,176,76,.35);color:#fff;border-radius:3px;padding:0 2px}
+  </style>
+</head>
+<body>
+
+  <!-- Standard Header -->
+  <header class="header-container">
+    <div class="header-capsule">
+      <div class="section right">
+        <div class="site-brand">
+          <img src="شعار حرث.jpeg" alt="شعار حرث" />
+          <h1>حــرث</h1>
+        </div>
+      </div>
+      <nav class="section center"><ul class="nav-links"></ul></nav>
+      <div class="section left" id="auth-header">
+        <a href="register.html" class="hs-btn hs-btn--ghost hs-btn--sm" id="login-link">تسجيل دخول</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile tabs -->
+  <div class="pf-tabs-mobile" id="mobile-tabs">
+    <button class="pf-tab-btn active" data-panel="profile"><i class="fas fa-user"></i> الملف</button>
+    <button class="pf-tab-btn" data-panel="security"><i class="fas fa-lock"></i> الأمان</button>
+    <button class="pf-tab-btn" data-panel="prefs"><i class="fas fa-sliders-h"></i> التخصيص</button>
+    <button class="pf-tab-btn" data-panel="billing"><i class="fas fa-credit-card"></i> الفواتير</button>
+    <button class="pf-tab-btn" data-panel="support"><i class="fas fa-headset"></i> الدعم</button>
+    <button class="pf-tab-btn" data-panel="danger"><i class="fas fa-exclamation-triangle"></i> الخطر</button>
+  </div>
+
+  <div class="pf-wrap">
+
+    <!-- ── Sidebar ───────────────────────────────────────────── -->
+    <aside class="pf-sidebar">
+      <div class="pf-user-card">
+        <div class="pf-avatar-wrap" onclick="document.getElementById('avatar-file-input').click()">
+          <div class="pf-avatar-ph" id="sidebar-avatar-ph">?</div>
+          <img class="pf-avatar" id="sidebar-avatar" style="display:none" src="" alt="" />
+          <div class="pf-avatar-overlay"><i class="fas fa-camera"></i></div>
+        </div>
+        <input type="file" id="avatar-file-input" accept="image/jpeg,image/png,image/webp" />
+        <div class="pf-uname" id="sidebar-name">جارٍ التحميل...</div>
+        <div class="pf-uemail" id="sidebar-email">—</div>
+        <div class="pf-role-badge" id="sidebar-role"><i class="fas fa-shield-alt"></i> عضو</div>
+      </div>
+      <div class="pf-stats">
+        <div class="pf-stat"><div class="pf-stat-num" id="stat-orders">—</div><div class="pf-stat-lbl">طلب</div></div>
+        <div class="pf-stat"><div class="pf-stat-num" id="stat-listings">—</div><div class="pf-stat-lbl">إعلان</div></div>
+        <div class="pf-stat"><div class="pf-stat-num" id="stat-rating">—</div><div class="pf-stat-lbl">تقييم</div></div>
+      </div>
+      <nav class="pf-nav">
+        <div class="pf-nav-item active" data-panel="profile">
+          <span class="nav-ico"><i class="fas fa-user"></i></span> الملف الشخصي
+        </div>
+        <div class="pf-nav-item" data-panel="security">
+          <span class="nav-ico"><i class="fas fa-lock"></i></span> الأمان والخصوصية
+        </div>
+        <div class="pf-nav-item" data-panel="prefs">
+          <span class="nav-ico"><i class="fas fa-sliders-h"></i></span> التخصيص
+        </div>
+        <div class="pf-nav-sep"></div>
+        <div class="pf-nav-item" data-panel="billing">
+          <span class="nav-ico"><i class="fas fa-credit-card"></i></span> الاشتراك والفواتير
+        </div>
+        <div class="pf-nav-item" data-panel="support">
+          <span class="nav-ico"><i class="fas fa-headset"></i></span> الدعم والمساعدة
+        </div>
+        <div class="pf-nav-sep"></div>
+        <div class="pf-nav-item" data-panel="danger" style="color:#ff7675">
+          <span class="nav-ico" style="color:#ff7675"><i class="fas fa-exclamation-triangle"></i></span> منطقة الخطر
+        </div>
+      </nav>
+    </aside>
+
+    <!-- ── Main Content ──────────────────────────────────────── -->
+    <main class="pf-main">
+
+      <!-- ═══ PANEL: Profile ═══ -->
+      <div class="pf-panel active" id="panel-profile">
+        <div class="panel-header">
+          <h2>الملف الشخصي</h2>
+          <p>إدارة معلوماتك الشخصية والصورة والموقع</p>
+        </div>
+
+        <!-- Avatar card -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-camera"></i> الصورة الشخصية</div>
+          <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+            <div class="pf-avatar-wrap" style="width:90px;height:90px" onclick="document.getElementById('avatar-file-input').click()">
+              <div class="pf-avatar-ph" id="main-avatar-ph" style="width:90px;height:90px;font-size:36px">?</div>
+              <img class="pf-avatar" id="main-avatar" style="display:none;width:90px;height:90px" src="" alt="" />
+              <div class="pf-avatar-overlay"><i class="fas fa-camera"></i></div>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:700;margin-bottom:6px">تغيير الصورة الشخصية</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:12px">JPG، PNG، أو WEBP حتى 5 ميجابايت</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn btn-ghost btn-sm" onclick="document.getElementById('avatar-file-input').click()">
+                  <i class="fas fa-upload"></i> رفع صورة
+                </button>
+                <button class="btn btn-danger btn-sm" id="remove-avatar-btn" onclick="removeAvatar()">
+                  <i class="fas fa-trash"></i> حذف الصورة
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal info -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-id-card"></i> المعلومات الشخصية</div>
+          <div class="form-grid">
+            <div>
+              <label class="f-label">الاسم الكامل *</label>
+              <input type="text" class="f-input" id="f-name" maxlength="100" placeholder="اسمك الكريم" />
+            </div>
+            <div>
+              <label class="f-label">اسم المستخدم</label>
+              <input type="text" class="f-input" id="f-username" maxlength="50" placeholder="مثال: ahmed_farmer" />
+              <div class="f-hint">يستخدم في الرابط الشخصي — أحرف إنجليزية وأرقام فقط</div>
+            </div>
+            <div>
+              <label class="f-label">البريد الإلكتروني</label>
+              <input type="email" class="f-input" id="f-email" readonly />
+              <div class="f-hint">لتغيير الإيميل انتقل لقسم الأمان</div>
+            </div>
+            <div>
+              <label class="f-label">رقم الهاتف</label>
+              <input type="tel" class="f-input" id="f-phone" maxlength="20" placeholder="+968 XXXX XXXX" />
+            </div>
+            <div>
+              <label class="f-label">تاريخ الميلاد</label>
+              <input type="date" class="f-input" id="f-birth-date" />
+            </div>
+            <div>
+              <label class="f-label">الجنس</label>
+              <select class="f-select" id="f-gender">
+                <option value="">— اختر —</option>
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+                <option value="prefer_not">أفضل عدم الإفصاح</option>
+              </select>
+            </div>
+            <div class="form-full">
+              <label class="f-label">نبذة تعريفية</label>
+              <textarea class="f-input" id="f-bio" maxlength="300" placeholder="عرّف بنفسك باختصار..."></textarea>
+              <div class="f-hint"><span id="bio-count">0</span>/300 حرف</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-map-marker-alt"></i> الموقع</div>
+          <div class="form-grid">
+            <div>
+              <label class="f-label">الدولة</label>
+              <select class="f-select" id="f-country">
+                <option value="">— اختر الدولة —</option>
+                <option value="OM">سلطنة عُمان</option>
+                <option value="SA">المملكة العربية السعودية</option>
+                <option value="AE">الإمارات العربية المتحدة</option>
+                <option value="KW">الكويت</option>
+                <option value="BH">البحرين</option>
+                <option value="QA">قطر</option>
+                <option value="YE">اليمن</option>
+                <option value="JO">الأردن</option>
+                <option value="EG">مصر</option>
+                <option value="OTHER">أخرى</option>
+              </select>
+            </div>
+            <div>
+              <label class="f-label">المحافظة / المدينة</label>
+              <input type="text" class="f-input" id="f-city" maxlength="100" placeholder="مثال: مسقط" />
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="save-profile-btn" onclick="saveProfile()">
+            <i class="fas fa-check"></i> حفظ التعديلات
+          </button>
+          <button class="btn btn-ghost" onclick="loadProfile()">
+            <i class="fas fa-times"></i> إلغاء التعديلات
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: Security ═══ -->
+      <div class="pf-panel" id="panel-security">
+        <div class="panel-header">
+          <h2>الأمان والخصوصية</h2>
+          <p>إدارة كلمة المرور والمصادقة الثنائية والجلسات النشطة</p>
+        </div>
+
+        <!-- Change Password -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-key"></i> تغيير كلمة المرور</div>
+          <div style="max-width:420px;display:flex;flex-direction:column;gap:12px">
+            <div>
+              <label class="f-label">كلمة المرور الحالية</label>
+              <div class="pwd-wrap">
+                <input type="password" class="f-input" id="pwd-current" placeholder="••••••••" style="padding-left:40px" />
+                <button class="pwd-toggle" onclick="togglePwd('pwd-current',this)"><i class="fas fa-eye"></i></button>
+              </div>
+            </div>
+            <div>
+              <label class="f-label">كلمة المرور الجديدة</label>
+              <div class="pwd-wrap">
+                <input type="password" class="f-input" id="pwd-new" placeholder="8 أحرف على الأقل" style="padding-left:40px" oninput="checkStrength(this.value)" />
+                <button class="pwd-toggle" onclick="togglePwd('pwd-new',this)"><i class="fas fa-eye"></i></button>
+              </div>
+              <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+              <div class="f-hint" id="strength-hint">أدخل كلمة مرور قوية تحتوي على أرقام وحروف ورموز</div>
+            </div>
+            <div>
+              <label class="f-label">تأكيد كلمة المرور الجديدة</label>
+              <div class="pwd-wrap">
+                <input type="password" class="f-input" id="pwd-confirm" placeholder="أعد كتابة كلمة المرور" style="padding-left:40px" />
+                <button class="pwd-toggle" onclick="togglePwd('pwd-confirm',this)"><i class="fas fa-eye"></i></button>
+              </div>
+            </div>
+            <button class="btn btn-primary" style="width:fit-content" onclick="changePassword()">
+              <i class="fas fa-shield-alt"></i> تغيير كلمة المرور
+            </button>
+          </div>
+        </div>
+
+        <!-- 2FA -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-mobile-alt"></i> المصادقة الثنائية (2FA)</div>
+          <div class="toggle-row" style="border:none;padding:0 0 14px">
+            <div class="toggle-info">
+              <div class="toggle-lbl">تفعيل المصادقة الثنائية</div>
+              <div class="toggle-sub">طبقة أمان إضافية عند كل تسجيل دخول</div>
+            </div>
+            <label class="sw"><input type="checkbox" id="sw-2fa" onchange="toggle2FA(this.checked)" /><span class="sw-slider"></span></label>
+          </div>
+          <div id="twofa-setup" style="display:none">
+            <div style="background:rgba(106,176,76,.08);border:1px solid rgba(106,176,76,.2);border-radius:12px;padding:16px;margin-top:10px">
+              <div style="font-size:13px;margin-bottom:12px;color:rgba(255,255,255,.75)">
+                امسح الرمز التالي بتطبيق المصادقة (Google Authenticator / Authy):
+              </div>
+              <div class="twofa-qr">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=otpauth://totp/Harth:user@harth.om?secret=JBSWY3DPEHPK3PXP&issuer=Harth" width="140" height="140" alt="2FA QR" />
+              </div>
+              <div style="font-size:12px;color:rgba(255,255,255,.5);margin:8px 0">رمز الإعداد اليدوي: <code style="color:#6ab04c;background:rgba(106,176,76,.1);padding:2px 8px;border-radius:4px">JBSWY3DPEHPK3PXP</code></div>
+              <div style="font-size:13px;font-weight:700;margin-bottom:6px;margin-top:14px">رموز الطوارئ:</div>
+              <div class="backup-codes" id="backup-codes"></div>
+              <div class="f-hint">احفظ هذه الرموز في مكان آمن — كل رمز يُستخدم مرة واحدة فقط</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sessions -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-desktop"></i> الجلسات النشطة</div>
+          <div id="sessions-list"><div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)"><div class="spin" style="width:22px;height:22px;border-width:2px"></div></div></div>
+          <div class="btn-row">
+            <button class="btn btn-danger btn-sm" onclick="revokeAllSessions()">
+              <i class="fas fa-sign-out-alt"></i> تسجيل خروج من جميع الأجهزة
+            </button>
+          </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-history"></i> سجل النشاطات الأمنية</div>
+          <div id="activity-log"><div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)"><div class="spin" style="width:22px;height:22px;border-width:2px"></div></div></div>
+        </div>
+
+        <!-- Data Export -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-download"></i> تنزيل بيانات الحساب</div>
+          <p style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:14px">تنزيل نسخة كاملة من بياناتك الشخصية والنشاطات والطلبات بصيغة JSON.</p>
+          <button class="btn btn-ghost" onclick="exportData()"><i class="fas fa-file-download"></i> تنزيل البيانات</button>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: Preferences ═══ -->
+      <div class="pf-panel" id="panel-prefs">
+        <div class="panel-header">
+          <h2>التخصيص</h2>
+          <p>تخصيص مظهر التطبيق وإعدادات الإشعارات</p>
+        </div>
+
+        <!-- Display -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-palette"></i> المظهر والعرض</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-lbl">الوضع الليلي</div>
+              <div class="toggle-sub">خلفية داكنة تريح العين</div>
+            </div>
+            <label class="sw"><input type="checkbox" id="sw-dark" checked onchange="toggleTheme(this.checked)" /><span class="sw-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-lbl">اللغة</div>
+              <div class="toggle-sub">لغة واجهة التطبيق</div>
+            </div>
+            <select class="f-select" id="pref-lang" style="width:auto;min-width:130px" onchange="savePref('language',this.value)">
+              <option value="ar">العربية</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-bell"></i> إشعارات التطبيق</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-lbl">إشعارات الطلبات والحجوزات</div>
+              <div class="toggle-sub">عند تحديث حالة الطلب أو الحجز</div>
+            </div>
+            <label class="sw"><input type="checkbox" id="sw-notif-orders" onchange="savePref('notif_orders',this.checked)" /><span class="sw-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-lbl">إشعارات الرسائل</div>
+              <div class="toggle-sub">عند استلام رسالة جديدة</div>
+            </div>
+            <label class="sw"><input type="checkbox" id="sw-notif-msgs" onchange="savePref('notif_messages',this.checked)" /><span class="sw-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-lbl">العروض والتخفيضات</div>
+              <div class="toggle-sub">عروض خاصة وبرنامج الولاء</div>
+            </div>
+            <label class="sw"><input type="checkbox" id="sw-notif-promos" onchange="savePref('notif_promos',this.checked)" /><span class="sw-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-lbl">تنبيهات الأمان</div>
+              <div class="toggle-sub">تسجيل دخول جديد أو تغيير في الحساب</div>
+            </div>
+            <label class="sw"><input type="checkbox" id="sw-notif-security" onchange="savePref('notif_security',this.checked)" /><span class="sw-slider"></span></label>
+          </div>
+        </div>
+
+        <!-- Email Notifications -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-envelope"></i> إشعارات البريد الإلكتروني</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-lbl">إشعارات البريد الإلكتروني</div>
+              <div class="toggle-sub">استلام تحديثات على بريدك الإلكتروني</div>
+            </div>
+            <label class="sw"><input type="checkbox" id="sw-notif-email" onchange="savePref('notif_email',this.checked)" /><span class="sw-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-lbl">إشعارات واتساب</div>
+              <div class="toggle-sub">تحديثات مهمة عبر واتساب</div>
+            </div>
+            <label class="sw"><input type="checkbox" id="sw-notif-wa" onchange="savePref('notif_whatsapp',this.checked)" /><span class="sw-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-lbl">تنبيه تسجيل الدخول</div>
+              <div class="toggle-sub">إشعار عند دخول من جهاز جديد</div>
+            </div>
+            <label class="sw"><input type="checkbox" id="sw-login-alerts" onchange="savePref('login_alerts',this.checked)" /><span class="sw-slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: Billing ═══ -->
+      <div class="pf-panel" id="panel-billing">
+        <div class="panel-header">
+          <h2>الاشتراك والفواتير</h2>
+          <p>إدارة باقتك وطرق الدفع وتاريخ الفواتير</p>
+        </div>
+
+        <!-- Current plan -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-crown"></i> باقتك الحالية</div>
+          <div class="plan-card">
+            <div class="plan-ico">🌟</div>
+            <div style="flex:1">
+              <div class="plan-name" id="plan-name">الباقة المجانية</div>
+              <div class="plan-meta" id="plan-meta">وصول أساسي لجميع ميزات المنصة</div>
+            </div>
+            <button class="btn btn-primary" onclick="switchTab('support')"><i class="fas fa-arrow-up"></i> ترقية</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px">
+            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px;text-align:center">
+              <div style="font-size:22px;font-weight:800;color:#6ab04c">∞</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">إعلانات نشطة</div>
+            </div>
+            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px;text-align:center">
+              <div style="font-size:22px;font-weight:800;color:#6ab04c">5%</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">عمولة المنصة</div>
+            </div>
+            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px;text-align:center">
+              <div style="font-size:22px;font-weight:800;color:#6ab04c">دائم</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">صلاحية الحساب</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment methods -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-credit-card"></i> طرق الدفع المحفوظة</div>
+          <div style="background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.18);border-radius:12px;padding:20px;text-align:center;color:rgba(255,255,255,.45)">
+            <i class="fas fa-credit-card" style="font-size:32px;margin-bottom:10px;display:block"></i>
+            <div style="font-size:14px">لا توجد طرق دفع محفوظة</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" style="margin-top:12px"><i class="fas fa-plus"></i> إضافة طريقة دفع</button>
+        </div>
+
+        <!-- Invoices -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-file-invoice"></i> سجل الفواتير</div>
+          <div id="invoices-list">
+            <div style="background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.18);border-radius:12px;padding:24px;text-align:center;color:rgba(255,255,255,.45)">
+              <i class="fas fa-receipt" style="font-size:32px;margin-bottom:10px;display:block"></i>
+              <div style="font-size:14px">لا توجد فواتير بعد</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: Support ═══ -->
+      <div class="pf-panel" id="panel-support">
+        <div class="panel-header">
+          <h2>الدعم والمساعدة</h2>
+          <p>تواصل مع فريق الدعم أو ابحث في مركز المساعدة</p>
+        </div>
+
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-rocket"></i> روابط سريعة</div>
+          <a class="sup-link" href="support.html">
+            <div class="sl-ico" style="background:rgba(52,152,219,.2);color:#74b9ff"><i class="fas fa-book-open"></i></div>
+            <div class="sl-txt"><div class="sl-lbl">مركز المساعدة</div><div class="sl-sub">مقالات وأسئلة شائعة</div></div>
+            <i class="fas fa-chevron-left sl-arr"></i>
+          </a>
+          <a class="sup-link" href="support.html#new">
+            <div class="sl-ico" style="background:rgba(106,176,76,.2);color:#6ab04c"><i class="fas fa-ticket-alt"></i></div>
+            <div class="sl-txt"><div class="sl-lbl">فتح تذكرة دعم</div><div class="sl-sub">تواصل مع فريق الدعم</div></div>
+            <i class="fas fa-chevron-left sl-arr"></i>
+          </a>
+          <a class="sup-link" href="https://wa.me/96812345678" target="_blank" rel="noopener">
+            <div class="sl-ico" style="background:rgba(37,211,102,.2);color:#25d366"><i class="fab fa-whatsapp"></i></div>
+            <div class="sl-txt"><div class="sl-lbl">واتساب</div><div class="sl-sub">رد فوري خلال دقائق</div></div>
+            <i class="fas fa-chevron-left sl-arr"></i>
+          </a>
+          <a class="sup-link" href="mailto:support@harth.om">
+            <div class="sl-ico" style="background:rgba(231,76,60,.2);color:#ff7675"><i class="fas fa-envelope"></i></div>
+            <div class="sl-txt"><div class="sl-lbl">البريد الإلكتروني</div><div class="sl-sub">support@harth.om</div></div>
+            <i class="fas fa-chevron-left sl-arr"></i>
+          </a>
+        </div>
+
+        <!-- Quick report -->
+        <div class="pf-card">
+          <div class="pf-card-title"><i class="fas fa-flag"></i> الإبلاغ عن مشكلة</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div>
+              <label class="f-label">نوع المشكلة</label>
+              <select class="f-select" id="report-type">
+                <option value="bug">خطأ تقني</option>
+                <option value="billing">مشكلة مالية</option>
+                <option value="account">مشكلة في الحساب</option>
+                <option value="content">محتوى مسيء</option>
+                <option value="other">أخرى</option>
+              </select>
+            </div>
+            <div>
+              <label class="f-label">وصف المشكلة</label>
+              <textarea class="f-input" id="report-body" style="min-height:80px" placeholder="اشرح المشكلة بالتفصيل..."></textarea>
+            </div>
+            <button class="btn btn-primary" style="width:fit-content" onclick="submitReport()">
+              <i class="fas fa-paper-plane"></i> إرسال البلاغ
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: Danger Zone ═══ -->
+      <div class="pf-panel" id="panel-danger">
+        <div class="panel-header">
+          <h2>منطقة الخطر</h2>
+          <p>إجراءات لا يمكن التراجع عنها — تصرف بحذر</p>
+        </div>
+
+        <!-- Deactivate -->
+        <div class="danger-card">
+          <h4><i class="fas fa-pause-circle"></i> تعطيل الحساب مؤقتاً</h4>
+          <p>سيتم إخفاء إعلاناتك وتعليق حسابك مؤقتاً. يمكنك إعادة تفعيله في أي وقت بتسجيل الدخول.</p>
+          <button class="btn btn-danger" style="margin-top:12px" onclick="openDeactivateModal()">
+            <i class="fas fa-pause"></i> تعطيل الحساب مؤقتاً
+          </button>
+        </div>
+
+        <!-- Delete -->
+        <div class="danger-card" style="margin-top:16px">
+          <h4><i class="fas fa-skull-crossbones"></i> حذف الحساب نهائياً</h4>
+          <p>سيتم حذف جميع بياناتك، إعلاناتك، طلباتك، ونقاط الولاء بشكل نهائي ولا يمكن التراجع عن هذا الإجراء إطلاقاً.</p>
+
+          <!-- Step 1 -->
+          <div class="danger-step active" id="del-step-1">
+            <button class="btn btn-danger" style="margin-top:12px" onclick="showStep(2)">
+              <i class="fas fa-trash-alt"></i> البدء في حذف الحساب
+            </button>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="danger-step" id="del-step-2">
+            <div style="background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.25);border-radius:10px;padding:14px;margin-top:12px">
+              <div style="font-size:13px;font-weight:700;color:#ff7675;margin-bottom:8px">⚠️ تأكيد الحذف</div>
+              <p style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:10px">اكتب <strong style="color:#ff7675">DELETE</strong> في الحقل أدناه للتأكيد:</p>
+              <input type="text" class="confirm-input" id="del-confirm-text" placeholder="اكتب DELETE هنا" />
+              <div style="margin-top:10px">
+                <label class="f-label">كلمة المرور للتحقق النهائي</label>
+                <div class="pwd-wrap">
+                  <input type="password" class="confirm-input" id="del-password" placeholder="كلمة مرورك الحالية" style="padding-left:40px" />
+                  <button class="pwd-toggle" onclick="togglePwd('del-password',this)"><i class="fas fa-eye"></i></button>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+                <button class="btn btn-danger" onclick="deleteAccount()"><i class="fas fa-trash-alt"></i> تأكيد الحذف النهائي</button>
+                <button class="btn btn-ghost btn-sm" onclick="showStep(1)">إلغاء</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div><!-- /pf-wrap -->
+
+  <!-- Deactivate Modal -->
+  <div class="modal-overlay" id="deactivate-modal">
+    <div class="modal-box">
+      <h3 style="color:#f1c40f"><i class="fas fa-pause-circle"></i> تعطيل الحساب</h3>
+      <p>هل أنت متأكد من تعطيل حسابك مؤقتاً؟ سيتم إخفاء جميع إعلاناتك ولن يتمكن المستخدمون من التواصل معك حتى تعيد التفعيل.</p>
+      <div class="modal-btns">
+        <button class="btn btn-ghost btn-sm" onclick="closeDeactivateModal()">إلغاء</button>
+        <button class="btn btn-danger" onclick="deactivateAccount()"><i class="fas fa-pause"></i> تعطيل الحساب</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="design-system.js"></script>
+  <script src="unified-nav.js"></script>
+  <script src="script.js"></script>
+  <script>
+  (function(){
+    "use strict";
+
+    // ── Helpers ────────────────────────────────────────────────
+    const esc = s => s == null ? "" : String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+    function toast(msg, err = false) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.toggle("err", err);
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 3200);
+    }
+    function fmtDate(d) {
+      if (!d) return "—";
+      return new Date(d).toLocaleDateString("ar-SA", { year:"numeric", month:"short", day:"numeric" });
+    }
+    function fmtDateTime(d) {
+      if (!d) return "—";
+      return new Date(d).toLocaleString("ar-SA", { year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
+    }
+    function setBtnLoading(btn, loading, origHTML) {
+      btn.disabled = loading;
+      if (loading) btn.innerHTML = '<span class="spin"></span> جارٍ الحفظ...';
+      else btn.innerHTML = origHTML;
+    }
+
+    // ── Panel switching ────────────────────────────────────────
+    function switchPanel(id) {
+      document.querySelectorAll(".pf-panel").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".pf-nav-item").forEach(n => n.classList.remove("active"));
+      document.querySelectorAll(".pf-tab-btn").forEach(t => t.classList.remove("active"));
+      const panel = document.getElementById("panel-" + id);
+      if (panel) panel.classList.add("active");
+      document.querySelectorAll(`[data-panel="${id}"]`).forEach(el => el.classList.add("active"));
+      if (id === "security") { loadSessions(); loadActivity(); }
+    }
+    window.switchTab = switchPanel; // alias used by support link
+
+    document.querySelectorAll(".pf-nav-item, .pf-tab-btn").forEach(el => {
+      el.addEventListener("click", () => switchPanel(el.dataset.panel));
+    });
+
+    // ── Load Profile ───────────────────────────────────────────
+    async function loadProfile() {
+      try {
+        const res = await apiFetch("/profile/me");
+        if (!res?.success) return;
+        populateProfile(res);
+      } catch (_e) {
+        // If no backend yet, populate from localStorage
+        const stored = JSON.parse(localStorage.getItem("user") || "{}");
+        populateProfile({ name: stored.name, email: stored.email, role: stored.role, profile: {} });
+      }
+    }
+
+    function populateProfile(data) {
+      const p = data.profile || {};
+      // Sidebar
+      const initials = (data.name || "؟").split(" ").map(w => w[0]).join("").slice(0,2);
+      document.getElementById("sidebar-avatar-ph").textContent = initials;
+      document.getElementById("main-avatar-ph").textContent    = initials;
+      document.getElementById("sidebar-name").textContent  = data.name  || "—";
+      document.getElementById("sidebar-email").textContent = data.email || "—";
+      document.getElementById("sidebar-role").innerHTML    = roleLabel(data.role);
+
+      if (p.avatar_url) {
+        ["sidebar-avatar","main-avatar"].forEach(id => {
+          const img = document.getElementById(id);
+          const ph  = document.getElementById(id.replace("-avatar","-avatar-ph").replace("main-","main-").replace("sidebar-","sidebar-"));
+          if (img) { img.src = p.avatar_url; img.style.display = "block"; }
+        });
+        document.getElementById("sidebar-avatar-ph").style.display = "none";
+        document.getElementById("main-avatar-ph").style.display    = "none";
+        document.getElementById("sidebar-avatar").style.display    = "block";
+        document.getElementById("main-avatar").style.display       = "block";
+        document.getElementById("sidebar-avatar").src = p.avatar_url;
+        document.getElementById("main-avatar").src    = p.avatar_url;
+      }
+
+      // Form fields
+      setValue("f-name",       data.name);
+      setValue("f-username",   p.username);
+      setValue("f-email",      data.email);
+      setValue("f-phone",      p.phone);
+      setValue("f-bio",        p.bio);
+      setValue("f-birth-date", p.birth_date ? p.birth_date.split("T")[0] : "");
+      setValue("f-country",    p.country);
+      setValue("f-city",       p.city);
+      setSelect("f-gender", p.gender);
+
+      // Preferences
+      setToggle("sw-dark",          (p.theme || "dark") === "dark");
+      setToggle("sw-2fa",           !!p.two_fa_enabled);
+      setToggle("sw-notif-orders",  p.notif_orders  !== false);
+      setToggle("sw-notif-msgs",    p.notif_messages !== false);
+      setToggle("sw-notif-promos",  !!p.notif_promos);
+      setToggle("sw-notif-security",p.notif_security !== false);
+      setToggle("sw-notif-email",   p.notif_email   !== false);
+      setToggle("sw-notif-wa",      !!p.notif_whatsapp);
+      setToggle("sw-login-alerts",  p.login_alerts  !== false);
+      setSelect("pref-lang",        p.language || "ar");
+
+      // Stats (placeholder)
+      document.getElementById("stat-orders").textContent   = "—";
+      document.getElementById("stat-listings").textContent = "—";
+      document.getElementById("stat-rating").textContent   = "—";
+
+      updateBioCount();
+    }
+
+    function setValue(id, val) { const el = document.getElementById(id); if (el && val != null) el.value = val; }
+    function setSelect(id, val) { const el = document.getElementById(id); if (el && val) el.value = val; }
+    function setToggle(id, val) { const el = document.getElementById(id); if (el) el.checked = !!val; }
+
+    function roleLabel(role) {
+      const map = { owner:"مالك معدات", renter:"مستأجر", delivery:"مندوب توصيل", admin:"مدير النظام" };
+      return `<i class="fas fa-shield-alt"></i> ${map[role] || "عضو"}`;
+    }
+
+    // ── Save Profile ───────────────────────────────────────────
+    async function saveProfile() {
+      const btn = document.getElementById("save-profile-btn");
+      const orig = btn.innerHTML;
+      setBtnLoading(btn, true, orig);
+      try {
+        const payload = {
+          name:       document.getElementById("f-name").value.trim(),
+          username:   document.getElementById("f-username").value.trim() || undefined,
+          bio:        document.getElementById("f-bio").value.trim()      || undefined,
+          birth_date: document.getElementById("f-birth-date").value      || undefined,
+          gender:     document.getElementById("f-gender").value          || undefined,
+          country:    document.getElementById("f-country").value         || undefined,
+          city:       document.getElementById("f-city").value.trim()     || undefined,
+          phone:      document.getElementById("f-phone").value.trim()    || undefined,
+        };
+        if (!payload.name) { toast("الاسم مطلوب", true); return; }
+        const res = await apiFetch("/profile/me", { method:"PUT", body: JSON.stringify(payload) });
+        if (!res?.success) throw new Error(res?.error?.message || "فشل الحفظ");
+        toast("✓ تم حفظ الملف الشخصي بنجاح");
+        // Update sidebar name
+        document.getElementById("sidebar-name").textContent = payload.name;
+        const stored = JSON.parse(localStorage.getItem("user") || "{}");
+        localStorage.setItem("user", JSON.stringify({ ...stored, name: payload.name }));
+      } catch (err) {
+        toast(err.message, true);
+      } finally {
+        setBtnLoading(btn, false, orig);
+      }
+    }
+    window.saveProfile = saveProfile;
+
+    // ── Avatar ─────────────────────────────────────────────────
+    document.getElementById("avatar-file-input").addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) { toast("الصورة أكبر من 5 ميجابايت", true); return; }
+      const preview = URL.createObjectURL(file);
+      setAvatarPreview(preview);
+      try {
+        const fd = new FormData();
+        fd.append("image", file);
+        const res = await fetch(`${window.API_BASE || "/api/v1"}/profile/avatar`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${getToken()}` },
+          body: fd,
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error("فشل رفع الصورة");
+        toast("✓ تم تحديث الصورة الشخصية");
+      } catch (err) {
+        toast(err.message, true);
+      }
+    });
+
+    function setAvatarPreview(src) {
+      ["sidebar-avatar","main-avatar"].forEach(id => {
+        const img = document.getElementById(id);
+        if (img) { img.src = src; img.style.display = "block"; }
+      });
+      document.getElementById("sidebar-avatar-ph").style.display = "none";
+      document.getElementById("main-avatar-ph").style.display    = "none";
+    }
+
+    async function removeAvatar() {
+      try {
+        const res = await apiFetch("/profile/avatar", { method:"DELETE" });
+        if (!res?.success) throw new Error("فشل الحذف");
+        ["sidebar-avatar","main-avatar"].forEach(id => {
+          const img = document.getElementById(id);
+          if (img) img.style.display = "none";
+        });
+        document.getElementById("sidebar-avatar-ph").style.display = "flex";
+        document.getElementById("main-avatar-ph").style.display    = "flex";
+        toast("تم حذف الصورة");
+      } catch (err) { toast(err.message, true); }
+    }
+    window.removeAvatar = removeAvatar;
+
+    // ── Password ───────────────────────────────────────────────
+    function togglePwd(id, btn) {
+      const inp = document.getElementById(id);
+      if (!inp) return;
+      const show = inp.type === "password";
+      inp.type = show ? "text" : "password";
+      btn.innerHTML = show ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+    }
+    window.togglePwd = togglePwd;
+
+    function checkStrength(v) {
+      const fill = document.getElementById("strength-fill");
+      const hint  = document.getElementById("strength-hint");
+      let score = 0;
+      if (v.length >= 8)  score++;
+      if (/[A-Z]/.test(v)) score++;
+      if (/[0-9]/.test(v)) score++;
+      if (/[^a-zA-Z0-9]/.test(v)) score++;
+      const colors = ["#e74c3c","#e67e22","#f1c40f","#6ab04c"];
+      const labels = ["ضعيفة","مقبولة","جيدة","قوية"];
+      fill.style.width  = (score * 25) + "%";
+      fill.style.background = colors[score - 1] || "#e74c3c";
+      hint.textContent  = score ? "قوة كلمة المرور: " + labels[score - 1] : "أدخل كلمة مرور قوية";
+    }
+    window.checkStrength = checkStrength;
+
+    async function changePassword() {
+      const cur  = document.getElementById("pwd-current").value;
+      const nw   = document.getElementById("pwd-new").value;
+      const conf = document.getElementById("pwd-confirm").value;
+      if (!cur || !nw) { toast("أدخل كلمة المرور الحالية والجديدة", true); return; }
+      if (nw.length < 8) { toast("كلمة المرور الجديدة أقل من 8 أحرف", true); return; }
+      if (nw !== conf)   { toast("كلمتا المرور غير متطابقتين", true); return; }
+      try {
+        const res = await apiFetch("/profile/change-password", {
+          method:"POST", body: JSON.stringify({ current_password: cur, new_password: nw })
+        });
+        if (!res?.success) throw new Error(res?.error?.message || "فشل");
+        toast("✓ تم تغيير كلمة المرور بنجاح");
+        ["pwd-current","pwd-new","pwd-confirm"].forEach(id => { document.getElementById(id).value = ""; });
+      } catch (err) { toast(err.message, true); }
+    }
+    window.changePassword = changePassword;
+
+    // ── 2FA ────────────────────────────────────────────────────
+    async function toggle2FA(enabled) {
+      const setup = document.getElementById("twofa-setup");
+      if (enabled) {
+        setup.style.display = "block";
+        // Generate mock backup codes
+        const codes = Array.from({length:8}, () => Math.random().toString(36).slice(2,9).toUpperCase());
+        document.getElementById("backup-codes").innerHTML = codes.map(c => `<div class="backup-code">${c}</div>`).join("");
+      } else {
+        setup.style.display = "none";
+      }
+      try {
+        await apiFetch("/profile/2fa/toggle", { method:"POST", body: JSON.stringify({ enabled }) });
+        toast(enabled ? "✓ تم تفعيل المصادقة الثنائية" : "تم تعطيل المصادقة الثنائية");
+      } catch (_e) {}
+    }
+    window.toggle2FA = toggle2FA;
+
+    // ── Sessions ───────────────────────────────────────────────
+    async function loadSessions() {
+      const wrap = document.getElementById("sessions-list");
+      try {
+        const res = await apiFetch("/profile/sessions");
+        const sessions = res?.sessions || [];
+        if (!sessions.length) {
+          wrap.innerHTML = renderMockSessions();
+          return;
+        }
+        wrap.innerHTML = sessions.map(s => sessionCardHTML(s)).join("");
+      } catch (_e) {
+        wrap.innerHTML = renderMockSessions();
+      }
+      wrap.querySelectorAll(".revoke-btn").forEach(btn => {
+        btn.addEventListener("click", () => revokeSession(btn.dataset.id, btn));
+      });
+    }
+
+    function renderMockSessions() {
+      const mock = [
+        { id:"current", device_name:"Chrome على Windows", device_type:"desktop", ip_address:"192.168.1.1", location:"مسقط، عُمان", last_active: new Date().toISOString(), is_current:true },
+        { id:"s2", device_name:"Safari على iPhone", device_type:"mobile", ip_address:"10.0.0.2", location:"مسقط، عُمان", last_active: new Date(Date.now()-3600000).toISOString(), is_current:false },
+      ];
+      const html = mock.map(s => sessionCardHTML(s)).join("");
+      return html;
+    }
+
+    function sessionCardHTML(s) {
+      const ico = s.device_type === "mobile" ? "fa-mobile-alt" : s.device_type === "tablet" ? "fa-tablet-alt" : "fa-desktop";
+      return `<div class="session-card${s.is_current ? " current" : ""}">
+        <div class="session-ico"><i class="fas ${ico}"></i></div>
+        <div class="session-info">
+          <div class="session-name">
+            ${esc(s.device_name || "جهاز غير معروف")}
+            ${s.is_current ? '<span class="session-current-badge">الجلسة الحالية</span>' : ""}
+          </div>
+          <div class="session-meta">
+            ${s.location ? esc(s.location) + " · " : ""}${esc(s.ip_address || "")} · آخر نشاط: ${fmtDateTime(s.last_active)}
+          </div>
+        </div>
+        ${!s.is_current ? `<button class="btn btn-danger btn-sm revoke-btn" data-id="${esc(s.id)}"><i class="fas fa-times"></i></button>` : ""}
+      </div>`;
+    }
+
+    async function revokeSession(id, btn) {
+      const orig = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spin"></span>';
+      try {
+        await apiFetch(`/profile/sessions/${id}`, { method:"DELETE" });
+        btn.closest(".session-card").remove();
+        toast("تم إنهاء الجلسة");
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = orig;
+        toast(err.message, true);
+      }
+    }
+
+    async function revokeAllSessions() {
+      if (!confirm("هل تريد تسجيل الخروج من جميع الأجهزة؟")) return;
+      try {
+        await apiFetch("/profile/sessions", { method:"DELETE" });
+        toast("✓ تم تسجيل الخروج من جميع الأجهزة");
+        document.getElementById("sessions-list").innerHTML = renderMockSessions().replace(/revoke-btn.*?<\/button>/gs, "");
+      } catch (err) { toast(err.message, true); }
+    }
+    window.revokeAllSessions = revokeAllSessions;
+
+    // ── Activity Log ───────────────────────────────────────────
+    async function loadActivity() {
+      const wrap = document.getElementById("activity-log");
+      try {
+        const res = await apiFetch("/profile/activity");
+        const log = res?.log || [];
+        if (!log.length) { wrap.innerHTML = renderMockActivity(); return; }
+        wrap.innerHTML = log.map(a => activityRowHTML(a)).join("");
+      } catch (_e) {
+        wrap.innerHTML = renderMockActivity();
+      }
+    }
+
+    function renderMockActivity() {
+      const mock = [
+        { action:"login", description:"تسجيل دخول ناجح", ip_address:"192.168.1.1", device_info:"Chrome", risk_level:"low", created_at: new Date().toISOString() },
+        { action:"profile_update", description:"تم تحديث معلومات الملف الشخصي", ip_address:"192.168.1.1", device_info:"Chrome", risk_level:"low", created_at: new Date(Date.now()-86400000).toISOString() },
+        { action:"password_change", description:"تم تغيير كلمة المرور", ip_address:"192.168.1.2", device_info:"Safari", risk_level:"medium", created_at: new Date(Date.now()-172800000).toISOString() },
+      ];
+      return mock.map(a => activityRowHTML(a)).join("");
+    }
+
+    function activityRowHTML(a) {
+      const icons = { login:"fa-sign-in-alt", logout:"fa-sign-out-alt", profile_update:"fa-user-edit", password_change:"fa-key", "2fa_enabled":"fa-shield-alt", account_deleted:"fa-trash-alt" };
+      const ico = icons[a.action] || "fa-circle";
+      return `<div class="activity-row">
+        <div class="act-ico ${a.risk_level}"><i class="fas ${ico}"></i></div>
+        <div class="act-info">
+          <div class="act-label">${esc(a.description || a.action)}</div>
+          <div class="act-meta">${esc(a.ip_address || "")}${a.device_info ? " · " + esc(a.device_info) : ""}</div>
+        </div>
+        <div class="act-time">${fmtDateTime(a.created_at)}</div>
+      </div>`;
+    }
+
+    // ── Export Data ────────────────────────────────────────────
+    async function exportData() {
+      try {
+        const res = await apiFetch("/profile/export-data", { method:"POST" });
+        if (!res?.success) throw new Error("فشل التصدير");
+        const blob = new Blob([JSON.stringify(res.data, null, 2)], { type:"application/json" });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement("a");
+        a.href = url; a.download = "harth-account-data.json"; a.click();
+        URL.revokeObjectURL(url);
+        toast("✓ تم تنزيل بياناتك");
+      } catch (err) { toast(err.message, true); }
+    }
+    window.exportData = exportData;
+
+    // ── Preferences ────────────────────────────────────────────
+    async function savePref(key, value) {
+      try {
+        await apiFetch("/profile/preferences", { method:"PUT", body: JSON.stringify({ [key]: value }) });
+      } catch (_e) {}
+    }
+    window.savePref = savePref;
+
+    function toggleTheme(dark) {
+      document.body.style.background = dark
+        ? "#0a1a0a"
+        : "linear-gradient(135deg,#f0f4f0,#e8f0e8)";
+      savePref("theme", dark ? "dark" : "light");
+    }
+    window.toggleTheme = toggleTheme;
+
+    // ── Bio counter ────────────────────────────────────────────
+    function updateBioCount() {
+      const bio = document.getElementById("f-bio");
+      if (bio) {
+        bio.addEventListener("input", () => { document.getElementById("bio-count").textContent = bio.value.length; });
+        document.getElementById("bio-count").textContent = bio.value.length;
+      }
+    }
+
+    // ── Preferences toggles ────────────────────────────────────
+    // (wired via onchange in HTML)
+
+    // ── Danger Zone ────────────────────────────────────────────
+    function showStep(n) {
+      document.querySelectorAll(".danger-step").forEach(el => el.classList.remove("active"));
+      const step = document.getElementById("del-step-" + n);
+      if (step) step.classList.add("active");
+    }
+    window.showStep = showStep;
+
+    function openDeactivateModal() {
+      document.getElementById("deactivate-modal").classList.add("open");
+    }
+    function closeDeactivateModal() {
+      document.getElementById("deactivate-modal").classList.remove("open");
+    }
+    window.openDeactivateModal  = openDeactivateModal;
+    window.closeDeactivateModal = closeDeactivateModal;
+
+    async function deactivateAccount() {
+      try {
+        const res = await apiFetch("/profile/deactivate", { method:"POST" });
+        if (!res?.success) throw new Error("فشل");
+        toast("تم تعطيل حسابك. سنشتاق إليك!");
+        closeDeactivateModal();
+        setTimeout(() => { localStorage.clear(); window.location.href = "register.html"; }, 1500);
+      } catch (err) { toast(err.message, true); }
+    }
+    window.deactivateAccount = deactivateAccount;
+
+    async function deleteAccount() {
+      const confirm_text = document.getElementById("del-confirm-text").value.trim();
+      const password     = document.getElementById("del-password").value;
+      if (confirm_text !== "DELETE") { toast("اكتب DELETE بالضبط للتأكيد", true); return; }
+      if (!password) { toast("أدخل كلمة المرور", true); return; }
+      try {
+        const res = await apiFetch("/profile", { method:"DELETE", body: JSON.stringify({ confirm_text, password }) });
+        if (!res?.success) throw new Error(res?.error?.message || "فشل");
+        toast("تم حذف حسابك نهائياً");
+        setTimeout(() => { localStorage.clear(); window.location.href = "index.html"; }, 1800);
+      } catch (err) { toast(err.message, true); }
+    }
+    window.deleteAccount = deleteAccount;
+
+    // ── Report ─────────────────────────────────────────────────
+    async function submitReport() {
+      const type = document.getElementById("report-type").value;
+      const body = document.getElementById("report-body").value.trim();
+      if (!body || body.length < 10) { toast("يرجى كتابة وصف أكثر تفصيلاً", true); return; }
+      try {
+        await apiFetch("/support/tickets", {
+          method:"POST",
+          body: JSON.stringify({ category:"technical", priority:"medium", subject: "بلاغ: " + type, body })
+        });
+        toast("✓ تم إرسال بلاغك، سنتواصل معك قريباً");
+        document.getElementById("report-body").value = "";
+      } catch (err) { toast(err.message, true); }
+    }
+    window.submitReport = submitReport;
+
+    // ── Auth guard ─────────────────────────────────────────────
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!getToken || !getToken()) {
+        toast("يرجى تسجيل الدخول أولاً", true);
+        setTimeout(() => { window.location.href = "register.html?redirect=profile.html"; }, 1200);
+        return;
+      }
+      loadProfile();
+    });
+
+  })();
+  </script>
+</body>
+</html>

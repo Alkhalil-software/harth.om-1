@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تحقّق الهوية | منصة حرث</title>
+    <link rel="stylesheet" href="design-system.css" />
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      body { background: linear-gradient(135deg,#1a3a1a 0%,#0f1f0f 100%); min-height: 100vh; }
+
+      .kyc-wrap { max-width: 680px; margin: 30px auto; padding: 0 16px 60px; }
+
+      .kyc-card {
+        background: rgba(255,255,255,0.97);
+        color: #1a1a1a;
+        border-radius: 18px;
+        padding: 28px 24px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+      }
+      .kyc-card h2 { margin: 0 0 6px; color: #2d5016; font-size: 22px; display: flex; align-items: center; gap: 8px; }
+      .kyc-card .sub { color: #555; font-size: 13px; margin: 0 0 20px; line-height: 1.7; }
+
+      /* ── Progress steps ── */
+      .steps { display: flex; gap: 0; margin-bottom: 28px; }
+      .step {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        position: relative;
+      }
+      .step:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        top: 19px;
+        inset-inline-start: 55%;
+        width: 90%;
+        height: 2px;
+        background: #ddd;
+        z-index: 0;
+      }
+      .step:not(:last-child).done::after { background: #6ab04c; }
+      .step-circle {
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        background: #e8e8e8;
+        color: #888;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 15px;
+        z-index: 1;
+        transition: all 0.3s;
+        border: 2px solid #ddd;
+      }
+      .step.active .step-circle { background: #6ab04c; color: #fff; border-color: #6ab04c; }
+      .step.done  .step-circle { background: #2d5016; color: #fff; border-color: #2d5016; }
+      .step-label { font-size: 11px; color: #888; text-align: center; }
+      .step.active .step-label { color: #2d5016; font-weight: 700; }
+      .step.done  .step-label  { color: #2d5016; }
+
+      /* ── Status banners ── */
+      .banner { padding: 14px 16px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; display: flex; gap: 10px; align-items: flex-start; }
+      .banner-pending  { background: #fff8e1; border: 1px solid #f1c40f; color: #7a5b00; }
+      .banner-approved { background: #f0fbea; border: 1px solid #6ab04c; color: #2d5016; }
+      .banner-rejected { background: #fdecea; border: 1px solid #e74c3c; color: #8a1c1c; }
+      .banner i { margin-top: 2px; flex-shrink: 0; }
+
+      /* ── Step panels ── */
+      .panel { display: none; }
+      .panel.active { display: block; }
+
+      .capture-zone {
+        border: 2px dashed #c0c0c0;
+        border-radius: 14px;
+        padding: 20px;
+        text-align: center;
+        background: #fafafa;
+        transition: border-color 0.2s, background 0.2s;
+        cursor: pointer;
+        position: relative;
+      }
+      .capture-zone.done { border-color: #6ab04c; background: #f3fbef; }
+      .capture-zone .icon { font-size: 36px; color: #c0c0c0; margin-bottom: 8px; }
+      .capture-zone.done .icon { color: #6ab04c; }
+      .capture-zone h4 { margin: 0 0 4px; color: #2d5016; font-size: 16px; }
+      .capture-zone p  { color: #666; font-size: 13px; margin: 0 0 14px; }
+      .capture-zone .tip {
+        background: rgba(106,176,76,0.08);
+        border: 1px solid rgba(106,176,76,0.2);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 12px;
+        color: #444;
+        margin-bottom: 14px;
+        text-align: right;
+      }
+      .preview-img {
+        max-width: 100%;
+        max-height: 220px;
+        border-radius: 10px;
+        border: 2px solid #6ab04c;
+        margin: 10px auto;
+        display: block;
+      }
+
+      .capture-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: #6ab04c; color: #fff;
+        border: none; border-radius: 10px;
+        padding: 11px 22px; font-family: inherit; font-size: 15px;
+        font-weight: 700; cursor: pointer;
+        transition: background 0.2s;
+      }
+      .capture-btn:hover { background: #5a9a3e; }
+      .retake-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: transparent; color: #e74c3c;
+        border: 1px solid #e74c3c; border-radius: 8px;
+        padding: 8px 16px; font-family: inherit; font-size: 13px;
+        cursor: pointer; margin-top: 8px;
+      }
+      .retake-btn:hover { background: rgba(231,76,60,0.08); }
+
+      /* ── GPS bar ── */
+      .gps-bar {
+        display: flex; align-items: center; gap: 8px;
+        background: rgba(241,196,15,0.1);
+        border: 1px solid rgba(241,196,15,0.35);
+        border-radius: 8px; padding: 8px 12px;
+        font-size: 12px; color: #7a5b00;
+        margin: 14px 0;
+      }
+      .gps-bar.ok  { background: rgba(106,176,76,0.08); border-color: rgba(106,176,76,0.3); color: #2d5016; }
+      .gps-bar.err { background: rgba(231,76,60,0.06);  border-color: rgba(231,76,60,0.2);  color: #8a1c1c; }
+
+      /* ── Identity input ── */
+      .id-input-wrap { margin: 14px 0; }
+      .id-input-wrap label { display: block; font-weight: 700; color: #2d5016; margin-bottom: 6px; }
+      .id-input-wrap input {
+        width: 100%; padding: 11px 14px;
+        border: 1.5px solid #ccc; border-radius: 10px;
+        font-family: inherit; font-size: 15px; box-sizing: border-box;
+      }
+      .id-input-wrap input:focus { outline: 2px solid #6ab04c; border-color: transparent; }
+
+      /* ── Nav buttons ── */
+      .nav-btns { display: flex; gap: 10px; margin-top: 20px; justify-content: space-between; flex-wrap: wrap; }
+      .btn-next {
+        background: #6ab04c; color: #fff;
+        border: none; border-radius: 10px;
+        padding: 12px 28px; font-family: inherit; font-size: 15px;
+        font-weight: 700; cursor: pointer;
+      }
+      .btn-next:disabled { opacity: 0.5; cursor: not-allowed; }
+      .btn-back {
+        background: transparent; color: #555;
+        border: 1.5px solid #ccc; border-radius: 10px;
+        padding: 12px 24px; font-family: inherit; font-size: 14px;
+        cursor: pointer;
+      }
+      .btn-submit {
+        width: 100%; background: #2d5016; color: #fff;
+        border: none; border-radius: 12px;
+        padding: 14px; font-family: inherit; font-size: 16px;
+        font-weight: 700; cursor: pointer; margin-top: 18px;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+      }
+      .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+      /* ── Upload status ── */
+      .upload-status { font-size: 13px; margin-top: 8px; min-height: 18px; }
+      .upload-status.ok  { color: #2d5016; }
+      .upload-status.err { color: #c0392b; }
+      .upload-status.loading { color: #888; }
+
+      /* ── Toast ── */
+      #toast {
+        position: fixed; bottom: 24px;
+        inset-inline-start: 50%; transform: translateX(-50%);
+        background: #2d5016; color: #fff;
+        padding: 12px 22px; border-radius: 8px;
+        z-index: 3000; opacity: 0; transition: opacity 0.25s;
+        pointer-events: none; white-space: nowrap;
+      }
+      #toast.show { opacity: 1; }
+      #toast.error { background: #c0392b; }
+
+      @media (max-width: 500px) {
+        .kyc-card { padding: 18px 14px; }
+        .step-label { font-size: 10px; }
+      }
+    </style>
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+
+  <body>
+    <header class="header-container">
+      <div class="header-capsule">
+        <div class="section right">
+          <div class="site-brand">
+            <img src="شعار حرث.jpeg" alt="شعار حرث" />
+            <h1>حــرث</h1>
+          </div>
+        </div>
+        <nav class="section center">
+          <ul class="nav-links"></ul>
+        </nav>
+        <div class="section left" id="auth-header">
+          <a href="register.html" class="hs-btn hs-btn--ghost hs-btn--sm" id="login-link">
+            تسجيل دخول
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <div class="kyc-wrap">
+      <div class="kyc-card">
+        <h2><i class="fas fa-shield-alt" style="color:#2d5016"></i> تحقّق الهوية</h2>
+        <p class="sub">
+          نطلب توثيق الهوية لزيادة ثقة المشترين وحماية الجميع من الاحتيال.
+          بعد التحقّق ستظهر علامة <strong style="color:#2d5016">✓ موثَّق</strong> على ملفك ومعداتك.
+        </p>
+
+        <!-- Status banner (pending/approved/rejected) -->
+        <div id="status-banner"></div>
+
+        <!-- Progress steps -->
+        <div class="steps" id="steps-bar">
+          <div class="step active" data-step="1">
+            <div class="step-circle">1</div>
+            <span class="step-label">وجه البطاقة</span>
+          </div>
+          <div class="step" data-step="2">
+            <div class="step-circle">2</div>
+            <span class="step-label">ظهر البطاقة</span>
+          </div>
+          <div class="step" data-step="3">
+            <div class="step-circle">3</div>
+            <span class="step-label">صورة شخصية</span>
+          </div>
+          <div class="step" data-step="4">
+            <div class="step-circle"><i class="fas fa-paper-plane" style="font-size:13px"></i></div>
+            <span class="step-label">مراجعة وإرسال</span>
+          </div>
+        </div>
+
+        <!-- Step 1: ID Front -->
+        <div class="panel active" id="panel-1">
+          <div class="capture-zone" id="zone-front">
+            <div class="icon"><i class="fas fa-id-card"></i></div>
+            <h4>وجه البطاقة الشخصية</h4>
+            <p>صورة واضحة للوجه الأمامي للبطاقة أو السجل التجاري</p>
+            <div class="tip">
+              <i class="fas fa-lightbulb" style="color:#f1c40f;margin-inline-end:4px"></i>
+              تأكد من وضوح الاسم ورقم الهوية — تجنب الوميض والظلال
+            </div>
+            <!-- capture="environment" forces rear camera on mobile (blocks gallery) -->
+            <input type="file" id="input-front" accept="image/jpeg,image/png,image/webp" capture="environment" style="display:none" />
+            <button class="capture-btn" id="btn-front">
+              <i class="fas fa-camera"></i> فتح الكاميرا والتقاط صورة
+            </button>
+            <div id="preview-front" style="display:none">
+              <img id="img-front" class="preview-img" src="" alt="وجه البطاقة" />
+              <div><button class="retake-btn" id="retake-front"><i class="fas fa-redo"></i> إعادة الالتقاط</button></div>
+            </div>
+            <div class="upload-status" id="status-front"></div>
+          </div>
+          <div class="nav-btns">
+            <a href="index.html" class="btn-back">العودة</a>
+            <button class="btn-next" id="next-1" disabled>التالي <i class="fas fa-chevron-left"></i></button>
+          </div>
+        </div>
+
+        <!-- Step 2: ID Back -->
+        <div class="panel" id="panel-2">
+          <div class="capture-zone" id="zone-back">
+            <div class="icon"><i class="fas fa-id-card-alt"></i></div>
+            <h4>ظهر البطاقة الشخصية</h4>
+            <p>صورة واضحة للوجه الخلفي للبطاقة</p>
+            <div class="tip">
+              <i class="fas fa-lightbulb" style="color:#f1c40f;margin-inline-end:4px"></i>
+              تأكد أن جميع الأرقام والبيانات ظاهرة بوضوح
+            </div>
+            <input type="file" id="input-back" accept="image/jpeg,image/png,image/webp" capture="environment" style="display:none" />
+            <button class="capture-btn" id="btn-back">
+              <i class="fas fa-camera"></i> فتح الكاميرا والتقاط صورة
+            </button>
+            <div id="preview-back" style="display:none">
+              <img id="img-back" class="preview-img" src="" alt="ظهر البطاقة" />
+              <div><button class="retake-btn" id="retake-back"><i class="fas fa-redo"></i> إعادة الالتقاط</button></div>
+            </div>
+            <div class="upload-status" id="status-back"></div>
+          </div>
+          <div class="nav-btns">
+            <button class="btn-back" id="back-2"><i class="fas fa-chevron-right"></i> السابق</button>
+            <button class="btn-next" id="next-2" disabled>التالي <i class="fas fa-chevron-left"></i></button>
+          </div>
+        </div>
+
+        <!-- Step 3: Selfie with ID -->
+        <div class="panel" id="panel-3">
+          <div class="capture-zone" id="zone-selfie">
+            <div class="icon"><i class="fas fa-user-circle"></i></div>
+            <h4>صورة شخصية مع البطاقة</h4>
+            <p>صورتك وأنت تحمل البطاقة — يجب أن يظهر وجهك ورقم البطاقة بوضوح</p>
+            <div class="tip">
+              <i class="fas fa-lightbulb" style="color:#f1c40f;margin-inline-end:4px"></i>
+              اجلس في مكان مضاء واحمل البطاقة بجانب وجهك
+            </div>
+            <!-- capture="user" forces front camera (selfie cam) on mobile -->
+            <input type="file" id="input-selfie" accept="image/jpeg,image/png,image/webp" capture="user" style="display:none" />
+            <button class="capture-btn" id="btn-selfie">
+              <i class="fas fa-camera-retro"></i> فتح الكاميرا الأمامية
+            </button>
+            <div id="preview-selfie" style="display:none">
+              <img id="img-selfie" class="preview-img" src="" alt="صورة شخصية" />
+              <div><button class="retake-btn" id="retake-selfie"><i class="fas fa-redo"></i> إعادة الالتقاط</button></div>
+            </div>
+            <div class="upload-status" id="status-selfie"></div>
+          </div>
+          <div class="nav-btns">
+            <button class="btn-back" id="back-3"><i class="fas fa-chevron-right"></i> السابق</button>
+            <button class="btn-next" id="next-3" disabled>التالي <i class="fas fa-chevron-left"></i></button>
+          </div>
+        </div>
+
+        <!-- Step 4: Review & Submit -->
+        <div class="panel" id="panel-4">
+          <h3 style="color:#2d5016;margin-bottom:12px"><i class="fas fa-check-circle"></i> مراجعة وإرسال</h3>
+
+          <!-- Thumbnails -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+            <div style="text-align:center">
+              <img id="thumb-front" src="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;border:2px solid #6ab04c" />
+              <div style="font-size:11px;color:#555;margin-top:4px">وجه البطاقة</div>
+            </div>
+            <div style="text-align:center">
+              <img id="thumb-back" src="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;border:2px solid #6ab04c" />
+              <div style="font-size:11px;color:#555;margin-top:4px">ظهر البطاقة</div>
+            </div>
+            <div style="text-align:center">
+              <img id="thumb-selfie" src="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;border:2px solid #6ab04c" />
+              <div style="font-size:11px;color:#555;margin-top:4px">صورة شخصية</div>
+            </div>
+          </div>
+
+          <!-- Identity number -->
+          <div class="id-input-wrap">
+            <label for="kyc-identity"><i class="fas fa-hashtag"></i> رقم الهوية / السجل التجاري (اختياري)</label>
+            <input type="text" id="kyc-identity" maxlength="64" placeholder="أدخل رقم البطاقة كما هو مكتوب" />
+          </div>
+
+          <!-- GPS capture at submit time -->
+          <div class="gps-bar" id="gps-bar">
+            <i class="fas fa-location-dot"></i>
+            <span id="gps-text">جارٍ تحديد موقعك تلقائياً...</span>
+          </div>
+
+          <div style="background:#f8f8f8;border-radius:8px;padding:12px;font-size:12px;color:#555;line-height:1.7;margin-bottom:4px">
+            <i class="fas fa-info-circle" style="color:#6ab04c;margin-inline-end:4px"></i>
+            سيتم مراجعة وثائقك من قِبل فريق حرث خلال 24–48 ساعة. ستصلك إشعار فور صدور القرار.
+          </div>
+
+          <button class="btn-submit" id="kyc-submit">
+            <i class="fas fa-paper-plane"></i> إرسال للمراجعة
+          </button>
+
+          <div class="nav-btns" style="justify-content:flex-end;margin-top:10px">
+            <button class="btn-back" id="back-4"><i class="fas fa-chevron-right"></i> السابق</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="design-system.js"></script>
+    <script src="unified-nav.js"></script>
+    <script src="script.js"></script>
+    <script>
+    (function () {
+      "use strict";
+
+      const TOKEN = localStorage.getItem("token");
+      if (!TOKEN) { window.location.href = "register.html"; return; }
+
+      const $ = (s) => document.querySelector(s);
+
+      // ── Toast ──
+      let toastTimer;
+      function showToast(msg, isError = false) {
+        const t = $("#toast");
+        t.textContent = msg;
+        t.className = "show" + (isError ? " error" : "");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => (t.className = ""), 3500);
+      }
+
+      function escapeHtml(s) {
+        if (s == null) return "";
+        return String(s).replace(/[&<>"']/g, (c) =>
+          ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+      }
+
+      // ── State ──
+      const urls = { id_front_url: null, id_back_url: null, selfie_url: null };
+      let capturedGps = null;
+      let currentStep = 1;
+
+      // ── Step navigation ──
+      function goTo(step) {
+        document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+        document.querySelector(`#panel-${step}`).classList.add("active");
+
+        document.querySelectorAll(".step").forEach((s) => {
+          const n = parseInt(s.dataset.step);
+          s.classList.toggle("active", n === step);
+          s.classList.toggle("done", n < step);
+        });
+
+        currentStep = step;
+        if (step === 4) startGpsCapture();
+      }
+
+      // ── GPS ──
+      function startGpsCapture() {
+        const bar  = $("#gps-bar");
+        const text = $("#gps-text");
+        if (!navigator.geolocation) {
+          text.textContent = "الجهاز لا يدعم تحديد الموقع";
+          bar.classList.add("err");
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            capturedGps = {
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+              accuracy: Math.round(pos.coords.accuracy),
+              client_ts: new Date().toISOString(),
+            };
+            text.textContent = `✓ تم تحديد الموقع (دقة ±${capturedGps.accuracy}م)`;
+            bar.classList.add("ok");
+          },
+          () => {
+            text.textContent = "تعذّر تحديد الموقع — تأكد من منح الإذن";
+            bar.classList.add("err");
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+        );
+      }
+
+      // ── Image capture wiring ──
+      // Slots: { key, inputId, btnId, previewId, imgId, retakeId, statusId, nextBtnId, urlKey }
+      const slots = [
+        { step: 1, inputId: "input-front",  btnId: "btn-front",  previewId: "preview-front",  imgId: "img-front",  retakeId: "retake-front",  statusId: "status-front",  nextId: "next-1", urlKey: "id_front_url", thumbId: "thumb-front"  },
+        { step: 2, inputId: "input-back",   btnId: "btn-back",   previewId: "preview-back",   imgId: "img-back",   retakeId: "retake-back",   statusId: "status-back",   nextId: "next-2", urlKey: "id_back_url",  thumbId: "thumb-back"   },
+        { step: 3, inputId: "input-selfie", btnId: "btn-selfie", previewId: "preview-selfie", imgId: "img-selfie", retakeId: "retake-selfie", statusId: "status-selfie", nextId: "next-3", urlKey: "selfie_url",   thumbId: "thumb-selfie" },
+      ];
+
+      slots.forEach((sl) => {
+        const input   = document.getElementById(sl.inputId);
+        const btn     = document.getElementById(sl.btnId);
+        const preview = document.getElementById(sl.previewId);
+        const img     = document.getElementById(sl.imgId);
+        const retake  = document.getElementById(sl.retakeId);
+        const status  = document.getElementById(sl.statusId);
+        const nextBtn = document.getElementById(sl.nextId);
+
+        btn.addEventListener("click", () => input.click());
+
+        retake.addEventListener("click", () => {
+          preview.style.display = "none";
+          btn.style.display = "inline-flex";
+          status.textContent = "";
+          status.className = "upload-status";
+          urls[sl.urlKey] = null;
+          nextBtn.disabled = true;
+          input.value = "";
+        });
+
+        input.addEventListener("change", async () => {
+          const file = input.files[0];
+          if (!file) return;
+
+          // Show instant local preview
+          const localUrl = URL.createObjectURL(file);
+          img.src = localUrl;
+          preview.style.display = "block";
+          btn.style.display = "none";
+          status.textContent = "جارٍ الرفع...";
+          status.className = "upload-status loading";
+          nextBtn.disabled = true;
+
+          try {
+            const fd = new FormData();
+            fd.append("image", file);
+            const freshToken = localStorage.getItem("token");
+            if (!freshToken) {
+              localStorage.removeItem("user");
+              window.location.href = "register.html";
+              return;
+            }
+            const r = await fetch(
+              (window.location.hostname === "localhost"
+                ? "http://localhost:3000/api/v1"
+                : "/api/v1") + "/uploads/image",
+              { method: "POST", headers: { Authorization: `Bearer ${freshToken}` }, body: fd },
+            );
+            if (r.status === 401) {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              window.location.href = "register.html?reason=session_expired";
+              return;
+            }
+            const data = await r.json();
+            if (!r.ok || !data.success) throw new Error(data?.error?.message || "فشل الرفع");
+
+            urls[sl.urlKey] = data.url;
+            img.src = data.url;
+            // Update thumbnail in step 4
+            const thumb = document.getElementById(sl.thumbId);
+            if (thumb) thumb.src = data.url;
+
+            status.textContent = "✓ تم الرفع بنجاح";
+            status.className = "upload-status ok";
+            nextBtn.disabled = false;
+            document.getElementById(`zone-${sl.inputId.replace("input-", "")}`).classList.add("done");
+          } catch (err) {
+            status.textContent = err.message;
+            status.className = "upload-status err";
+            preview.style.display = "none";
+            btn.style.display = "inline-flex";
+            urls[sl.urlKey] = null;
+            nextBtn.disabled = true;
+          }
+        });
+      });
+
+      // ── Step nav buttons ──
+      document.getElementById("next-1").addEventListener("click", () => goTo(2));
+      document.getElementById("next-2").addEventListener("click", () => goTo(3));
+      document.getElementById("next-3").addEventListener("click", () => goTo(4));
+      document.getElementById("back-2").addEventListener("click", () => goTo(1));
+      document.getElementById("back-3").addEventListener("click", () => goTo(2));
+      document.getElementById("back-4").addEventListener("click", () => goTo(3));
+
+      // ── Submit ──
+      document.getElementById("kyc-submit").addEventListener("click", async () => {
+        if (!urls.id_front_url || !urls.id_back_url || !urls.selfie_url) {
+          showToast("خطأ — بعض الصور غير مرفوعة", true);
+          return;
+        }
+        const btn = document.getElementById("kyc-submit");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ الإرسال...';
+
+        try {
+          const body = {
+            id_front_url: urls.id_front_url,
+            id_back_url:  urls.id_back_url,
+            selfie_url:   urls.selfie_url,
+          };
+          const identity = document.getElementById("kyc-identity").value.trim();
+          if (identity) body.identity = identity;
+
+          const res = await apiFetch("/kyc/submit", {
+            method: "POST",
+            body: JSON.stringify(body),
+          });
+          if (!res || !res.success) throw new Error(res?.error?.message || "فشل الإرسال");
+
+          showToast("✓ تم الإرسال — سيتم مراجعة وثائقك قريباً");
+          document.getElementById("steps-bar").style.display = "none";
+          document.querySelectorAll(".panel").forEach((p) => (p.style.display = "none"));
+          document.getElementById("status-banner").innerHTML = `
+            <div class="banner banner-pending">
+              <i class="fas fa-clock"></i>
+              <div>طلبك قيد المراجعة. سنُخطرك فور صدور القرار — لا حاجة لإعادة الإرسال.</div>
+            </div>`;
+        } catch (err) {
+          showToast(err.message, true);
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال للمراجعة';
+        }
+      });
+
+      // ── Boot: load current KYC state ──
+      (async function init() {
+        try {
+          const res = await apiFetch("/kyc/me");
+          if (!res || !res.success) return;
+          const kyc = res.kyc;
+
+          if (kyc.identity_status === "pending") {
+            document.getElementById("status-banner").innerHTML = `
+              <div class="banner banner-pending">
+                <i class="fas fa-clock"></i>
+                <div>طلبك قيد المراجعة من قِبل الإدارة. سنُخطرك فور صدور القرار.</div>
+              </div>`;
+            document.getElementById("steps-bar").style.display = "none";
+            document.querySelectorAll(".panel").forEach((p) => (p.style.display = "none"));
+            return;
+          }
+          if (kyc.identity_status === "approved") {
+            document.getElementById("status-banner").innerHTML = `
+              <div class="banner banner-approved">
+                <i class="fas fa-check-circle"></i>
+                <div>هويتك موثَّقة ✓ — علامة <strong>موثَّق</strong> ظاهرة على ملفك ومعداتك.</div>
+              </div>`;
+            document.getElementById("steps-bar").style.display = "none";
+            document.querySelectorAll(".panel").forEach((p) => (p.style.display = "none"));
+            return;
+          }
+          if (kyc.identity_status === "rejected") {
+            const reason = kyc.identity_rejection_reason
+              ? `<div style="margin-top:4px"><strong>السبب:</strong> ${escapeHtml(kyc.identity_rejection_reason)}</div>`
+              : "";
+            document.getElementById("status-banner").innerHTML = `
+              <div class="banner banner-rejected">
+                <i class="fas fa-times-circle"></i>
+                <div>لم تتم الموافقة على الوثائق المُقدَّمة. يمكنك إعادة الإرسال.${reason}</div>
+              </div>`;
+          }
+          if (kyc.identity) {
+            document.getElementById("kyc-identity").value = kyc.identity;
+          }
+        } catch (_e) { /* non-fatal */ }
+      })();
+    })();
+    </script>
+    <script src="responsive.js" defer></script>
+  </body>
+</html>

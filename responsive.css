@@ -1,0 +1,1635 @@
+/* ============================================================
+ * HARTH RESPONSIVE LAYER v1
+ * ------------------------------------------------------------
+ * Full responsive overhaul for all screen sizes:
+ *   - 320px (small mobile)
+ *   - 375px (mobile)
+ *   - 480px (large mobile)
+ *   - 768px (tablet)
+ *   - 1024px (laptop)
+ *   - 1440px (desktop)
+ *   - 1920px+ (ultra-wide)
+ *
+ * Mobile-first approach: base styles target mobile.
+ * Larger screens get progressive enhancement via min-width queries.
+ * Loaded AFTER style.css to override any non-responsive rules.
+ * ============================================================ */
+
+/* ------------------------------------------------------------
+ * 0. GLOBAL FOUNDATIONS — prevent horizontal scroll, smooth boxing
+ * ------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden !important;
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+video,
+iframe,
+svg,
+canvas,
+picture {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Prevent input zoom on iOS by ensuring 16px+ font-size */
+input,
+select,
+textarea,
+button {
+  font-size: 16px;
+  font-family: inherit;
+  max-width: 100%;
+}
+
+/* Touch targets: at least 44x44 px on mobile per Apple/WCAG */
+@media (max-width: 768px) {
+  button,
+  .hs-btn,
+  .nav-item,
+  a.button,
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 44px;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 1. CONTAINER — fluid, centered, with consistent max-widths
+ * ------------------------------------------------------------ */
+.container {
+  width: 100%;
+  max-width: 100%;
+  padding-left: 16px;
+  padding-right: 16px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 480px) {
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1400px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1600px;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 2. HEADER & NAVIGATION — mobile-first with hamburger
+ * ------------------------------------------------------------ */
+/* Override conflicting earlier definitions in style.css */
+.header-container {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 8px 12px !important;
+  margin: 10px auto !important;
+  width: calc(100% - 20px) !important;
+  max-width: 1400px;
+  overflow: visible !important;
+  position: relative;
+  z-index: 100;
+}
+
+.header-capsule {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(60, 64, 72, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 8px 14px;
+  border-radius: 50px;
+  width: 100%;
+  max-width: 1400px;
+  position: relative;
+  gap: 8px;
+  flex-wrap: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.header-capsule .section {
+  display: flex;
+  align-items: center;
+}
+
+.header-capsule .section.right {
+  flex: 0 0 auto;
+}
+
+.header-capsule .section.left {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+}
+
+.header-capsule .section.center {
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+/* Brand mark sizing */
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.site-brand img {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.site-brand h1 {
+  font-size: 18px !important;
+  margin: 0;
+  color: #fff;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+/* Hamburger button — visible only on mobile */
+.hs-hamburger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  padding: 0;
+  margin-inline-start: 6px;
+  transition: background 0.2s ease, transform 0.15s ease;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1001;
+}
+
+.hs-hamburger:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.hs-hamburger:active {
+  transform: scale(0.96);
+}
+
+.hs-hamburger__lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 20px;
+}
+
+.hs-hamburger__lines span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+  transform-origin: center;
+}
+
+/* Animate to "X" when open */
+.hs-hamburger[aria-expanded="true"] .hs-hamburger__lines span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.hs-hamburger[aria-expanded="true"] .hs-hamburger__lines span:nth-child(2) {
+  opacity: 0;
+}
+
+.hs-hamburger[aria-expanded="true"] .hs-hamburger__lines span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* MOBILE NAV (default behaviour, < 1024px)
+   Off-canvas slide-in panel — uses visibility + transform so the panel
+   is fully removed from the document's hit-test and overflow box when
+   closed (avoids any body.scrollWidth contribution on iOS Safari). */
+.header-capsule .section.center {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: auto;
+  width: min(320px, 85vw);
+  height: 100dvh;
+  height: 100vh; /* fallback for older browsers */
+  background: linear-gradient(180deg, #1f2a25 0%, #2d5016 100%);
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 80px 20px 40px;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.4);
+  transform: translate3d(110%, 0, 0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0s linear 0.3s;
+  z-index: 1000;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  border: none;
+  display: flex !important;
+  /* Containment so children don't extend the document's overflow box */
+  contain: layout paint;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* RTL: slide in from the LEFT */
+html[dir="rtl"] .header-capsule .section.center,
+[dir="rtl"] .header-capsule .section.center {
+  right: auto;
+  left: 0;
+  transform: translate3d(-110%, 0, 0);
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.4);
+}
+
+body.menu-open .header-capsule .section.center {
+  transform: translate3d(0, 0, 0) !important;
+  visibility: visible;
+  pointer-events: auto;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0s linear 0s;
+}
+
+.header-capsule .section.center .nav-links {
+  flex-direction: column !important;
+  gap: 6px !important;
+  width: 100%;
+  align-items: stretch;
+}
+
+.header-capsule .section.center .nav-links li {
+  width: 100%;
+}
+
+.header-capsule .section.center .nav-links li a,
+.header-capsule .section.center .nav-links li .nav-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px !important;
+  font-size: 15px !important;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px !important;
+  white-space: normal;
+  text-align: start;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.header-capsule .section.center .nav-links li a:hover,
+.header-capsule .section.center .nav-links li a.nav-item--active {
+  background: rgba(106, 176, 76, 0.25);
+  border-color: rgba(106, 176, 76, 0.4);
+  color: #fff;
+}
+
+/* Backdrop for open menu */
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 999;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+body.menu-open .menu-backdrop {
+  opacity: 1;
+  visibility: visible;
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+
+/* Auth section in header — keep small on mobile */
+.header-capsule .section.left .login-nav-button,
+.header-capsule .section.left .hs-btn {
+  font-size: 12px !important;
+  padding: 6px 12px !important;
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .site-brand h1 {
+    font-size: 16px !important;
+  }
+  .site-brand img {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .header-capsule {
+    padding: 6px 10px;
+  }
+  .header-capsule .section.left .login-nav-button,
+  .header-capsule .section.left .hs-btn {
+    padding: 5px 9px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* DESKTOP NAV (≥ 1024px) — restore inline horizontal nav */
+@media (min-width: 1024px) {
+  .hs-hamburger {
+    display: none !important;
+  }
+
+  .menu-backdrop {
+    display: none !important;
+  }
+
+  .header-container {
+    padding: 12px 20px !important;
+    margin: 14px auto !important;
+  }
+
+  .header-capsule {
+    padding: 10px 22px;
+    gap: 16px;
+  }
+
+  .header-capsule .section.center {
+    position: static;
+    width: auto;
+    height: auto;
+    background: transparent;
+    flex-direction: row;
+    padding: 0;
+    box-shadow: none;
+    transform: none !important;
+    z-index: auto;
+    overflow: visible;
+    justify-content: center;
+    visibility: visible;
+    pointer-events: auto;
+    contain: none;
+  }
+
+  .header-capsule .section.center .nav-links {
+    flex-direction: row !important;
+    gap: 8px !important;
+    width: auto;
+    align-items: center;
+  }
+
+  .header-capsule .section.center .nav-links li {
+    width: auto;
+  }
+
+  .header-capsule .section.center .nav-links li a,
+  .header-capsule .section.center .nav-links li .nav-item {
+    width: auto;
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 12px !important;
+    white-space: nowrap;
+  }
+
+  .site-brand img {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .site-brand h1 {
+    font-size: 20px !important;
+  }
+
+  .header-capsule .section.left .login-nav-button,
+  .header-capsule .section.left .hs-btn {
+    font-size: 14px !important;
+    padding: 8px 22px !important;
+  }
+
+  body.menu-open {
+    overflow: auto;
+  }
+}
+
+@media (min-width: 1280px) {
+  .header-capsule .section.center .nav-links {
+    gap: 12px !important;
+  }
+  .header-capsule .section.center .nav-links li a,
+  .header-capsule .section.center .nav-links li .nav-item {
+    padding: 9px 18px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 2b. ALTERNATE HEADER PATTERNS (hs-header / header / topbar)
+ * ------------------------------------------------------------ */
+
+/* .hs-header — used by loyalty.html, kyc.html, post-story.html etc.
+   Has a logo, an inline <nav> with .nav-links, and a login/logout link.
+   On mobile: stack everything, hide the nav behind a hamburger. */
+.hs-header {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 14px !important;
+  position: relative;
+  z-index: 100;
+}
+
+.hs-header .logo,
+.hs-header > a:first-child {
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  flex-shrink: 0;
+}
+
+.hs-header > nav {
+  display: none;
+  flex: 1 1 100%;
+  order: 99;
+}
+
+.hs-header > nav .nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.hs-header > nav .nav-links li a {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.hs-header.menu-open > nav,
+body.menu-open .hs-header > nav {
+  display: block;
+}
+
+.hs-header > a:last-child,
+.hs-header .login-nav-button {
+  font-size: clamp(0.75rem, 2.2vw, 0.9rem);
+  padding: 7px 14px !important;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .hs-header {
+    padding: 14px 24px !important;
+    flex-wrap: nowrap;
+  }
+  .hs-header > nav {
+    display: block;
+    flex: 1 1 auto;
+    order: 0;
+  }
+  .hs-header > nav .nav-links {
+    flex-direction: row;
+    justify-content: center;
+    width: auto;
+  }
+  .hs-header > nav .nav-links li a {
+    width: auto;
+    padding: 8px 16px;
+    background: transparent;
+  }
+}
+
+/* Simple `.header` (checkout.html) — logo + back button.
+   No nav to worry about, but make sure they wrap on small screens. */
+.header {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px !important;
+}
+
+.header .logo {
+  font-size: clamp(1rem, 3.4vw, 1.4rem);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.header .back-btn {
+  font-size: clamp(0.8rem, 2.4vw, 0.95rem);
+  padding: 7px 14px !important;
+  white-space: nowrap;
+}
+
+/* `.topbar` (delivery.html, admin-dashboard.html) */
+.topbar {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px !important;
+}
+
+.topbar h1 {
+  font-size: clamp(1rem, 3vw, 1.4rem) !important;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.topbar > div,
+.topbar .user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.topbar .btn-logout {
+  font-size: clamp(0.75rem, 2vw, 0.9rem);
+  padding: 7px 14px !important;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .topbar {
+    padding: 14px 24px !important;
+    flex-wrap: nowrap;
+  }
+}
+
+/* `.top-navigation` (register.html, forgot-password.html) — just a back link */
+.top-navigation {
+  display: flex !important;
+  align-items: center;
+  padding: 12px 16px !important;
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+  z-index: 50;
+}
+
+.top-navigation .back-btn {
+  font-size: clamp(0.8rem, 2.4vw, 0.95rem) !important;
+  padding: 8px 14px !important;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  text-decoration: none;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* `.tabs` (delivery, admin) — horizontally scrollable on mobile */
+.tabs {
+  display: flex !important;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  flex-wrap: nowrap !important;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.tabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tabs::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+}
+
+.tabs .tab {
+  flex: 0 0 auto !important;
+  white-space: nowrap;
+  padding: 10px 14px !important;
+  font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+}
+
+@media (min-width: 768px) {
+  .tabs {
+    overflow-x: visible;
+    flex-wrap: wrap !important;
+  }
+  .tabs .tab {
+    flex: 1 1 auto !important;
+    padding: 12px 18px !important;
+  }
+}
+
+/* `.tab-content` make sure it never overflows */
+.tab-content {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Cart table goes horizontal-scroll on mobile */
+.cart-card {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cart-table {
+  min-width: 480px;
+}
+
+@media (min-width: 768px) {
+  .cart-card {
+    overflow-x: visible;
+  }
+  .cart-table {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* `.summary-grid` in checkout — stack on mobile */
+.summary-grid {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .summary-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .summary-grid {
+    grid-template-columns: 2fr 1fr !important;
+    gap: 24px;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 3. HERO SECTION — fluid type & padding
+ * ------------------------------------------------------------ */
+.hero-section {
+  min-height: auto !important;
+  padding: 32px 0 !important;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 100%;
+  padding: 0 4px;
+}
+
+.hero-title {
+  font-size: clamp(1.5rem, 6vw, 3.5rem) !important;
+  line-height: 1.25 !important;
+  margin-bottom: 16px !important;
+  word-wrap: break-word;
+}
+
+.hero-description {
+  font-size: clamp(0.95rem, 2.6vw, 1.15rem) !important;
+  line-height: 1.7 !important;
+  margin-bottom: 24px !important;
+  padding: 0 8px;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  padding: 0 12px;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.hero-actions .hs-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (min-width: 480px) {
+  .hero-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: none;
+  }
+  .hero-actions .hs-btn {
+    width: auto;
+    min-width: 180px;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-section {
+    min-height: 60vh !important;
+    padding: 56px 0 !important;
+  }
+  .hero-actions {
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-section {
+    min-height: 70vh !important;
+    padding: 80px 0 !important;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 4. FEATURES / STATS / CTA — responsive grids
+ * ------------------------------------------------------------ */
+.features-section,
+.stats-section,
+.cta-section {
+  padding: 32px 0 !important;
+}
+
+@media (min-width: 768px) {
+  .features-section,
+  .stats-section,
+  .cta-section {
+    padding: 56px 0 !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .features-section,
+  .stats-section,
+  .cta-section {
+    padding: 80px 0 !important;
+  }
+}
+
+.section-title {
+  font-size: clamp(1.4rem, 4vw, 2rem) !important;
+  margin-bottom: 24px !important;
+  text-align: center;
+  padding: 0 8px;
+}
+
+@media (min-width: 768px) {
+  .section-title {
+    margin-bottom: 40px !important;
+  }
+}
+
+.features-grid {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 16px !important;
+  margin-top: 16px;
+}
+
+@media (min-width: 600px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .features-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 24px !important;
+  }
+}
+
+.feature-icon {
+  width: 3rem !important;
+  height: 3rem !important;
+  font-size: 1.25rem !important;
+  margin-bottom: 12px !important;
+}
+
+@media (min-width: 768px) {
+  .feature-icon {
+    width: 4rem !important;
+    height: 4rem !important;
+    font-size: 1.5rem !important;
+  }
+}
+
+.feature-title {
+  font-size: clamp(1rem, 2.5vw, 1.15rem) !important;
+}
+
+.feature-description {
+  font-size: clamp(0.85rem, 2vw, 0.95rem) !important;
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 16px !important;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 32px !important;
+  }
+}
+
+.stat-number {
+  font-size: clamp(1.6rem, 6vw, 3rem) !important;
+}
+
+.stat-label {
+  font-size: clamp(0.8rem, 2vw, 1rem) !important;
+}
+
+/* CTA */
+.cta-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.cta-actions .hs-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (min-width: 480px) {
+  .cta-actions {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: none;
+  }
+  .cta-actions .hs-btn {
+    width: auto;
+  }
+}
+
+.cta-title {
+  font-size: clamp(1.3rem, 4vw, 1.8rem) !important;
+}
+
+.cta-description {
+  font-size: clamp(0.9rem, 2.4vw, 1.05rem) !important;
+}
+
+/* ------------------------------------------------------------
+ * 5. FOOTER — stack on mobile, grid on desktop
+ * ------------------------------------------------------------ */
+.footer-modern {
+  padding: 32px 0 16px !important;
+  margin-top: 40px !important;
+}
+
+.footer-content {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 32px !important;
+  margin-bottom: 24px !important;
+  text-align: center;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer-links {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 24px !important;
+  text-align: center;
+}
+
+@media (min-width: 540px) {
+  .footer-links {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .footer-modern {
+    padding: 56px 0 24px !important;
+  }
+  .footer-content {
+    grid-template-columns: 1fr 2fr !important;
+    text-align: start;
+    gap: 40px !important;
+  }
+  .footer-brand {
+    align-items: flex-start;
+  }
+  .footer-links {
+    grid-template-columns: repeat(3, 1fr) !important;
+    text-align: start;
+  }
+}
+
+.footer-section h4 {
+  font-size: clamp(1rem, 2.5vw, 1.1rem) !important;
+}
+
+.footer-section ul,
+.footer-section a,
+.contact-item span {
+  font-size: clamp(0.85rem, 2vw, 0.95rem) !important;
+}
+
+.social-links-footer {
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .social-links-footer {
+    justify-content: flex-start;
+  }
+}
+
+.footer-bottom-content {
+  flex-direction: column !important;
+  gap: 8px !important;
+  text-align: center;
+  font-size: clamp(0.75rem, 1.8vw, 0.85rem);
+}
+
+@media (min-width: 768px) {
+  .footer-bottom-content {
+    flex-direction: row !important;
+    text-align: start;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 6. CARDS / EQUIPMENT / PRODUCTS GRIDS (basket, tools)
+ * ------------------------------------------------------------ */
+.equipment-grid,
+.products-grid,
+.tools-grid {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 14px !important;
+  padding: 0 4px;
+}
+
+@media (min-width: 480px) {
+  .equipment-grid,
+  .products-grid,
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .equipment-grid,
+  .products-grid,
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .equipment-grid,
+  .products-grid,
+  .tools-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 24px !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  .equipment-grid,
+  .products-grid,
+  .tools-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+.product-card,
+.tool-card {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.product-card img,
+.tool-card img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Filters bar */
+.filters-bar {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  padding: 14px !important;
+  margin: 16px 12px !important;
+  width: auto !important;
+  max-width: none !important;
+}
+
+.filters-bar input,
+.filters-bar select,
+.filters-bar button {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+@media (min-width: 600px) {
+  .filters-bar {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center;
+    margin: 20px auto !important;
+    max-width: 1100px !important;
+    width: auto !important;
+  }
+  .filters-bar input,
+  .filters-bar select,
+  .filters-bar button {
+    width: auto !important;
+  }
+  .filters-bar input[type="search"] {
+    flex: 1 1 240px !important;
+    min-width: 200px !important;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 7. CHECKOUT PAGE — single column on mobile
+ * ------------------------------------------------------------ */
+.checkout-formal {
+  padding: 16px 8px !important;
+}
+
+.checkout-container {
+  padding: 16px 8px !important;
+  max-width: 100% !important;
+}
+
+.checkout-header {
+  padding: 24px 16px !important;
+}
+
+.checkout-header h1 {
+  font-size: clamp(1.4rem, 5vw, 2.2rem) !important;
+}
+
+.checkout-header p {
+  font-size: clamp(0.9rem, 2.5vw, 1.15rem) !important;
+}
+
+.checkout-header-icon {
+  width: 56px !important;
+  height: 56px !important;
+  font-size: 1.6rem !important;
+  margin-bottom: 12px !important;
+}
+
+.checkout-content {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 20px !important;
+  padding: 16px !important;
+}
+
+@media (min-width: 1024px) {
+  .checkout-formal {
+    padding: 40px 20px !important;
+  }
+  .checkout-container {
+    padding: 30px 20px !important;
+  }
+  .checkout-header {
+    padding: 40px !important;
+  }
+  .checkout-header-icon {
+    width: 80px !important;
+    height: 80px !important;
+    font-size: 2.5rem !important;
+  }
+  .checkout-content {
+    grid-template-columns: 1fr 380px !important;
+    gap: 32px !important;
+    padding: 36px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .checkout-content {
+    gap: 40px !important;
+    padding: 50px !important;
+  }
+}
+
+.order-summary-panel {
+  padding: 18px !important;
+}
+
+@media (min-width: 768px) {
+  .order-summary-panel {
+    padding: 28px !important;
+  }
+}
+
+.order-item {
+  flex-direction: column !important;
+  gap: 12px !important;
+  text-align: center;
+}
+
+@media (min-width: 600px) {
+  .order-item {
+    flex-direction: row !important;
+    text-align: start;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 8. FORMS — registration, login, KYC etc.
+ * ------------------------------------------------------------ */
+.auth-card,
+.kyc-card,
+.form-card,
+.register-card,
+.login-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 16px 12px !important;
+  padding: 20px !important;
+  border-radius: 16px !important;
+  box-sizing: border-box;
+}
+
+@media (min-width: 600px) {
+  .auth-card,
+  .kyc-card,
+  .form-card,
+  .register-card,
+  .login-card {
+    max-width: 480px !important;
+    margin: 24px auto !important;
+    padding: 28px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .auth-card,
+  .kyc-card,
+  .form-card,
+  .register-card,
+  .login-card {
+    max-width: 540px !important;
+    padding: 36px !important;
+  }
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Generic form rows: stack inputs vertically by default */
+.form-row,
+.field-row,
+.input-row {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+@media (min-width: 600px) {
+  .form-row,
+  .field-row,
+  .input-row {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 9. DASHBOARDS (admin / owner) — sidebar and main area
+ * ------------------------------------------------------------ */
+.dashboard-layout,
+.dashboard-grid,
+.admin-layout {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 16px !important;
+  padding: 12px !important;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-layout,
+  .dashboard-grid,
+  .admin-layout {
+    grid-template-columns: 240px 1fr !important;
+    gap: 24px !important;
+    padding: 24px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .dashboard-layout,
+  .dashboard-grid,
+  .admin-layout {
+    grid-template-columns: 280px 1fr !important;
+  }
+}
+
+.dashboard-sidebar,
+.admin-sidebar {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Dashboard stat cards / kpi cards */
+.kpi-grid,
+.dashboard-kpis,
+.dashboard-stats {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 12px !important;
+}
+
+@media (min-width: 480px) {
+  .kpi-grid,
+  .dashboard-kpis,
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .kpi-grid,
+  .dashboard-kpis,
+  .dashboard-stats {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 16px !important;
+  }
+}
+
+/* Tables in dashboards: scroll horizontally, never break */
+.table-wrap,
+.table-responsive,
+.responsive-table {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+}
+
+table {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  table {
+    font-size: 13px;
+  }
+  table th,
+  table td {
+    padding: 8px 10px !important;
+    white-space: nowrap;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 10. MODALS — full-screen friendly on mobile
+ * ------------------------------------------------------------ */
+.modal,
+.modal-content,
+.dialog {
+  width: calc(100% - 24px) !important;
+  max-width: 100% !important;
+  max-height: 90vh !important;
+  margin: 12px !important;
+  border-radius: 16px !important;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+@media (min-width: 600px) {
+  .modal,
+  .modal-content,
+  .dialog {
+    width: auto !important;
+    max-width: 540px !important;
+    margin: auto !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .modal,
+  .modal-content,
+  .dialog {
+    max-width: 640px !important;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 11. FLOATING BUTTONS — comfortable on mobile, avoid overlap
+ * ------------------------------------------------------------ */
+.ai-floating-button,
+.basket-floating-button {
+  width: 52px !important;
+  height: 52px !important;
+  font-size: 24px !important;
+  bottom: 16px !important;
+}
+
+.ai-floating-button {
+  right: 16px !important;
+}
+
+.basket-floating-button {
+  left: 16px !important;
+}
+
+@media (min-width: 768px) {
+  .ai-floating-button,
+  .basket-floating-button {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 28px !important;
+    bottom: 30px !important;
+  }
+  .ai-floating-button {
+    right: 30px !important;
+  }
+  .basket-floating-button {
+    left: 30px !important;
+  }
+}
+
+/* Avoid floating buttons covering content */
+.main-content,
+main {
+  padding-bottom: 80px;
+}
+
+@media (min-width: 1024px) {
+  .main-content,
+  main {
+    padding-bottom: 0;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 12. STORIES STRIP — tight horizontal scroll on mobile
+ * ------------------------------------------------------------ */
+.stories-rail {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 4px;
+  scrollbar-width: thin;
+}
+
+.stories-rail::-webkit-scrollbar {
+  height: 6px;
+}
+
+.stories-rail::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+}
+
+.stories-rail > * {
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------
+ * 13. BUTTONS — consistent sizing
+ * ------------------------------------------------------------ */
+.hs-btn {
+  font-size: clamp(0.85rem, 2.4vw, 1rem) !important;
+  padding: 10px 18px !important;
+  white-space: nowrap;
+}
+
+.hs-btn--lg {
+  font-size: clamp(0.95rem, 2.6vw, 1.1rem) !important;
+  padding: 12px 24px !important;
+}
+
+.hs-btn--sm {
+  font-size: clamp(0.75rem, 2vw, 0.85rem) !important;
+  padding: 7px 14px !important;
+}
+
+@media (min-width: 768px) {
+  .hs-btn {
+    padding: 11px 22px !important;
+  }
+  .hs-btn--lg {
+    padding: 14px 28px !important;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 14. UTILITY FIXES — cap content widths, prevent overflows
+ * ------------------------------------------------------------ */
+main,
+.main-content,
+section,
+header,
+footer {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+pre,
+code {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+dt,
+dd,
+span {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Long URLs / emails should wrap */
+a {
+  word-break: break-word;
+}
+
+/* ------------------------------------------------------------
+ * 15. ULTRA-WIDE (≥ 1920px) — keep content readable, not stretched
+ * ------------------------------------------------------------ */
+@media (min-width: 1920px) {
+  body {
+    font-size: 16px;
+  }
+  .hero-title {
+    font-size: 4rem !important;
+  }
+  .hero-description {
+    font-size: 1.25rem !important;
+  }
+  .features-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    max-width: 1500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 16. TOUCH OPTIMIZATIONS (pointer: coarse → finger input)
+ * ------------------------------------------------------------ */
+@media (pointer: coarse) {
+  .hs-btn,
+  button,
+  a.button,
+  .nav-item {
+    min-height: 44px;
+  }
+  /* Disable hover transforms that feel stuck on touch */
+  .hs-btn:hover,
+  .nav-item:hover,
+  .feature-card:hover {
+    transform: none !important;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 17. ACCESSIBILITY — focus visible, reduced motion
+ * ------------------------------------------------------------ */
+:focus-visible {
+  outline: 2px solid #6ab04c;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------
+ * 18. LANDSCAPE PHONES — minor tweaks
+ * ------------------------------------------------------------ */
+@media (max-height: 480px) and (orientation: landscape) {
+  .hero-section {
+    min-height: auto !important;
+    padding: 20px 0 !important;
+  }
+  .header-capsule .section.center {
+    padding-top: 60px;
+  }
+}
+
+/* ------------------------------------------------------------
+ * END OF RESPONSIVE LAYER
+ * ------------------------------------------------------------ */

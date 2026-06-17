@@ -1,0 +1,1381 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تأجير المعدات - حرث</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="design-system.css" />
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+      /* Inline styles specific to this page. Kept scoped to avoid touching style.css. */
+      .filters-bar {
+        max-width: 1100px;
+        margin: 20px auto;
+        padding: 14px 18px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .filters-bar input,
+      .filters-bar select {
+        padding: 8px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        background: #ffffff;
+        color: #1a1a1a;
+        font-family: inherit;
+        appearance: auto;
+        -webkit-appearance: auto;
+      }
+      .filters-bar select option {
+        background: #ffffff;
+        color: #1a1a1a;
+      }
+      .filters-bar select option:checked {
+        background: #e8f5e0;
+        color: #1a1a1a;
+      }
+      .filters-bar input[type="search"] {
+        flex: 1;
+        min-width: 200px;
+      }
+      #load-state {
+        text-align: center;
+        padding: 40px;
+        font-size: 18px;
+      }
+      .loading-spinner {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #6ab04c;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Rental booking modal */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+      .modal-backdrop.open {
+        display: flex;
+      }
+      .modal {
+        background: #fff;
+        color: #1a1a1a;
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 440px;
+        width: 92%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal h3 {
+        margin: 0 0 12px;
+        color: #2d5016;
+      }
+      .modal label {
+        display: block;
+        margin: 10px 0 4px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .modal input,
+      .modal textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-family: inherit;
+        box-sizing: border-box;
+      }
+      .modal textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .modal-actions button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: 700;
+      }
+      .btn-primary-green {
+        background: #6ab04c;
+        color: #fff;
+      }
+      .btn-secondary-grey {
+        background: #95a5a6;
+        color: #fff;
+      }
+      .availability-hint {
+        font-size: 13px;
+        margin-top: 8px;
+        min-height: 20px;
+      }
+      .availability-hint.ok {
+        color: #27ae60;
+      }
+      .availability-hint.bad {
+        color: #c0392b;
+      }
+      .total-preview {
+        background: #f0f8e8;
+        border: 1px solid #6ab04c;
+        border-radius: 8px;
+        padding: 10px;
+        margin-top: 12px;
+        font-weight: 700;
+        color: #2d5016;
+      }
+
+      #toast {
+        position: fixed;
+        bottom: 24px;
+        inset-inline-start: 50%;
+        transform: translateX(-50%);
+        background: #2d5016;
+        color: #fff;
+        padding: 12px 22px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        z-index: 2000;
+        opacity: 0;
+        transition: opacity 0.25s;
+        pointer-events: none;
+        max-width: 90vw;
+      }
+      #toast.show {
+        opacity: 1;
+      }
+      #toast.error {
+        background: #c0392b;
+      }
+
+      /* Skeleton Grid for Loading State */
+      .skeleton-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--sp-6);
+        padding: var(--sp-6) 0;
+      }
+
+      /* Enhanced Equipment Grid */
+      .equipment-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--sp-6);
+        padding: var(--sp-6) 0;
+        transition: all var(--dur-fast);
+      }
+
+      /* Equipment Card Enhancements */
+      .equipment-card {
+        background: var(--surface-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: var(--border-width) solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--r-xl);
+        box-shadow: var(--shadow-glass);
+        transition: all var(--dur-fast);
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .equipment-card:hover {
+        background: var(--surface-glass-hover);
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .equipment-card .price-tag {
+        position: absolute;
+        top: var(--sp-3);
+        right: var(--sp-3);
+        background: var(--color-accent-500);
+        color: #1a1a1a;
+        padding: var(--sp-2) var(--sp-3);
+        border-radius: var(--r-pill);
+        font-size: var(--fs-xs);
+        font-weight: var(--fw-bold);
+        z-index: 10;
+        box-shadow: var(--shadow-md);
+      }
+
+      .equipment-card .equip-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: var(--color-neutral-700);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-soft);
+      }
+
+      .equipment-card .equip-details {
+        padding: var(--sp-4);
+      }
+
+      .equipment-card .equip-details h3 {
+        color: var(--color-text);
+        font-size: var(--fs-lg);
+        font-weight: var(--fw-bold);
+        margin: 0 0 var(--sp-2);
+        line-height: var(--lh-tight);
+      }
+
+      .equipment-card .equip-details p {
+        color: var(--color-text-muted);
+        font-size: var(--fs-sm);
+        line-height: var(--lh-base);
+        margin: 0 0 var(--sp-3);
+      }
+
+      .equipment-card .equip-actions {
+        display: flex;
+        gap: var(--sp-2);
+        margin-top: var(--sp-4);
+      }
+
+      /* ===== Trust badges (3) ====================================== */
+      /* A small horizontal row of icon+label chips. Backgrounds use a
+         per-badge accent color via the --badge-color custom property so
+         we don't need a separate CSS class per badge type. */
+      .trust-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 6px 0 8px;
+      }
+      .trust-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        font-size: 11px;
+        color: #fff;
+        white-space: nowrap;
+      }
+      .trust-badge i {
+        font-size: 11px;
+      }
+      .trust-stats {
+        font-size: 11px;
+        color: #d3e0c4;
+        margin: 4px 0 0;
+        opacity: 0.85;
+      }
+      .deposit-hint {
+        margin-top: 8px;
+        padding: 6px 10px;
+        background: rgba(241, 196, 15, 0.15);
+        border: 1px solid rgba(241, 196, 15, 0.45);
+        border-radius: 8px;
+        font-size: 12px;
+        color: #ffeaa7;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* Filters Enhancement */
+      .filters-bar {
+        background: var(--surface-2);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: var(--border-width) solid var(--border-subtle);
+        border-radius: var(--r-xl);
+        padding: var(--sp-4);
+        margin-bottom: var(--sp-6);
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        align-items: center;
+      }
+
+      .filters-bar select,
+      .filters-bar input {
+        min-width: 120px;
+        flex: 1;
+      }
+
+      .filters-bar button {
+        white-space: nowrap;
+      }
+
+      /* Pagination Enhancement */
+      .pagination-bar {
+        display: flex;
+        gap: var(--sp-2);
+        justify-content: center;
+        padding: var(--sp-6) 0;
+        flex-wrap: wrap;
+      }
+
+      .pagination-bar button {
+        min-width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--surface-2);
+        color: var(--color-text-muted);
+        border: var(--border-width) solid var(--border-subtle);
+        border-radius: var(--r-md);
+        font-family: inherit;
+        font-size: var(--fs-sm);
+        font-weight: var(--fw-medium);
+        cursor: pointer;
+        transition: all var(--dur-fast);
+      }
+
+      .pagination-bar button:hover:not(:disabled) {
+        background: var(--surface-3);
+        color: var(--color-text);
+        border-color: var(--border-strong);
+      }
+
+      .pagination-bar button.active {
+        background: var(--color-brand-500);
+        color: white;
+        border-color: var(--color-brand-600);
+      }
+
+      .pagination-bar button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Modal Enhancements */
+      .modal-backdrop {
+        background: var(--surface-overlay-strong);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+      .modal {
+        background: var(--surface-modal);
+        border: var(--border-width) solid var(--border-subtle);
+        box-shadow: var(--shadow-2xl);
+      }
+
+      .modal h3 {
+        color: var(--color-text);
+        font-size: var(--fs-lg);
+        font-weight: var(--fw-bold);
+        margin: 0 0 var(--sp-4);
+      }
+
+      .modal label {
+        color: var(--color-text-muted);
+        font-size: var(--fs-sm);
+        font-weight: var(--fw-medium);
+        display: block;
+        margin: var(--sp-3) 0 var(--sp-2);
+      }
+
+      .modal input,
+      .modal select,
+      .modal textarea {
+        width: 100%;
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--surface-2);
+        color: var(--color-text);
+        border: var(--border-width) solid var(--border-soft);
+        border-radius: var(--r-sm);
+        font-family: inherit;
+        font-size: var(--fs-sm);
+        transition: border-color var(--dur-fast);
+        box-sizing: border-box;
+      }
+
+      .modal input:focus,
+      .modal select:focus,
+      .modal textarea:focus {
+        outline: none;
+        border-color: var(--color-brand-500);
+        box-shadow: 0 0 0 3px rgba(106, 176, 76, 0.1);
+      }
+
+      .modal textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: var(--sp-3);
+        margin-top: var(--sp-6);
+      }
+
+      .modal-actions button {
+        flex: 1;
+        padding: var(--sp-3) var(--sp-4);
+        border: none;
+        border-radius: var(--r-md);
+        cursor: pointer;
+        font-family: inherit;
+        font-size: var(--fs-sm);
+        font-weight: var(--fw-medium);
+        transition: all var(--dur-fast);
+      }
+
+      .btn-primary-green {
+        background: var(--color-brand-500);
+        color: #fff;
+      }
+
+      .btn-primary-green:hover {
+        background: var(--color-brand-600);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-secondary-grey {
+        background: var(--color-neutral-600);
+        color: #fff;
+      }
+
+      .btn-secondary-grey:hover {
+        background: var(--color-neutral-700);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+      }
+
+      /* Utility Classes */
+      .availability-hint {
+        font-size: var(--fs-xs);
+        margin-top: var(--sp-2);
+        min-height: 20px;
+        line-height: var(--lh-base);
+      }
+
+      .availability-hint.ok {
+        color: var(--color-success-500);
+      }
+
+      .availability-hint.bad {
+        color: var(--color-danger-500);
+      }
+
+      .total-preview {
+        background: rgba(106, 176, 76, 0.1);
+        border: var(--border-width) solid var(--color-brand-500);
+        border-radius: var(--r-md);
+        padding: var(--sp-3);
+        margin-top: var(--sp-3);
+        font-weight: var(--fw-bold);
+        color: var(--color-brand-300);
+      }
+
+      /* Clear filters function */
+      .hs-btn--clear-filters {
+        background: transparent;
+        color: var(--color-text-muted);
+        border: var(--border-width) solid var(--border-subtle);
+      }
+
+      .hs-btn--clear-filters:hover {
+        background: var(--surface-2);
+        color: var(--color-text);
+        border-color: var(--border-strong);
+      }
+
+      .pagination-bar {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        padding: 20px;
+        flex-wrap: wrap;
+      }
+      .pagination-bar button {
+        padding: 6px 14px;
+        border: 1px solid #6ab04c;
+        background: rgba(255, 255, 255, 0.9);
+        color: #2d5016;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .pagination-bar button.active {
+        background: #6ab04c;
+        color: #fff;
+      }
+      .pagination-bar button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    </style>
+  
+    <!-- HARTH-RESPONSIVE-CSS -->
+    <link rel="stylesheet" href="responsive.css" />
+  </head>
+
+  <body>
+    <header class="header-container">
+      <div class="header-capsule">
+        <div class="section right">
+          <div class="site-brand">
+            <img src="شعار حرث.jpeg" alt="Logo" />
+            <h1>حــرث</h1>
+          </div>
+        </div>
+
+        <nav class="section center">
+          <ul class="nav-links">
+            <li><a href="track.html" class="nav-item">تتبع</a></li>
+            <li><a href="delivery.html" class="nav-item">توصيل</a></li>
+            <li><a href="basket.html" class="nav-item">بيع معدات</a></li>
+            <li><a href="tools.html" class="nav-item">تأجير معدات</a></li>
+            <li><a href="index.html" class="nav-item">الرئيسية</a></li>
+          </ul>
+        </nav>
+
+        <div class="section left" id="auth-header">
+          <a href="register.html" class="hs-btn hs-btn--ghost hs-btn--sm" id="login-link">تسجيل دخول</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Top-of-tools banner slot. Populated from
+           /public/banners?placement=tools_top. Hidden if nothing
+           returns. Same component as the homepage strip but inline. -->
+      <div id="tools-top-banner" class="container" style="display:none;margin:20px auto 0"></div>
+
+      <div style="text-align: center; margin-top: 30px">
+        <h2 style="font-size: 32px">معداتك للإيجار</h2>
+        <p>تصفح المعدات المتوفرة واستأجرها مباشرة من أصحابها</p>
+      </div>
+
+      <div class="filters-bar">
+        <input 
+          type="search" 
+          id="filter-search" 
+          class="hs-input" 
+          placeholder="ابحث عن معدة..." 
+          title="البحث في أسماء ووصف المعدات"
+        />
+        
+        <select id="filter-category" class="hs-select" title="فئة المعدات">
+          <option value="">كل الفئات</option>
+          <option value="tractor">الجرارات</option>
+          <option value="harvester">معدات الحصاد</option>
+          <option value="sprayer">المرشات والري</option>
+          <option value="tools">الأدوات اليدوية</option>
+          <option value="seeds">البذور</option>
+          <option value="fertilizer">الأسمدة</option>
+          <option value="pesticide">المبيدات</option>
+          <option value="other">أخرى</option>
+        </select>
+        
+        <select id="filter-governorate" class="hs-select" title="المحافظة">
+          <option value="">كل المحافظات</option>
+          <option value="muscat">مسقط</option>
+          <option value="dhofar">ظفار</option>
+          <option value="musandam">مسندم</option>
+          <option value="buraimi">البريمي</option>
+          <option value="dakhiliyah">الداخلية</option>
+          <option value="north_batinah">شمال الباطنة</option>
+          <option value="south_batinah">جنوب الباطنة</option>
+          <option value="south_sharqiyah">جنوب الشرقية</option>
+          <option value="north_sharqiyah">شمال الشرقية</option>
+          <option value="dhahirah">الظاهرة</option>
+          <option value="wusta">الوسطى</option>
+        </select>
+        
+        <select id="filter-sort" class="hs-select" title="ترتيب النتائج">
+          <option value="newest">الأحدث أولاً</option>
+          <option value="oldest">الأقدم أولاً</option>
+          <option value="price_low">السعر (أقل إلى أعلى)</option>
+          <option value="price_high">السعر (أعلى إلى أقل)</option>
+          <option value="rating">الأعلى تقييماً</option>
+        </select>
+        
+        <button
+          type="button"
+          class="hs-btn hs-btn--ghost"
+          id="filter-favorites-toggle"
+          aria-pressed="false"
+          title="إظهار المفضلة فقط">
+          <i class="far fa-heart"></i>
+          <span>المفضلة فقط</span>
+        </button>
+      </div>
+
+      <div id="load-state" class="skeleton-grid">
+        <div class="hs-card">
+          <div class="skeleton skeleton--card"></div>
+          <div class="card__body">
+            <div class="skeleton skeleton--title"></div>
+            <div class="skeleton skeleton--text"></div>
+            <div class="skeleton skeleton--text" style="width: 60%;"></div>
+            <div style="margin-top: var(--sp-4); display: flex; gap: var(--sp-2);">
+              <div class="skeleton skeleton--button" style="flex: 1;"></div>
+              <div class="skeleton skeleton--button" style="width: 3rem;"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="hs-card">
+          <div class="skeleton skeleton--card"></div>
+          <div class="card__body">
+            <div class="skeleton skeleton--title"></div>
+            <div class="skeleton skeleton--text"></div>
+            <div class="skeleton skeleton--text" style="width: 80%;"></div>
+            <div style="margin-top: var(--sp-4); display: flex; gap: var(--sp-2);">
+              <div class="skeleton skeleton--button" style="flex: 1;"></div>
+              <div class="skeleton skeleton--button" style="width: 3rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hs-card">
+          <div class="skeleton skeleton--card"></div>
+          <div class="card__body">
+            <div class="skeleton skeleton--title"></div>
+            <div class="skeleton skeleton--text"></div>
+            <div class="skeleton skeleton--text" style="width: 70%;"></div>
+            <div style="margin-top: var(--sp-4); display: flex; gap: var(--sp-2);">
+              <div class="skeleton skeleton--button" style="flex: 1;"></div>
+              <div class="skeleton skeleton--button" style="width: 3rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hs-card">
+          <div class="skeleton skeleton--card"></div>
+          <div class="card__body">
+            <div class="skeleton skeleton--title"></div>
+            <div class="skeleton skeleton--text"></div>
+            <div class="skeleton skeleton--text" style="width: 65%;"></div>
+            <div style="margin-top: var(--sp-4); display: flex; gap: var(--sp-2);">
+              <div class="skeleton skeleton--button" style="flex: 1;"></div>
+              <div class="skeleton skeleton--button" style="width: 3rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hs-card">
+          <div class="skeleton skeleton--card"></div>
+          <div class="card__body">
+            <div class="skeleton skeleton--title"></div>
+            <div class="skeleton skeleton--text"></div>
+            <div class="skeleton skeleton--text" style="width: 75%;"></div>
+            <div style="margin-top: var(--sp-4); display: flex; gap: var(--sp-2);">
+              <div class="skeleton skeleton--button" style="flex: 1;"></div>
+              <div class="skeleton skeleton--button" style="width: 3rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hs-card">
+          <div class="skeleton skeleton--card"></div>
+          <div class="card__body">
+            <div class="skeleton skeleton--title"></div>
+            <div class="skeleton skeleton--text"></div>
+            <div class="skeleton skeleton--text" style="width: 60%;"></div>
+            <div style="margin-top: var(--sp-4); display: flex; gap: var(--sp-2);">
+              <div class="skeleton skeleton--button" style="flex: 1;"></div>
+              <div class="skeleton skeleton--button" style="width: 3rem;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section
+        class="equipment-grid"
+        id="equip-grid"
+        style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); display: none"
+      ></section>
+
+      <div id="empty-state" class="hs-empty" style="display: none">
+        <div class="hs-empty__art">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 20L24 14L36 20V34C36 35.1046 35.1046 36 34 36H14C12.8954 36 12 35.1046 12 34V20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M24 14V36" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M24 8V14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20 8H28" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="30" cy="24" r="2" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3 class="hs-empty__title">لا توجد معدات متاحة</h3>
+        <p class="hs-empty__desc">لم نعثر على معدات متاحة للإيجار بالمعايير المحددة. جرب تعديل المرشحات أو ابحث عن شيء آخر.</p>
+        <div class="hs-empty__cta">
+          <button type="button" class="hs-btn hs-btn--secondary" onclick="clearFilters()">
+            <i class="fas fa-filter"></i>
+            مسح المرشحات
+          </button>
+        </div>
+      </div>
+
+      <div id="pagination" class="pagination-bar"></div>
+    </main>
+
+    <!-- Rental booking modal -->
+    <div class="modal-backdrop" id="modal-backdrop">
+      <div class="modal" role="dialog" aria-labelledby="modal-title">
+        <h3 id="modal-title">حجز إيجار</h3>
+        <p id="modal-equipment-name" style="color: #666; font-size: 14px; margin: 0 0 8px"></p>
+        <p id="modal-daily-price" style="color: #6ab04c; font-weight: 700; margin: 0"></p>
+
+        <!-- Deposit (تأمين) notice — only shown when the listing has a
+             non-zero deposit_amount. Inserted by JS in openBookingModal(). -->
+        <div
+          id="modal-deposit-block"
+          style="
+            display: none;
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: rgba(241, 196, 15, 0.12);
+            border: 1px solid rgba(241, 196, 15, 0.5);
+            border-radius: 8px;
+            color: #5a4500;
+            font-size: 13px;
+            line-height: 1.5;
+          "
+        ></div>
+
+        <label for="rental-start">تاريخ البداية</label>
+        <input type="date" id="rental-start" />
+
+        <label for="rental-end">تاريخ النهاية</label>
+        <input type="date" id="rental-end" />
+
+        <div id="availability-hint" class="availability-hint"></div>
+
+        <label for="rental-notes">ملاحظات (اختياري)</label>
+        <textarea id="rental-notes" maxlength="2000" placeholder="أي ملاحظات للمالك..."></textarea>
+
+        <div id="total-preview" class="total-preview" style="display: none"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-primary-green" id="confirm-rental">
+            <i class="fas fa-shopping-cart"></i> إضافة للسلة
+          </button>
+          <button type="button" class="btn-secondary-grey" id="cancel-rental">
+            إلغاء
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="team-logo-container">
+        <img src="شعار حرث.jpeg" class="team-img" />
+      </div>
+      <div class="social-links">
+        <a
+          href="https://www.instagram.com/harth_oman?igsh=ZnpodHd4bTdieXBq&utm_source=qr"
+          class="insta"
+        ><i class="fab fa-instagram"></i></a>
+        <a href="77556094" class="wa"><i class="fab fa-whatsapp"></i></a>
+        <a href="#" class="yt"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 جميع الحقوق محفوظة لفريق حرث</p>
+        <p class="dev-name">(Development by: Alkhalil Alhashmi)</p>
+      </div>
+    </footer>
+
+    <div id="toast"></div>
+
+    <a href="checkout.html" class="basket-floating-button" title="سلة المبيعات">🛒</a>
+
+    <script src="design-system.js"></script>
+    <script src="equipment-pdf.js"></script>
+    <script src="unified-nav.js"></script>
+    <script src="script.js"></script>
+    <script>
+      // =================================================================
+      // tools.html — لِسّة الـ rental listings مع حجز من API حقيقي.
+      // Uses apiFetch() from script.js (loaded above).
+      // =================================================================
+      (function () {
+        "use strict";
+
+        const PAGE_SIZE = 12;
+        let currentPage = 1;
+        let activeEquipment = null; // item currently in the modal
+        let availabilityDebounce = null;
+        let favoritesOnly = false; // favorites-filter toggle
+
+        const $ = (s) => document.querySelector(s);
+        const $$ = (s) => document.querySelectorAll(s);
+
+        function showToast(msg, isError = false) {
+          const t = $("#toast");
+          t.textContent = msg;
+          t.classList.toggle("error", isError);
+          t.classList.add("show");
+          setTimeout(() => t.classList.remove("show"), 3200);
+        }
+
+        function escapeHtml(s) {
+          if (s == null) return "";
+          return String(s).replace(/[&<>"']/g, (c) => ({
+            "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+          })[c]);
+        }
+
+        function categoryLabel(c) {
+          return ({
+            tractor: "جرار", sprayer: "مرشة", harvester: "حصادة",
+            tools: "أدوات", seeds: "بذور", fertilizer: "أسمدة",
+            pesticide: "مبيدات", other: "أخرى",
+          })[c] || c;
+        }
+
+        // ---------- Clear all filters ----------
+        function clearFilters() {
+          $("#filter-category").value = "";
+          $("#filter-search").value = "";
+          const gov = $("#filter-governorate");
+          if (gov) gov.value = "";
+          const sort = $("#filter-sort");
+          if (sort) sort.value = "newest";
+          
+          // Reset favorites toggle
+          favoritesOnly = false;
+          const toggle = $("#filter-favorites-toggle");
+          if (toggle) {
+            toggle.setAttribute("aria-pressed", "false");
+            toggle.style.background = "transparent";
+            toggle.style.borderColor = "rgba(255,255,255,0.2)";
+          }
+          
+          // Reset to first page and reload
+          currentPage = 1;
+          loadEquipment();
+          
+          // Show success toast
+          showToast("تم مسح جميع المرشحات ✓");
+        }
+
+        // ---------- Load and render equipment list ----------
+        async function loadEquipment() {
+          $("#load-state").style.display = "block";
+          $("#equip-grid").style.display = "none";
+          $("#empty-state").style.display = "none";
+          $("#pagination").innerHTML = "";
+
+          const cat = $("#filter-category").value;
+          const gov = $("#filter-governorate") ? $("#filter-governorate").value : "";
+          const search = $("#filter-search").value.trim();
+
+          // Favorites-only mode hits /wishlist instead of /equipment.
+          // Only authenticated users can use this filter.
+          if (favoritesOnly) {
+            if (!getToken || !getToken()) {
+              $("#load-state").style.display = "none";
+              $("#empty-state").style.display = "block";
+              $("#empty-state").innerHTML = `
+                <i class="far fa-heart" style="font-size:64px;color:#6ab04c;display:block;margin-bottom:12px"></i>
+                <h3>سجّل دخول لرؤية مفضلتك</h3>
+                <p style="margin-top:8px"><a href="register.html" style="color:#6ab04c">تسجيل الدخول</a></p>
+              `;
+              return;
+            }
+            const params = new URLSearchParams({
+              page: String(currentPage),
+              limit: String(PAGE_SIZE),
+              listing_type: "rent",
+            });
+            if (cat) params.set("category", cat);
+            if (search) params.set("search", search);
+
+            try {
+              const res = await apiFetch(`/wishlist?${params}`);
+              if (!res || !res.success) {
+                throw new Error((res && res.error && res.error.message) || "Failed to load");
+              }
+              renderGrid(res.items);
+              renderPagination(res.pagination);
+            } catch (err) {
+              $("#load-state").innerHTML = `<p style="color:#ffb3b3">خطأ: ${escapeHtml(err.message)}</p>`;
+              showToast(err.message || "خطأ", true);
+            }
+            return;
+          }
+
+          // Normal mode
+          const params = new URLSearchParams({
+            listing_type: "rent",
+            page: String(currentPage),
+            limit: String(PAGE_SIZE),
+            sort: $("#filter-sort").value,
+          });
+          if (cat) params.set("category", cat);
+          if (gov) params.set("governorate", gov);
+          if (search) params.set("search", search);
+
+          try {
+            const res = await apiFetch(`/equipment?${params}`);
+            if (!res || !res.success) {
+              throw new Error((res && res.error && res.error.message) || "Failed to load");
+            }
+            renderGrid(res.items);
+            renderPagination(res.pagination);
+          } catch (err) {
+            $("#load-state").innerHTML = `<p style="color:#ffb3b3">خطأ في التحميل: ${escapeHtml(err.message)}</p>`;
+            showToast(err.message || "خطأ في التحميل", true);
+          }
+        }
+
+        function renderGrid(items) {
+          $("#load-state").style.display = "none";
+          const grid = $("#equip-grid");
+          grid.innerHTML = "";
+
+          if (!items.length) {
+            $("#empty-state").style.display = "block";
+            return;
+          }
+
+          for (const eq of items) {
+            const img = eq.primary_image_url || (Array.isArray(eq.images) && eq.images[0]) || "";
+            const loc = eq.location || {};
+            const locStr = (loc.city ? loc.city : "") + (loc.street ? " — " + loc.street : "");
+
+            // Trust badges. The list endpoint attaches a compact trust object
+            // per item (badges + a few stats). We render at most three badges
+            // on the card so it stays readable on mobile; the rest live on
+            // the future farmer profile page.
+            const trust = eq.trust || null;
+            const badgesHtml = renderTrustBadges(trust);
+            const trustLineHtml = renderTrustLine(trust);
+
+            // Deposit hint — only render if the listing actually has one.
+            // Renters care a LOT about whether a deposit applies before they
+            // tap "حجز", so it lives on the card itself, not just in the
+            // booking modal.
+            const dep = Number(eq.deposit_amount || 0);
+            const depHtml = dep > 0
+              ? `<div class="deposit-hint" title="يُحجز ويُعاد عند إرجاع المعدة سليمة">
+                   <i class="fas fa-shield-alt" style="color:#f1c40f"></i>
+                   تأمين ${escapeHtml(dep.toFixed(2))} ر.ع
+                 </div>`
+              : "";
+
+            const card = document.createElement("div");
+            card.className = "equipment-card";
+            card.innerHTML = `
+              <div class="price-tag">${escapeHtml(String(eq.daily_price))} ر.ع / يوم</div>
+              ${img
+                ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(eq.name)}" class="equip-img" />`
+                : `<div class="equip-img" style="background:#333;display:flex;align-items:center;justify-content:center"><i class="fas fa-image" style="font-size:40px;color:#888"></i></div>`}
+              <div class="equip-details">
+                <h3>${escapeHtml(eq.name)}</h3>
+                ${badgesHtml}
+                <p style="font-size:14px;color:#f1f2f6">
+                  ${escapeHtml((eq.description || "").slice(0, 120))}${(eq.description || "").length > 120 ? "..." : ""}
+                </p>
+                <div class="location-badge">
+                  <i class="fas fa-tag" style="color:#6ab04c"></i> ${escapeHtml(categoryLabel(eq.category))}
+                  ${locStr ? `&nbsp;·&nbsp;<i class="fas fa-map-marker-alt" style="color:#6ab04c"></i> ${escapeHtml(locStr)}` : ""}
+                </div>
+                <div class="owner-info">
+                  <i class="fas fa-star" style="color:#f1c40f"></i>
+                  <span>${Number(eq.avg_rating || 0).toFixed(1)} (${eq.ratings_count || 0} تقييم)</span>
+                </div>
+                ${trustLineHtml}
+                ${depHtml}
+              </div>
+              <div class="contact-buttons">
+                <button class="btn-order book-btn" data-id="${eq.id}">
+                  <i class="fas fa-calendar-check"></i> حجز
+                </button>
+                <button class="btn-pdf-datasheet pdf-btn" title="عرض الملف الفني PDF" style="background:linear-gradient(135deg,#8e44ad,#9b59b6);color:#fff;border:none;padding:9px 14px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:.15s">
+                  <i class="fas fa-file-pdf"></i> الملف الفني
+                </button>
+              </div>
+            `;
+            grid.appendChild(card);
+
+            card.querySelector(".book-btn").addEventListener("click", () => openBookingModal(eq));
+            card.querySelector(".pdf-btn").addEventListener("click", () => {
+              if (window.generateEquipmentPDF) generateEquipmentPDF(eq);
+            });
+          }
+
+          grid.style.display = "grid";
+        }
+
+        // Render the trust-badge row for a card. Returns "" if no badges
+        // apply, so we don't waste vertical space on un-vetted listings.
+        function renderTrustBadges(trust) {
+          if (!trust || !trust.badges) return "";
+          const b = trust.badges;
+          const items = [];
+          if (b.verified) {
+            items.push(badge("check-circle", "#6ab04c", "موثَّق"));
+          }
+          if (b.top_seller) {
+            items.push(badge("star", "#f1c40f", "بائع مميَّز"));
+          }
+          if (b.fast_shipping) {
+            items.push(badge("truck-fast", "#3498db", "شحن سريع"));
+          }
+          if (b.quick_responder) {
+            items.push(badge("bolt", "#e67e22", "ردّ سريع"));
+          }
+          if (b.is_pro && !b.verified) {
+            // Show PRO only if not already showing موثَّق — keep the row
+            // tidy. Verified > pro in the priority order.
+            items.push(badge("crown", "#9b59b6", "PRO"));
+          }
+          if (!items.length) return "";
+          return `<div class="trust-badges">${items.join("")}</div>`;
+        }
+
+        function badge(icon, color, label) {
+          return `<span class="trust-badge" style="--badge-color:${color}">
+            <i class="fas fa-${icon}" style="color:${color}"></i>
+            ${escapeHtml(label)}
+          </span>`;
+        }
+
+        // The smaller "stats" line under the badges. Renders only when we
+        // have meaningful numbers — newly-onboarded farmers don't see noise.
+        function renderTrustLine(trust) {
+          if (!trust) return "";
+          const parts = [];
+          if (trust.completed_transactions > 0) {
+            parts.push(`${trust.completed_transactions} طلب مكتمل`);
+          }
+          if (trust.completion_rate != null && trust.completed_transactions >= 3) {
+            parts.push(`إكمال ${trust.completion_rate}%`);
+          }
+          if (trust.avg_response_hours != null) {
+            const h = Math.round(trust.avg_response_hours * 10) / 10;
+            parts.push(`ردّ ~${h} ساعة`);
+          }
+          if (!parts.length) return "";
+          return `<div class="trust-stats">${parts.map(escapeHtml).join(" · ")}</div>`;
+        }
+
+        function renderPagination(p) {
+          const wrap = $("#pagination");
+          wrap.innerHTML = "";
+          if (!p || p.pages <= 1) return;
+          const mk = (label, page, opts = {}) => {
+            const b = document.createElement("button");
+            b.textContent = label;
+            if (opts.active) b.classList.add("active");
+            if (opts.disabled) b.disabled = true;
+            b.addEventListener("click", () => {
+              currentPage = page;
+              loadEquipment();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+            return b;
+          };
+          wrap.appendChild(mk("السابق", Math.max(1, p.page - 1), { disabled: p.page === 1 }));
+          for (let i = 1; i <= p.pages; i++) {
+            wrap.appendChild(mk(String(i), i, { active: i === p.page }));
+          }
+          wrap.appendChild(mk("التالي", Math.min(p.pages, p.page + 1), { disabled: p.page === p.pages }));
+        }
+
+        // ---------- Booking modal ----------
+        function openBookingModal(eq) {
+          if (!getToken || !getToken()) {
+            showToast("يجب تسجيل الدخول أولاً", true);
+            setTimeout(() => (window.location.href = "register.html"), 1200);
+            return;
+          }
+          activeEquipment = eq;
+          $("#modal-equipment-name").textContent = eq.name;
+          $("#modal-daily-price").textContent = `السعر اليومي: ${eq.daily_price} ر.ع`;
+
+          // Deposit notice in the modal. We always show this BEFORE the
+          // user picks dates so they aren't surprised at total time.
+          const dep = Number(eq.deposit_amount || 0);
+          const depBlock = document.getElementById("modal-deposit-block");
+          if (depBlock) {
+            if (dep > 0) {
+              depBlock.style.display = "block";
+              depBlock.innerHTML = `
+                <i class="fas fa-shield-alt" style="color:#f1c40f"></i>
+                <strong>تأمين قابل للاسترداد:</strong> ${dep.toFixed(2)} ر.ع.
+                يُحجز المبلغ مع الحجز ويُعاد إليك عند إرجاع المعدة سليمة.
+                إذا تضرّرت أو لم تُعد، يحقّ للمالك احتجاز جزء أو كلّ التأمين.
+              `;
+            } else {
+              depBlock.style.display = "none";
+            }
+          }
+
+          const today = new Date().toISOString().slice(0, 10);
+          $("#rental-start").min = today;
+          $("#rental-end").min = today;
+          $("#rental-start").value = "";
+          $("#rental-end").value = "";
+          $("#rental-notes").value = "";
+          $("#availability-hint").textContent = "";
+          $("#availability-hint").className = "availability-hint";
+          $("#total-preview").style.display = "none";
+          $("#modal-backdrop").classList.add("open");
+        }
+
+        function closeModal() {
+          $("#modal-backdrop").classList.remove("open");
+          activeEquipment = null;
+        }
+
+        // Availability check with debounce
+        function maybeCheckAvailability() {
+          clearTimeout(availabilityDebounce);
+          availabilityDebounce = setTimeout(checkAvailability, 350);
+        }
+
+        async function checkAvailability() {
+          const start = $("#rental-start").value;
+          const end = $("#rental-end").value;
+          const hint = $("#availability-hint");
+          const preview = $("#total-preview");
+
+          if (!start || !end || !activeEquipment) {
+            hint.textContent = "";
+            hint.className = "availability-hint";
+            preview.style.display = "none";
+            return;
+          }
+          if (new Date(end) < new Date(start)) {
+            hint.textContent = "تاريخ النهاية يجب أن يكون بعد البداية";
+            hint.className = "availability-hint bad";
+            preview.style.display = "none";
+            return;
+          }
+
+          try {
+            const res = await apiFetch(
+              `/rentals/availability/${activeEquipment.id}?start_date=${start}&end_date=${end}`,
+            );
+            if (!res || !res.success) {
+              hint.textContent = (res && res.error && res.error.message) || "تعذّر التحقق";
+              hint.className = "availability-hint bad";
+              return;
+            }
+            if (res.available) {
+              hint.textContent = `✓ متاح لـ ${res.days} يوم`;
+              hint.className = "availability-hint ok";
+              const rentalCost = Number(activeEquipment.daily_price) * res.days;
+              const dep = Number(activeEquipment.deposit_amount || 0);
+              const grand = rentalCost + dep;
+              preview.style.display = "block";
+              preview.innerHTML = dep > 0
+                ? `الإيجار: ${rentalCost.toFixed(2)} ر.ع (${res.days} يوم × ${activeEquipment.daily_price} ر.ع)
+                   <br>تأمين قابل للاسترداد: ${dep.toFixed(2)} ر.ع
+                   <br><strong>الإجمالي عند الحجز: ${grand.toFixed(2)} ر.ع</strong>`
+                : `الإجمالي المتوقع: ${rentalCost.toFixed(2)} ر.ع (${res.days} يوم × ${activeEquipment.daily_price} ر.ع)`;
+            } else {
+              hint.textContent = "✗ هذه الفترة محجوزة. جرّب تواريخ أخرى.";
+              hint.className = "availability-hint bad";
+              preview.style.display = "none";
+            }
+          } catch (err) {
+            hint.textContent = err.message || "خطأ في التحقق";
+            hint.className = "availability-hint bad";
+          }
+        }
+
+        const RENTAL_CART_KEY = "harth_rental_cart";
+
+        function getRentalCart() {
+          try { return JSON.parse(localStorage.getItem(RENTAL_CART_KEY) || "[]"); }
+          catch (_e) { return []; }
+        }
+
+        function saveRentalCart(items) {
+          localStorage.setItem(RENTAL_CART_KEY, JSON.stringify(items));
+        }
+
+        function daysBetween(start, end) {
+          const ms = new Date(end) - new Date(start);
+          return Math.max(1, Math.ceil(ms / 86400000));
+        }
+
+        function confirmRental() {
+          if (!activeEquipment) return;
+          const start = $("#rental-start").value;
+          const end = $("#rental-end").value;
+          const notes = $("#rental-notes").value.trim();
+
+          if (!start || !end) {
+            showToast("اختر تواريخ البداية والنهاية", true);
+            return;
+          }
+          if (new Date(end) < new Date(start)) {
+            showToast("تاريخ النهاية يجب أن يكون بعد البداية", true);
+            return;
+          }
+
+          const days = daysBetween(start, end);
+          const dailyPrice = Number(activeEquipment.daily_price || 0);
+          const deposit = Number(activeEquipment.deposit_amount || 0);
+          const rentalCost = dailyPrice * days;
+
+          const cart = getRentalCart();
+
+          // Remove existing entry for the same equipment if re-added
+          const filtered = cart.filter((r) => r.equipment_id !== activeEquipment.id);
+
+          filtered.push({
+            equipment_id: activeEquipment.id,
+            name: activeEquipment.name,
+            daily_price: dailyPrice,
+            start_date: start,
+            end_date: end,
+            days,
+            rental_cost: rentalCost,
+            deposit_amount: deposit,
+            grand_total: rentalCost + deposit,
+            notes: notes || null,
+            primary_image_url: activeEquipment.primary_image_url || null,
+          });
+
+          saveRentalCart(filtered);
+          closeModal();
+          showToast(`✓ تمت إضافة "${activeEquipment.name}" للسلة (${days} يوم)`);
+
+          setTimeout(() => {
+            window.location.href = "checkout.html";
+          }, 1400);
+        }
+
+        // Top-of-tools promotional banner — same admin-managed source as
+        // the homepage. Hidden when no banner is configured for this
+        // placement. Failures are silent — the equipment grid is the
+        // primary content.
+        async function loadToolsTopBanner() {
+          try {
+            const res = await apiFetch("/public/banners?placement=tools_top");
+            if (!res || !res.success || !res.items.length) return;
+            const wrap = $("#tools-top-banner");
+            wrap.innerHTML = res.items.map(toolsTopBannerHtml).join("");
+            wrap.style.display = "block";
+          } catch (_e) {
+            /* silent */
+          }
+        }
+
+        function toolsTopBannerHtml(b) {
+          const bg = b.background_color || "#2d5016";
+          const fg = b.text_color || "#ffffff";
+          const bgImage = b.image_url
+            ? `background:linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)),url('${escapeHtml(b.image_url)}') center/cover;`
+            : `background:linear-gradient(135deg,${bg},rgba(0,0,0,0.4));`;
+          const cta = b.cta_url && b.cta_label
+            ? `<a href="${escapeHtml(b.cta_url)}" style="background:${escapeHtml(fg)};color:${escapeHtml(bg)};padding:8px 16px;border-radius:999px;text-decoration:none;font-weight:700;font-size:13px;display:inline-block">${escapeHtml(b.cta_label)} →</a>`
+            : "";
+          return `
+            <div style="${bgImage};color:${escapeHtml(fg)};padding:20px 24px;border-radius:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;box-shadow:0 4px 14px rgba(0,0,0,0.18)">
+              <div>
+                <div style="font-weight:800;font-size:18px">${escapeHtml(b.title)}</div>
+                ${b.subtitle ? `<div style="opacity:0.95;font-size:13px;margin-top:4px">${escapeHtml(b.subtitle)}</div>` : ""}
+              </div>
+              ${cta}
+            </div>
+          `;
+        }
+
+        // ---------- Wire up ----------
+        document.addEventListener("DOMContentLoaded", () => {
+          loadEquipment();
+          loadToolsTopBanner();
+
+          let searchDebounce;
+          $("#filter-search").addEventListener("input", () => {
+            clearTimeout(searchDebounce);
+            searchDebounce = setTimeout(() => {
+              currentPage = 1;
+              loadEquipment();
+            }, 350);
+          });
+          $("#filter-governorate").addEventListener("change", () => { currentPage = 1; loadEquipment(); });
+          $("#filter-category").addEventListener("change", () => {
+            currentPage = 1;
+            loadEquipment();
+          });
+          $("#filter-sort").addEventListener("change", () => {
+            currentPage = 1;
+            loadEquipment();
+          });
+
+          // Favorites filter — switches the data source. Same UX as basket.html.
+          const favBtn = $("#filter-favorites-toggle");
+          if (favBtn) {
+            favBtn.addEventListener("click", () => {
+              favoritesOnly = !favoritesOnly;
+              favBtn.setAttribute("aria-pressed", String(favoritesOnly));
+              favBtn.querySelector("i").className = favoritesOnly ? "fas fa-heart" : "far fa-heart";
+              favBtn.style.background = favoritesOnly ? "rgba(231, 76, 60, 0.2)" : "transparent";
+              favBtn.style.borderColor = favoritesOnly ? "#e74c3c" : "rgba(255,255,255,0.2)";
+              favBtn.style.color = favoritesOnly ? "#ffb3b3" : "#fff";
+
+              const govSel = $("#filter-governorate");
+              const sortSel = $("#filter-sort");
+              if (govSel) govSel.disabled = favoritesOnly;
+              if (sortSel) sortSel.disabled = favoritesOnly;
+
+              currentPage = 1;
+              loadEquipment();
+            });
+          }
+
+          $("#rental-start").addEventListener("change", maybeCheckAvailability);
+          $("#rental-end").addEventListener("change", maybeCheckAvailability);
+          $("#confirm-rental").addEventListener("click", confirmRental);
+          $("#cancel-rental").addEventListener("click", closeModal);
+          $("#modal-backdrop").addEventListener("click", (e) => {
+            if (e.target === $("#modal-backdrop")) closeModal();
+          });
+        });
+      })();
+    </script>
+  
+    <!-- HARTH-RESPONSIVE-JS -->
+    <script src="responsive.js" defer></script>
+  </body>
+</html>
