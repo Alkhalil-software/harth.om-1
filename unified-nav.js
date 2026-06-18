@@ -84,8 +84,6 @@
 
   /* ─── Mobile bottom-nav items (max 5 per role) ───────────────────── */
   const MOBILE_ITEMS = [
-    { href: "index.html",           label: "الرئيسية", icon: "fa-home",           roles: "*"                               },
-    { href: "tools.html",           label: "تأجير",    icon: "fa-tractor",        roles: "*"                               },
     { href: "basket.html",          label: "بيع",      icon: "fa-store",          roles: "*"                               },
     { href: "my-orders.html",       label: "طلباتي",   icon: "fa-box",            roles: ["renter", "owner", "admin"]      },
     { href: "delivery.html",        label: "توصيل",    icon: "fa-truck",          roles: ["delivery"]                      },
