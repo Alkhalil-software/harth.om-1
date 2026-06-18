@@ -141,7 +141,10 @@ button {
   max-width: 1400px;
   overflow: visible !important;
   position: relative;
-  z-index: 100;
+  /* Must beat .menu-backdrop's z-index (999) — .header-container creates
+     its own stacking context, so the slide-in panel inside it (z-index
+     1000) was being trapped under the backdrop and eating all taps. */
+  z-index: 1002;
 }
 
 .header-capsule {
