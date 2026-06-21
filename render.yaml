@@ -1,8 +1,6 @@
-databases:
-  - name: harth-db
-    plan: basic-256mb
-    region: oregon
-
+# No `databases:` block — using a free Neon Postgres instance instead of
+# Render's paid Postgres plans. Set DATABASE_URL manually in the Render
+# dashboard (Environment tab) to your Neon connection string.
 services:
   - type: web
     name: harth-web
@@ -10,36 +8,17 @@ services:
     plan: free
     region: oregon
     rootDir: server
+    autoDeploy: true
     buildCommand: npm install
     startCommand: npm run migrate && npm start
     healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_ENV
         value: production
+      # Set this in the Render dashboard to your Neon connection string
+      # (includes ?sslmode=require, so DB_SSL below is not needed).
       - key: DATABASE_URL
-        fromDatabase:
-          name: harth-db
-          property: connectionString
-      - key: DB_HOST
-        fromDatabase:
-          name: harth-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: harth-db
-          property: port
-      - key: DB_USER
-        fromDatabase:
-          name: harth-db
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: harth-db
-          property: password
-      - key: DB_NAME
-        fromDatabase:
-          name: harth-db
-          property: database
+        sync: false
       - key: DB_SSL
         value: "true"
       - key: JWT_SECRET

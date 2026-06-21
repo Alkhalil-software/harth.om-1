@@ -1,20 +1,27 @@
 const path = require("path");
 require("dotenv").config();
 
-const required = [
-  "PORT",
-  "DB_HOST",
-  "DB_USER",
-  "DB_PASSWORD",
-  "DB_NAME",
-  "JWT_SECRET",
-];
+const required = ["PORT", "JWT_SECRET"];
 
 const missing = required.filter((k) => !process.env[k]);
 if (missing.length) {
   // eslint-disable-next-line no-console
   console.error(
     `🚨 Fatal: missing required env vars: ${missing.join(", ")}. See .env.example.`,
+  );
+  process.exit(1);
+}
+
+const hasDbConfig =
+  process.env.DATABASE_URL ||
+  (process.env.DB_HOST &&
+    process.env.DB_USER &&
+    process.env.DB_PASSWORD &&
+    process.env.DB_NAME);
+if (!hasDbConfig) {
+  // eslint-disable-next-line no-console
+  console.error(
+    "🚨 Fatal: set either DATABASE_URL, or all of DB_HOST/DB_USER/DB_PASSWORD/DB_NAME. See .env.example.",
   );
   process.exit(1);
 }

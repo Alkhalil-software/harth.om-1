@@ -60,7 +60,13 @@
       "Bash(git remote *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(awk 'NR==806,NR==1300' \"admin-dashboard.html\")"
+      "Bash(awk 'NR==806,NR==1300' \"admin-dashboard.html\")",
+      "Bash(curl -s https://harth-web.onrender.com/responsive.css)",
+      "Bash(curl -s https://harth-web.onrender.com/responsive.css -o /tmp/live-responsive.css)",
+      "Read(//tmp/**)",
+      "Bash(curl -s https://harth-web.onrender.com/unified-nav.js -o /tmp/live-unav.js)",
+      "Bash(curl -s https://harth-web.onrender.com/responsive.js -o /tmp/live-resp.js)",
+      "Bash(curl -s https://harth-web.onrender.com/responsive.css -o /tmp/live-resp.css)"
     ]
   }
 }
