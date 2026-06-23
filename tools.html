@@ -18,66 +18,19 @@
 
     <style>
       /* Inline styles specific to this page. Kept scoped to avoid touching style.css. */
-      .filters-bar {
-        max-width: 1100px;
-        margin: 20px auto;
-        padding: 14px 18px;
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-      .filters-bar input,
-      .filters-bar select {
-        padding: 8px 12px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 8px;
-        background: #ffffff;
-        color: #1a1a1a;
-        font-family: inherit;
-        appearance: auto;
-        -webkit-appearance: auto;
-      }
-      .filters-bar select option {
-        background: #ffffff;
-        color: #1a1a1a;
-      }
-      .filters-bar select option:checked {
-        background: #e8f5e0;
-        color: #1a1a1a;
-      }
-      .filters-bar input[type="search"] {
-        flex: 1;
-        min-width: 200px;
-      }
       #load-state {
         text-align: center;
         padding: 40px;
         font-size: 18px;
-      }
-      .loading-spinner {
-        display: inline-block;
-        width: 40px;
-        height: 40px;
-        border: 4px solid rgba(255, 255, 255, 0.3);
-        border-top-color: #6ab04c;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
       }
 
       /* Rental booking modal */
       .modal-backdrop {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.6);
+        background: var(--surface-overlay-strong);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         display: none;
         align-items: center;
         justify-content: center;
@@ -87,33 +40,50 @@
         display: flex;
       }
       .modal {
-        background: #fff;
-        color: #1a1a1a;
-        border-radius: 16px;
-        padding: 24px;
+        background: var(--surface-modal);
+        color: var(--color-text);
+        border: var(--border-width) solid var(--border-subtle);
+        box-shadow: var(--shadow-2xl);
+        border-radius: var(--r-xl);
+        padding: var(--sp-6);
         max-width: 440px;
         width: 92%;
         max-height: 90vh;
         overflow-y: auto;
       }
       .modal h3 {
-        margin: 0 0 12px;
-        color: #2d5016;
+        margin: 0 0 var(--sp-4);
+        color: var(--color-text);
+        font-size: var(--fs-lg);
+        font-weight: var(--fw-bold);
       }
       .modal label {
         display: block;
-        margin: 10px 0 4px;
-        font-size: 14px;
-        font-weight: 600;
+        margin: var(--sp-3) 0 var(--sp-2);
+        font-size: var(--fs-sm);
+        font-weight: var(--fw-medium);
+        color: var(--color-text-muted);
       }
       .modal input,
+      .modal select,
       .modal textarea {
         width: 100%;
-        padding: 8px 10px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--surface-2);
+        color: var(--color-text);
+        border: var(--border-width) solid var(--border-soft);
+        border-radius: var(--r-sm);
         font-family: inherit;
+        font-size: var(--fs-sm);
         box-sizing: border-box;
+        transition: border-color var(--dur-fast);
+      }
+      .modal input:focus,
+      .modal select:focus,
+      .modal textarea:focus {
+        outline: none;
+        border-color: var(--color-brand-500);
+        box-shadow: 0 0 0 3px rgba(106, 176, 76, 0.1);
       }
       .modal textarea {
         resize: vertical;
@@ -121,45 +91,53 @@
       }
       .modal-actions {
         display: flex;
-        gap: 10px;
-        margin-top: 14px;
+        gap: var(--sp-3);
+        margin-top: var(--sp-5);
       }
       .modal-actions button {
         flex: 1;
-        padding: 10px;
+        padding: var(--sp-3) var(--sp-4);
         border: none;
-        border-radius: 8px;
+        border-radius: var(--r-md);
         cursor: pointer;
         font-family: inherit;
-        font-weight: 700;
+        font-weight: var(--fw-medium);
+        transition: all var(--dur-fast);
       }
       .btn-primary-green {
-        background: #6ab04c;
+        background: var(--color-brand-500);
         color: #fff;
+      }
+      .btn-primary-green:hover {
+        background: var(--color-brand-600);
+        transform: translateY(-1px);
       }
       .btn-secondary-grey {
-        background: #95a5a6;
+        background: var(--color-neutral-600);
         color: #fff;
       }
+      .btn-secondary-grey:hover {
+        background: var(--color-neutral-700);
+      }
       .availability-hint {
-        font-size: 13px;
-        margin-top: 8px;
+        font-size: var(--fs-xs);
+        margin-top: var(--sp-2);
         min-height: 20px;
       }
       .availability-hint.ok {
-        color: #27ae60;
+        color: var(--color-success-500);
       }
       .availability-hint.bad {
-        color: #c0392b;
+        color: var(--color-danger-500);
       }
       .total-preview {
-        background: #f0f8e8;
-        border: 1px solid #6ab04c;
-        border-radius: 8px;
-        padding: 10px;
-        margin-top: 12px;
-        font-weight: 700;
-        color: #2d5016;
+        background: rgba(106, 176, 76, 0.1);
+        border: var(--border-width) solid var(--color-brand-500);
+        border-radius: var(--r-md);
+        padding: var(--sp-3);
+        margin-top: var(--sp-3);
+        font-weight: var(--fw-bold);
+        color: var(--color-brand-300);
       }
 
       #toast {
@@ -188,58 +166,184 @@
       /* Skeleton Grid for Loading State */
       .skeleton-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: var(--sp-6);
-        padding: var(--sp-6) 0;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: var(--sp-5);
       }
 
-      /* Enhanced Equipment Grid */
-      .equipment-grid {
+      /* ===== Marketplace layout: sidebar + listings ==================== */
+      .marketplace-layout {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: var(--sp-6);
-        padding: var(--sp-6) 0;
+        grid-template-columns: 280px 1fr;
+        gap: var(--sp-8);
+        align-items: start;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 var(--sp-4) var(--sp-10);
+      }
+
+      .filters-sidebar {
+        background: var(--surface-glass);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: var(--border-width) solid var(--border-soft);
+        border-radius: var(--r-lg);
+        padding: var(--sp-5);
+        position: sticky;
+        top: var(--sp-6);
+      }
+
+      .filters-sidebar-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--sp-4);
+      }
+      .filters-sidebar-head h3 {
+        margin: 0;
+        font-size: var(--fs-md);
+        color: var(--color-text);
+      }
+      .filters-close-btn {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--color-text-muted);
+        font-size: var(--fs-lg);
+        cursor: pointer;
+      }
+
+      .filter-group {
+        margin-bottom: var(--sp-5);
+      }
+      .filter-group-title {
+        display: block;
+        font-size: var(--fs-sm);
+        font-weight: var(--fw-medium);
+        color: var(--color-text-muted);
+        margin-bottom: var(--sp-2);
+      }
+
+      .filter-pills {
+        display: flex;
+        gap: var(--sp-2);
+        flex-wrap: wrap;
+      }
+      .filter-pill {
+        flex: 1;
+        padding: 8px 10px;
+        border-radius: var(--r-pill);
+        border: var(--border-width) solid var(--border-soft);
+        background: var(--surface-2);
+        color: var(--color-text-muted);
+        font-family: inherit;
+        font-size: var(--fs-xs);
+        cursor: pointer;
+        white-space: nowrap;
         transition: all var(--dur-fast);
       }
+      .filter-pill.is-active,
+      .filter-pill[aria-pressed="true"] {
+        background: var(--color-brand-500);
+        border-color: var(--color-brand-500);
+        color: #fff;
+      }
 
-      /* Equipment Card Enhancements */
+      .price-range-inputs {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+      }
+      .price-range-inputs .hs-input {
+        text-align: center;
+      }
+      .price-range-sep {
+        color: var(--color-text-soft);
+      }
+
+      .filters-sidebar-actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-2);
+      }
+
+      /* ===== Listings toolbar ========================================== */
+      .listings-toolbar {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-5);
+        flex-wrap: wrap;
+      }
+      .listings-toolbar .search-field {
+        flex: 1 1 240px;
+        position: relative;
+      }
+      .listings-toolbar .search-field i {
+        position: absolute;
+        inset-inline-start: var(--sp-3);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--color-text-soft);
+      }
+      .listings-toolbar .search-field input {
+        width: 100%;
+        padding-inline-start: var(--sp-8);
+        box-sizing: border-box;
+      }
+      .listings-result-count {
+        font-size: var(--fs-sm);
+        color: var(--color-text-muted);
+        white-space: nowrap;
+      }
+      #filters-drawer-btn {
+        display: none;
+      }
+
+      /* ===== Enhanced equipment grid + cards ============================ */
+      .equipment-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: var(--sp-5);
+      }
+
       .equipment-card {
         background: var(--surface-glass);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: var(--border-width) solid rgba(255, 255, 255, 0.2);
-        border-radius: var(--r-xl);
-        box-shadow: var(--shadow-glass);
-        transition: all var(--dur-fast);
+        border: var(--border-width) solid var(--border-soft);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow-md);
+        transition: transform var(--dur-base) var(--ease-standard),
+          box-shadow var(--dur-base) var(--ease-standard);
         overflow: hidden;
         position: relative;
-        cursor: pointer;
+        display: flex;
+        flex-direction: column;
       }
 
       .equipment-card:hover {
-        background: var(--surface-glass-hover);
-        border-color: rgba(255, 255, 255, 0.4);
         transform: translateY(-4px);
-        box-shadow: var(--shadow-xl);
+        box-shadow: var(--shadow-lg);
       }
 
       .equipment-card .price-tag {
         position: absolute;
-        top: var(--sp-3);
-        right: var(--sp-3);
+        bottom: var(--sp-2);
+        inset-inline-end: var(--sp-2);
+        top: auto;
+        right: auto;
         background: var(--color-accent-500);
         color: #1a1a1a;
-        padding: var(--sp-2) var(--sp-3);
+        padding: 4px 10px;
         border-radius: var(--r-pill);
         font-size: var(--fs-xs);
         font-weight: var(--fw-bold);
         z-index: 10;
-        box-shadow: var(--shadow-md);
       }
 
       .equipment-card .equip-img {
         width: 100%;
-        height: 200px;
+        height: 190px;
         object-fit: cover;
         background: var(--color-neutral-700);
         display: flex;
@@ -248,15 +352,44 @@
         color: var(--color-text-soft);
       }
 
+      .equip-media {
+        position: relative;
+      }
+
+      .listing-fav-btn {
+        position: absolute;
+        top: var(--sp-2);
+        inset-inline-start: var(--sp-2);
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 50%;
+        border: none;
+        background: rgba(0, 0, 0, 0.45);
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        transition: background var(--dur-fast);
+      }
+      .listing-fav-btn[aria-pressed="true"] {
+        background: var(--color-danger-500);
+      }
+
       .equipment-card .equip-details {
         padding: var(--sp-4);
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-1);
+        flex: 1;
       }
 
       .equipment-card .equip-details h3 {
         color: var(--color-text);
         font-size: var(--fs-lg);
         font-weight: var(--fw-bold);
-        margin: 0 0 var(--sp-2);
+        margin: 0 0 var(--sp-1);
         line-height: var(--lh-tight);
       }
 
@@ -264,24 +397,43 @@
         color: var(--color-text-muted);
         font-size: var(--fs-sm);
         line-height: var(--lh-base);
-        margin: 0 0 var(--sp-3);
+        margin: 0 0 var(--sp-2);
       }
 
-      .equipment-card .equip-actions {
+      .equipment-card .contact-buttons {
         display: flex;
         gap: var(--sp-2);
-        margin-top: var(--sp-4);
+        margin-top: auto;
+        padding-top: var(--sp-3);
+      }
+      .equipment-card .btn-order {
+        flex: 1;
+        background: var(--color-brand-500);
+        color: #fff;
+        border: none;
+        padding: 9px 14px;
+        border-radius: var(--r-md);
+        font-family: inherit;
+        font-size: var(--fs-sm);
+        font-weight: var(--fw-medium);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: background var(--dur-fast);
+        white-space: nowrap;
+      }
+      .equipment-card .btn-order:hover {
+        background: var(--color-brand-600);
       }
 
-      /* ===== Trust badges (3) ====================================== */
-      /* A small horizontal row of icon+label chips. Backgrounds use a
-         per-badge accent color via the --badge-color custom property so
-         we don't need a separate CSS class per badge type. */
+      /* ===== Trust badges ============================================== */
       .trust-badges {
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
-        margin: 6px 0 8px;
+        margin: 2px 0 4px;
       }
       .trust-badge {
         display: inline-flex;
@@ -300,16 +452,16 @@
       }
       .trust-stats {
         font-size: 11px;
-        color: #d3e0c4;
+        color: var(--color-text-soft);
         margin: 4px 0 0;
         opacity: 0.85;
       }
       .deposit-hint {
-        margin-top: 8px;
+        margin-top: var(--sp-2);
         padding: 6px 10px;
         background: rgba(241, 196, 15, 0.15);
         border: 1px solid rgba(241, 196, 15, 0.45);
-        border-radius: 8px;
+        border-radius: var(--r-sm);
         font-size: 12px;
         color: #ffeaa7;
         display: inline-flex;
@@ -317,32 +469,7 @@
         gap: 6px;
       }
 
-      /* Filters Enhancement */
-      .filters-bar {
-        background: var(--surface-2);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: var(--border-width) solid var(--border-subtle);
-        border-radius: var(--r-xl);
-        padding: var(--sp-4);
-        margin-bottom: var(--sp-6);
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--sp-3);
-        align-items: center;
-      }
-
-      .filters-bar select,
-      .filters-bar input {
-        min-width: 120px;
-        flex: 1;
-      }
-
-      .filters-bar button {
-        white-space: nowrap;
-      }
-
-      /* Pagination Enhancement */
+      /* ===== Pagination ================================================= */
       .pagination-bar {
         display: flex;
         gap: var(--sp-2);
@@ -350,11 +477,10 @@
         padding: var(--sp-6) 0;
         flex-wrap: wrap;
       }
-
       .pagination-bar button {
-        min-width: 2.5rem;
-        height: 2.5rem;
-        padding: 0;
+        min-width: 2.4rem;
+        height: 2.4rem;
+        padding: 0 10px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -368,182 +494,63 @@
         cursor: pointer;
         transition: all var(--dur-fast);
       }
-
       .pagination-bar button:hover:not(:disabled) {
         background: var(--surface-3);
         color: var(--color-text);
         border-color: var(--border-strong);
       }
-
       .pagination-bar button.active {
         background: var(--color-brand-500);
         color: white;
         border-color: var(--color-brand-600);
       }
-
       .pagination-bar button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
       }
 
-      /* Modal Enhancements */
-      .modal-backdrop {
-        background: var(--surface-overlay-strong);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+      /* ===== Mobile filter bottom sheet ================================ */
+      .filters-sheet-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: calc(var(--z-modal) - 1);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity var(--dur-base) var(--ease-standard),
+          visibility var(--dur-base) var(--ease-standard);
+      }
+      .filters-sheet-backdrop.is-open {
+        opacity: 1;
+        visibility: visible;
       }
 
-      .modal {
-        background: var(--surface-modal);
-        border: var(--border-width) solid var(--border-subtle);
-        box-shadow: var(--shadow-2xl);
-      }
-
-      .modal h3 {
-        color: var(--color-text);
-        font-size: var(--fs-lg);
-        font-weight: var(--fw-bold);
-        margin: 0 0 var(--sp-4);
-      }
-
-      .modal label {
-        color: var(--color-text-muted);
-        font-size: var(--fs-sm);
-        font-weight: var(--fw-medium);
-        display: block;
-        margin: var(--sp-3) 0 var(--sp-2);
-      }
-
-      .modal input,
-      .modal select,
-      .modal textarea {
-        width: 100%;
-        padding: var(--sp-3) var(--sp-4);
-        background: var(--surface-2);
-        color: var(--color-text);
-        border: var(--border-width) solid var(--border-soft);
-        border-radius: var(--r-sm);
-        font-family: inherit;
-        font-size: var(--fs-sm);
-        transition: border-color var(--dur-fast);
-        box-sizing: border-box;
-      }
-
-      .modal input:focus,
-      .modal select:focus,
-      .modal textarea:focus {
-        outline: none;
-        border-color: var(--color-brand-500);
-        box-shadow: 0 0 0 3px rgba(106, 176, 76, 0.1);
-      }
-
-      .modal textarea {
-        resize: vertical;
-        min-height: 80px;
-      }
-
-      .modal-actions {
-        display: flex;
-        gap: var(--sp-3);
-        margin-top: var(--sp-6);
-      }
-
-      .modal-actions button {
-        flex: 1;
-        padding: var(--sp-3) var(--sp-4);
-        border: none;
-        border-radius: var(--r-md);
-        cursor: pointer;
-        font-family: inherit;
-        font-size: var(--fs-sm);
-        font-weight: var(--fw-medium);
-        transition: all var(--dur-fast);
-      }
-
-      .btn-primary-green {
-        background: var(--color-brand-500);
-        color: #fff;
-      }
-
-      .btn-primary-green:hover {
-        background: var(--color-brand-600);
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-md);
-      }
-
-      .btn-secondary-grey {
-        background: var(--color-neutral-600);
-        color: #fff;
-      }
-
-      .btn-secondary-grey:hover {
-        background: var(--color-neutral-700);
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-md);
-      }
-
-      /* Utility Classes */
-      .availability-hint {
-        font-size: var(--fs-xs);
-        margin-top: var(--sp-2);
-        min-height: 20px;
-        line-height: var(--lh-base);
-      }
-
-      .availability-hint.ok {
-        color: var(--color-success-500);
-      }
-
-      .availability-hint.bad {
-        color: var(--color-danger-500);
-      }
-
-      .total-preview {
-        background: rgba(106, 176, 76, 0.1);
-        border: var(--border-width) solid var(--color-brand-500);
-        border-radius: var(--r-md);
-        padding: var(--sp-3);
-        margin-top: var(--sp-3);
-        font-weight: var(--fw-bold);
-        color: var(--color-brand-300);
-      }
-
-      /* Clear filters function */
-      .hs-btn--clear-filters {
-        background: transparent;
-        color: var(--color-text-muted);
-        border: var(--border-width) solid var(--border-subtle);
-      }
-
-      .hs-btn--clear-filters:hover {
-        background: var(--surface-2);
-        color: var(--color-text);
-        border-color: var(--border-strong);
-      }
-
-      .pagination-bar {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        padding: 20px;
-        flex-wrap: wrap;
-      }
-      .pagination-bar button {
-        padding: 6px 14px;
-        border: 1px solid #6ab04c;
-        background: rgba(255, 255, 255, 0.9);
-        color: #2d5016;
-        border-radius: 6px;
-        cursor: pointer;
-        font-family: inherit;
-      }
-      .pagination-bar button.active {
-        background: #6ab04c;
-        color: #fff;
-      }
-      .pagination-bar button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
+      @media (max-width: 1023px) {
+        .marketplace-layout {
+          grid-template-columns: 1fr;
+        }
+        .filters-sidebar {
+          position: fixed;
+          inset-inline: 0;
+          bottom: 0;
+          top: auto;
+          max-height: 85vh;
+          overflow-y: auto;
+          border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+          z-index: var(--z-modal);
+          transform: translateY(100%);
+          transition: transform var(--dur-slow) var(--ease-emphasized);
+          box-shadow: var(--shadow-xl);
+        }
+        .filters-sidebar.is-open {
+          transform: translateY(0);
+        }
+        .filters-close-btn {
+          display: block;
+        }
+        #filters-drawer-btn {
+          display: inline-flex;
+        }
       }
     </style>
 
@@ -597,61 +604,116 @@
         <p>تصفح المعدات المتوفرة واستأجرها مباشرة من أصحابها</p>
       </div>
 
-      <div class="filters-bar">
-        <input
-          type="search"
-          id="filter-search"
-          class="hs-input"
-          placeholder="ابحث عن معدة..."
-          title="البحث في أسماء ووصف المعدات"
-        />
+      <div class="marketplace-layout">
+        <aside class="filters-sidebar" id="filters-sidebar">
+          <div class="filters-sidebar-head">
+            <h3><i class="fas fa-sliders-h"></i> الفلاتر</h3>
+            <button type="button" class="filters-close-btn" id="filters-close" aria-label="إغلاق الفلاتر">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
 
-        <select id="filter-category" class="hs-select" title="فئة المعدات">
-          <option value="">كل الفئات</option>
-          <option value="tractor">الجرارات</option>
-          <option value="harvester">معدات الحصاد</option>
-          <option value="sprayer">المرشات والري</option>
-          <option value="tools">الأدوات اليدوية</option>
-          <option value="seeds">البذور</option>
-          <option value="fertilizer">الأسمدة</option>
-          <option value="pesticide">المبيدات</option>
-          <option value="other">أخرى</option>
-        </select>
+          <div class="filter-group">
+            <label class="filter-group-title" for="filter-category">الفئة</label>
+            <select id="filter-category" class="hs-select" title="فئة المعدات">
+              <option value="">كل الفئات</option>
+              <option value="tractor">الجرارات</option>
+              <option value="harvester">معدات الحصاد</option>
+              <option value="sprayer">المرشات والري</option>
+              <option value="tools">الأدوات اليدوية</option>
+              <option value="seeds">البذور</option>
+              <option value="fertilizer">الأسمدة</option>
+              <option value="pesticide">المبيدات</option>
+              <option value="other">أخرى</option>
+            </select>
+          </div>
 
-        <select id="filter-governorate" class="hs-select" title="المحافظة">
-          <option value="">كل المحافظات</option>
-          <option value="muscat">مسقط</option>
-          <option value="dhofar">ظفار</option>
-          <option value="musandam">مسندم</option>
-          <option value="buraimi">البريمي</option>
-          <option value="dakhiliyah">الداخلية</option>
-          <option value="north_batinah">شمال الباطنة</option>
-          <option value="south_batinah">جنوب الباطنة</option>
-          <option value="south_sharqiyah">جنوب الشرقية</option>
-          <option value="north_sharqiyah">شمال الشرقية</option>
-          <option value="dhahirah">الظاهرة</option>
-          <option value="wusta">الوسطى</option>
-        </select>
+          <div class="filter-group">
+            <label class="filter-group-title" for="filter-governorate">المحافظة</label>
+            <select id="filter-governorate" class="hs-select" title="المحافظة">
+              <option value="">كل المحافظات</option>
+              <option value="muscat">مسقط</option>
+              <option value="dhofar">ظفار</option>
+              <option value="musandam">مسندم</option>
+              <option value="buraimi">البريمي</option>
+              <option value="dakhiliyah">الداخلية</option>
+              <option value="north_batinah">شمال الباطنة</option>
+              <option value="south_batinah">جنوب الباطنة</option>
+              <option value="south_sharqiyah">جنوب الشرقية</option>
+              <option value="north_sharqiyah">شمال الشرقية</option>
+              <option value="dhahirah">الظاهرة</option>
+              <option value="wusta">الوسطى</option>
+            </select>
+          </div>
 
-        <select id="filter-sort" class="hs-select" title="ترتيب النتائج">
-          <option value="newest">الأحدث أولاً</option>
-          <option value="oldest">الأقدم أولاً</option>
-          <option value="price_low">السعر (أقل إلى أعلى)</option>
-          <option value="price_high">السعر (أعلى إلى أقل)</option>
-          <option value="rating">الأعلى تقييماً</option>
-        </select>
+          <div class="filter-group">
+            <span class="filter-group-title">نطاق السعر اليومي (ر.ع)</span>
+            <div class="price-range-inputs">
+              <input type="number" id="filter-min-price" class="hs-input" placeholder="من" min="0" inputmode="decimal" />
+              <span class="price-range-sep">—</span>
+              <input type="number" id="filter-max-price" class="hs-input" placeholder="إلى" min="0" inputmode="decimal" />
+            </div>
+          </div>
 
-        <button
-          type="button"
-          class="hs-btn hs-btn--ghost"
-          id="filter-favorites-toggle"
-          aria-pressed="false"
-          title="إظهار المفضلة فقط"
-        >
-          <i class="far fa-heart"></i>
-          <span>المفضلة فقط</span>
-        </button>
-      </div>
+          <div class="filter-group">
+            <label class="filter-group-title" for="filter-min-rating">التقييم الأدنى</label>
+            <select id="filter-min-rating" class="hs-select">
+              <option value="">أي تقييم</option>
+              <option value="4">4 نجوم فأكثر</option>
+              <option value="3">3 نجوم فأكثر</option>
+              <option value="2">2 نجوم فأكثر</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <button
+              type="button"
+              class="hs-btn hs-btn--ghost hs-btn--block"
+              id="filter-favorites-toggle"
+              aria-pressed="false"
+              title="إظهار المفضلة فقط"
+            >
+              <i class="far fa-heart"></i>
+              <span>المفضلة فقط</span>
+            </button>
+          </div>
+
+          <div class="filters-sidebar-actions">
+            <button type="button" class="hs-btn hs-btn--block" id="apply-filters">تطبيق الفلاتر</button>
+            <button
+              type="button"
+              class="hs-btn hs-btn--ghost hs-btn--block"
+              onclick="clearFilters()"
+            >
+              مسح الكل
+            </button>
+          </div>
+        </aside>
+
+        <div class="listings-main">
+          <div class="listings-toolbar">
+            <div class="search-field">
+              <i class="fas fa-search"></i>
+              <input
+                type="search"
+                id="filter-search"
+                class="hs-input"
+                placeholder="ابحث عن معدة..."
+                title="البحث في أسماء ووصف المعدات"
+              />
+            </div>
+            <div class="listings-result-count" id="result-count"></div>
+            <button type="button" class="hs-btn hs-btn--secondary hs-btn--sm" id="filters-drawer-btn">
+              <i class="fas fa-sliders-h"></i> الفلاتر
+            </button>
+            <select id="filter-sort" class="hs-select" title="ترتيب النتائج">
+              <option value="newest">الأحدث أولاً</option>
+              <option value="oldest">الأقدم أولاً</option>
+              <option value="price_low">السعر (أقل إلى أعلى)</option>
+              <option value="price_high">السعر (أعلى إلى أقل)</option>
+              <option value="rating">الأعلى تقييماً</option>
+            </select>
+          </div>
 
       <div id="load-state" class="skeleton-grid">
         <div class="hs-card">
@@ -748,10 +810,7 @@
       <section
         class="equipment-grid"
         id="equip-grid"
-        style="
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          display: none;
-        "
+        style="display: none"
       ></section>
 
       <div id="empty-state" class="hs-empty" style="display: none">
@@ -812,6 +871,10 @@
       </div>
 
       <div id="pagination" class="pagination-bar"></div>
+        </div>
+      </div>
+
+      <div class="filters-sheet-backdrop" id="filters-sheet-backdrop"></div>
     </main>
 
     <!-- Rental booking modal -->
@@ -913,6 +976,7 @@
         let activeEquipment = null; // item currently in the modal
         let availabilityDebounce = null;
         let favoritesOnly = false; // favorites-filter toggle
+        let currentItems = []; // last rendered page — used for #eq-<id> deep links
 
         const $ = (s) => document.querySelector(s);
         const $$ = (s) => document.querySelectorAll(s);
@@ -963,6 +1027,12 @@
           if (gov) gov.value = "";
           const sort = $("#filter-sort");
           if (sort) sort.value = "newest";
+          const minPrice = $("#filter-min-price");
+          if (minPrice) minPrice.value = "";
+          const maxPrice = $("#filter-max-price");
+          if (maxPrice) maxPrice.value = "";
+          const minRating = $("#filter-min-rating");
+          if (minRating) minRating.value = "";
 
           // Reset favorites toggle
           favoritesOnly = false;
@@ -976,6 +1046,7 @@
           // Reset to first page and reload
           currentPage = 1;
           loadEquipment();
+          closeFiltersSheet();
 
           // Show success toast
           showToast("تم مسح جميع المرشحات ✓");
@@ -1024,6 +1095,7 @@
               }
               renderGrid(res.items);
               renderPagination(res.pagination);
+              setResultCount(res.pagination);
             } catch (err) {
               $("#load-state").innerHTML =
                 `<p style="color:#ffb3b3">خطأ: ${escapeHtml(err.message)}</p>`;
@@ -1033,6 +1105,16 @@
           }
 
           // Normal mode
+          const minPrice = $("#filter-min-price")
+            ? $("#filter-min-price").value
+            : "";
+          const maxPrice = $("#filter-max-price")
+            ? $("#filter-max-price").value
+            : "";
+          const minRating = $("#filter-min-rating")
+            ? $("#filter-min-rating").value
+            : "";
+
           const params = new URLSearchParams({
             listing_type: "rent",
             page: String(currentPage),
@@ -1042,6 +1124,9 @@
           if (cat) params.set("category", cat);
           if (gov) params.set("governorate", gov);
           if (search) params.set("search", search);
+          if (minPrice) params.set("min_price", minPrice);
+          if (maxPrice) params.set("max_price", maxPrice);
+          if (minRating) params.set("min_rating", minRating);
 
           try {
             const res = await apiFetch(`/equipment?${params}`);
@@ -1052,6 +1137,7 @@
             }
             renderGrid(res.items);
             renderPagination(res.pagination);
+            setResultCount(res.pagination);
           } catch (err) {
             $("#load-state").innerHTML =
               `<p style="color:#ffb3b3">خطأ في التحميل: ${escapeHtml(err.message)}</p>`;
@@ -1059,10 +1145,17 @@
           }
         }
 
+        function setResultCount(pagination) {
+          const el = $("#result-count");
+          if (!el || !pagination) return;
+          el.textContent = `${Number(pagination.total || 0).toLocaleString("ar")} نتيجة`;
+        }
+
         function renderGrid(items) {
           $("#load-state").style.display = "none";
           const grid = $("#equip-grid");
           grid.innerHTML = "";
+          currentItems = items;
 
           if (!items.length) {
             $("#empty-state").style.display = "block";
@@ -1102,13 +1195,19 @@
 
             const card = document.createElement("div");
             card.className = "equipment-card";
+            card.id = `eq-${eq.id}`;
             card.innerHTML = `
-              <div class="price-tag">${escapeHtml(String(eq.daily_price))} ر.ع / يوم</div>
-              ${
-                img
-                  ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(eq.name)}" class="equip-img" />`
-                  : `<div class="equip-img" style="background:#333;display:flex;align-items:center;justify-content:center"><i class="fas fa-image" style="font-size:40px;color:#888"></i></div>`
-              }
+              <div class="equip-media">
+                ${
+                  img
+                    ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(eq.name)}" class="equip-img" />`
+                    : `<div class="equip-img" style="background:#333;display:flex;align-items:center;justify-content:center"><i class="fas fa-image" style="font-size:40px;color:#888"></i></div>`
+                }
+                <button type="button" class="listing-fav-btn" data-id="${eq.id}" aria-pressed="false" title="إضافة للمفضلة">
+                  <i class="far fa-heart"></i>
+                </button>
+                <div class="price-tag">${escapeHtml(String(eq.daily_price))} ر.ع / يوم</div>
+              </div>
               <div class="equip-details">
                 <h3>${escapeHtml(eq.name)}</h3>
                 ${badgesHtml}
@@ -1143,9 +1242,45 @@
             card.querySelector(".pdf-btn").addEventListener("click", () => {
               if (window.generateEquipmentPDF) generateEquipmentPDF(eq);
             });
+            card
+              .querySelector(".listing-fav-btn")
+              .addEventListener("click", (e) => {
+                e.stopPropagation();
+                toggleFavorite(e.currentTarget);
+              });
           }
 
           grid.style.display = "grid";
+        }
+
+        // Optimistic favorite toggle — POST to add, DELETE to remove. Guests
+        // get redirected to register instead of a dead click.
+        async function toggleFavorite(btn) {
+          if (!getToken || !getToken()) {
+            showToast("سجّل دخول لإضافة المعدة للمفضلة", true);
+            return;
+          }
+          const id = btn.dataset.id;
+          const pressed = btn.getAttribute("aria-pressed") === "true";
+          const icon = btn.querySelector("i");
+          try {
+            if (pressed) {
+              await apiFetch(`/wishlist/${id}`, { method: "DELETE" });
+              btn.setAttribute("aria-pressed", "false");
+              icon.className = "far fa-heart";
+              showToast("تمت الإزالة من المفضلة");
+            } else {
+              await apiFetch("/wishlist", {
+                method: "POST",
+                body: JSON.stringify({ equipment_id: id }),
+              });
+              btn.setAttribute("aria-pressed", "true");
+              icon.className = "fas fa-heart";
+              showToast("أضيف للمفضلة ✓");
+            }
+          } catch (_e) {
+            showToast("حدث خطأ، حاول مرة أخرى", true);
+          }
         }
 
         // Render the trust-badge row for a card. Returns "" if no badges
@@ -1447,9 +1582,32 @@
           `;
         }
 
+        // ---------- Mobile filter bottom sheet ----------
+        function openFiltersSheet() {
+          $("#filters-sidebar").classList.add("is-open");
+          $("#filters-sheet-backdrop").classList.add("is-open");
+        }
+        function closeFiltersSheet() {
+          $("#filters-sidebar").classList.remove("is-open");
+          $("#filters-sheet-backdrop").classList.remove("is-open");
+        }
+
+        // ---------- #eq-<id> deep link from the homepage ----------
+        // Scrolls the matching card into view and opens its booking modal
+        // once the first page of results has rendered.
+        function handleHashDeepLink() {
+          const m = /^#eq-(.+)$/.exec(window.location.hash);
+          if (!m) return;
+          const card = document.getElementById(`eq-${m[1]}`);
+          if (!card) return;
+          card.scrollIntoView({ behavior: "smooth", block: "center" });
+          const eq = currentItems.find((i) => String(i.id) === m[1]);
+          if (eq) setTimeout(() => openBookingModal(eq), 400);
+        }
+
         // ---------- Wire up ----------
         document.addEventListener("DOMContentLoaded", () => {
-          loadEquipment();
+          loadEquipment().then(handleHashDeepLink);
           loadToolsTopBanner();
 
           let searchDebounce;
@@ -1472,6 +1630,18 @@
             currentPage = 1;
             loadEquipment();
           });
+
+          $("#apply-filters").addEventListener("click", () => {
+            currentPage = 1;
+            loadEquipment();
+            closeFiltersSheet();
+          });
+          $("#filters-drawer-btn").addEventListener("click", openFiltersSheet);
+          $("#filters-close").addEventListener("click", closeFiltersSheet);
+          $("#filters-sheet-backdrop").addEventListener(
+            "click",
+            closeFiltersSheet,
+          );
 
           // Favorites filter — switches the data source. Same UX as basket.html.
           const favBtn = $("#filter-favorites-toggle");

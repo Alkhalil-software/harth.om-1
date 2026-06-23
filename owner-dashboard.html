@@ -24,46 +24,53 @@
         padding: 0 16px;
       }
       .dash-card {
-        background: rgba(255, 255, 255, 0.92);
-        color: #1a1a1a;
-        border-radius: 16px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        background: var(--surface-glass);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        color: var(--color-text);
+        border: var(--border-width) solid var(--border-soft);
+        border-radius: var(--r-lg);
+        padding: var(--sp-5);
+        margin-bottom: var(--sp-5);
+        box-shadow: var(--shadow-md);
       }
       .dash-card h2 {
-        margin: 0 0 14px;
-        color: #2d5016;
-        border-bottom: 2px solid #6ab04c;
-        padding-bottom: 8px;
+        margin: 0 0 var(--sp-4);
+        color: var(--color-text);
+        border-bottom: 2px solid var(--color-brand-500);
+        padding-bottom: var(--sp-2);
+        font-size: var(--fs-lg);
       }
       .dash-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: var(--sp-5);
       }
       /* ── Premium Equipment Cards ─────────────────────────── */
       .equip-card {
-        background: #fff;
-        border-radius: 20px;
+        background: var(--surface-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: var(--r-lg);
         overflow: hidden;
-        box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        box-shadow: var(--shadow-md);
+        transition: transform var(--dur-base) var(--ease-standard),
+          box-shadow var(--dur-base) var(--ease-standard);
         display: flex;
         flex-direction: column;
-        border: 1px solid rgba(106,176,76,0.12);
+        border: var(--border-width) solid var(--border-soft);
         position: relative;
       }
       .equip-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 14px 36px rgba(0,0,0,0.13);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
       }
       /* Media */
       .eq-media {
         position: relative;
-        height: 200px;
+        height: 190px;
         overflow: hidden;
-        background: linear-gradient(135deg,#e8f5e0,#d0e8c0);
+        background: var(--color-neutral-700);
         flex-shrink: 0;
       }
       .eq-media img {
@@ -82,15 +89,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #6ab04c;
-        opacity: 0.5;
+        color: var(--color-text-soft);
+        opacity: 0.6;
         font-size: 48px;
       }
       /* Floating badges over image */
       .eq-badges {
         position: absolute;
-        top: 10px;
-        inset-inline-start: 10px;
+        top: var(--sp-2);
+        inset-inline-start: var(--sp-2);
         display: flex;
         flex-direction: column;
         gap: 5px;
@@ -115,8 +122,8 @@
       /* Status pill top-right */
       .eq-status-pill {
         position: absolute;
-        top: 10px;
-        inset-inline-end: 10px;
+        top: var(--sp-2);
+        inset-inline-end: var(--sp-2);
         display: inline-flex;
         align-items: center;
         gap: 5px;
@@ -135,15 +142,15 @@
       .eq-s-hidden      { background:rgba(150,150,150,0.93); color:#fff; }
       /* Card body */
       .eq-body {
-        padding: 16px;
+        padding: var(--sp-4);
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: var(--sp-2);
       }
       .eq-cat {
         font-size: 11px;
-        color: #6ab04c;
+        color: var(--color-brand-500);
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.7px;
@@ -152,9 +159,9 @@
         gap: 5px;
       }
       .eq-name {
-        font-size: 16px;
+        font-size: var(--fs-md);
         font-weight: 700;
-        color: #1a2e10;
+        color: var(--color-text);
         margin: 0;
         line-height: 1.3;
       }
@@ -165,34 +172,34 @@
         gap: 4px;
         margin-top: 2px;
       }
-      .eq-price-main  { font-size: 22px; font-weight: 800; color:#2d5016; }
-      .eq-price-unit  { font-size: 13px; color:#888; }
-      .eq-price-extra { font-size: 13px; color:#3498db; font-weight:600; }
+      .eq-price-main  { font-size: var(--fs-xl); font-weight: 800; color: var(--color-accent-500); }
+      .eq-price-unit  { font-size: 13px; color: var(--color-text-soft); }
+      .eq-price-extra { font-size: 13px; color: var(--color-info-500); font-weight:600; }
       .eq-meta-row {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
         font-size: 12px;
-        color: #777;
+        color: var(--color-text-muted);
       }
       .eq-meta-row span {
         display: inline-flex;
         align-items: center;
         gap: 4px;
       }
-      .eq-meta-row i { color:#6ab04c; width:12px; text-align:center; }
+      .eq-meta-row i { color: var(--color-brand-500); width:12px; text-align:center; }
       /* Action buttons */
       .eq-actions {
         display: flex;
         gap: 6px;
         margin-top: auto;
-        padding-top: 4px;
+        padding-top: var(--sp-1);
       }
       .eq-btn {
         flex: 1;
         padding: 9px 8px;
         border: none;
-        border-radius: 10px;
+        border-radius: var(--r-sm);
         cursor: pointer;
         font-family: inherit;
         font-size: 12px;
@@ -213,42 +220,52 @@
       .badge { display:none; }
 
       /* ── Technical specs accordion ── */
-      .specs-acc { margin-top:16px; border:1px solid rgba(106,176,76,.35); border-radius:12px; overflow:hidden; background:#fff; }
-      .specs-acc summary { cursor:pointer; padding:13px 18px; font-weight:700; color:#2d5016; font-size:14px; background:#f0f9f0; list-style:none; display:flex; align-items:center; gap:8px; user-select:none; }
+      .specs-acc { margin-top: var(--sp-4); border: var(--border-width) solid var(--border-soft); border-radius: var(--r-md); overflow:hidden; background: var(--surface-2); }
+      .specs-acc summary { cursor:pointer; padding:13px 18px; font-weight:700; color: var(--color-text); font-size:14px; background: var(--surface-3); list-style:none; display:flex; align-items:center; gap:8px; user-select:none; }
       .specs-acc summary::-webkit-details-marker { display:none; }
       .specs-acc summary .acc-arrow { margin-inline-start:auto; font-size:11px; transition:transform .22s; }
       .specs-acc[open] summary .acc-arrow { transform:rotate(-180deg); }
-      .specs-acc .acc-body { padding:18px; }
-      .specs-sub { font-weight:700; color:#2d5016; font-size:13px; margin:16px 0 10px; padding-top:14px; border-top:1px dashed #c8e6c9; display:flex; align-items:center; gap:6px; }
+      .specs-acc .acc-body { padding: var(--sp-5); }
+      .specs-sub { font-weight:700; color: var(--color-text); font-size:13px; margin:16px 0 10px; padding-top:14px; border-top: 1px dashed var(--border-soft); display:flex; align-items:center; gap:6px; }
       .specs-sub:first-child { margin-top:0; padding-top:0; border:none; }
-      .pdf-drop { border:2px dashed rgba(106,176,76,.5); border-radius:9px; padding:14px 16px; background:#f8fff8; margin-top:8px; }
-      .pdf-file-info { display:flex; align-items:center; gap:8px; margin-top:8px; padding:8px 12px; background:#fff; border:1px solid #dce; border-radius:7px; font-size:12px; color:#444; }
-      .pdf-file-info i { color:#e74c3c; font-size:16px; }
+      .pdf-drop { border: 2px dashed var(--color-brand-500); border-radius: var(--r-sm); padding:14px 16px; background: var(--surface-2); margin-top:8px; }
+      .pdf-file-info { display:flex; align-items:center; gap:8px; margin-top:8px; padding:8px 12px; background: var(--surface-2); border: var(--border-width) solid var(--border-soft); border-radius: var(--r-sm); font-size:12px; color: var(--color-text-muted); }
+      .pdf-file-info i { color: var(--color-danger-500); font-size:16px; }
       .pdf-current-link { margin-top:6px; font-size:12px; }
-      .pdf-current-link a { color:#6ab04c; text-decoration:none; }
+      .pdf-current-link a { color: var(--color-brand-500); text-decoration:none; }
       .pdf-current-link a:hover { text-decoration:underline; }
 
       /* Form */
       .form-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 12px;
+        gap: var(--sp-3);
       }
       .form-grid label {
         display: flex;
         flex-direction: column;
-        font-size: 14px;
-        color: #333;
+        font-size: var(--fs-sm);
+        color: var(--color-text-muted);
       }
       .form-grid input,
       .form-grid select,
       .form-grid textarea {
-        padding: 8px 10px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
+        padding: var(--sp-3) var(--sp-3);
+        background: var(--surface-2);
+        color: var(--color-text);
+        border: var(--border-width) solid var(--border-soft);
+        border-radius: var(--r-sm);
         font-family: inherit;
-        font-size: 14px;
+        font-size: var(--fs-sm);
         margin-top: 4px;
+        transition: border-color var(--dur-fast);
+      }
+      .form-grid input:focus,
+      .form-grid select:focus,
+      .form-grid textarea:focus {
+        outline: none;
+        border-color: var(--color-brand-500);
+        box-shadow: 0 0 0 3px rgba(106, 176, 76, 0.1);
       }
       .form-grid textarea {
         grid-column: 1 / -1;
@@ -256,28 +273,36 @@
       }
       .form-actions {
         display: flex;
-        gap: 10px;
-        margin-top: 12px;
+        gap: var(--sp-3);
+        margin-top: var(--sp-3);
       }
       .btn-save {
-        background: #6ab04c;
+        background: var(--color-brand-500);
         color: #fff;
         border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
+        padding: var(--sp-3) var(--sp-5);
+        border-radius: var(--r-md);
         font-family: inherit;
         font-weight: 700;
         cursor: pointer;
+        transition: background var(--dur-fast);
+      }
+      .btn-save:hover {
+        background: var(--color-brand-600);
       }
       .btn-cancel {
-        background: #95a5a6;
+        background: var(--color-neutral-600);
         color: #fff;
         border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
+        padding: var(--sp-3) var(--sp-5);
+        border-radius: var(--r-md);
         font-family: inherit;
         font-weight: 700;
         cursor: pointer;
+        transition: background var(--dur-fast);
+      }
+      .btn-cancel:hover {
+        background: var(--color-neutral-700);
       }
       .image-preview {
         display: flex;
@@ -289,9 +314,9 @@
         position: relative;
         width: 80px;
         height: 80px;
-        border-radius: 8px;
+        border-radius: var(--r-sm);
         overflow: hidden;
-        border: 2px solid #ddd;
+        border: 2px solid var(--border-soft);
       }
       .image-preview .thumb img {
         width: 100%;
@@ -314,13 +339,13 @@
         font-size: 12px;
       }
       .image-preview .thumb.primary {
-        border-color: #6ab04c;
+        border-color: var(--color-brand-500);
       }
       .image-preview .thumb .primary-badge {
         position: absolute;
         bottom: 2px;
         inset-inline-start: 2px;
-        background: #6ab04c;
+        background: var(--color-brand-500);
         color: #fff;
         font-size: 10px;
         padding: 1px 6px;
@@ -332,11 +357,11 @@
         bottom: 24px;
         inset-inline-start: 50%;
         transform: translateX(-50%);
-        background: #2d5016;
+        background: var(--color-brand-700);
         color: #fff;
         padding: 12px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        border-radius: var(--r-md);
+        box-shadow: var(--shadow-lg);
         z-index: 1000;
         opacity: 0;
         transition: opacity 0.2s;
@@ -347,101 +372,119 @@
         opacity: 1;
       }
       #toast.error {
-        background: #c0392b;
+        background: var(--color-danger-600, #c0392b);
       }
 
       .empty-state {
         text-align: center;
         padding: 40px 20px;
-        color: #666;
+        color: var(--color-text-muted);
       }
       .empty-state i {
         font-size: 48px;
-        color: #6ab04c;
+        color: var(--color-brand-500);
         margin-bottom: 12px;
       }
 
       .stats-row {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 12px;
-        margin-bottom: 16px;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-4);
       }
       .stat-box {
-        background: linear-gradient(135deg, #6ab04c, #2d5016);
-        color: #fff;
-        padding: 16px;
-        border-radius: 12px;
+        background: var(--surface-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: var(--border-width) solid var(--border-soft);
+        color: var(--color-text);
+        padding: var(--sp-4);
+        border-radius: var(--r-lg);
         text-align: center;
       }
       .stat-box .num {
         font-size: 28px;
-        font-weight: 700;
+        font-weight: 800;
+        color: var(--color-accent-500);
       }
       .stat-box .label {
         font-size: 13px;
-        opacity: 0.9;
+        color: var(--color-text-muted);
       }
 
       .pagination {
         display: flex;
-        gap: 8px;
+        gap: var(--sp-2);
         justify-content: center;
-        margin-top: 16px;
+        margin-top: var(--sp-4);
         flex-wrap: wrap;
       }
       .pagination button {
-        padding: 6px 12px;
-        border: 1px solid #6ab04c;
-        background: #fff;
-        color: #2d5016;
-        border-radius: 6px;
+        min-width: 2.4rem;
+        height: 2.4rem;
+        padding: 0 10px;
+        background: var(--surface-2);
+        color: var(--color-text-muted);
+        border: var(--border-width) solid var(--border-subtle);
+        border-radius: var(--r-md);
         cursor: pointer;
         font-family: inherit;
+        font-size: var(--fs-sm);
+        transition: all var(--dur-fast);
+      }
+      .pagination button:hover:not(:disabled) {
+        background: var(--surface-3);
+        color: var(--color-text);
       }
       .pagination button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
       }
       .pagination button.active {
-        background: #6ab04c;
+        background: var(--color-brand-500);
         color: #fff;
+        border-color: var(--color-brand-600);
       }
 
       .login-gate {
         max-width: 420px;
         margin: 60px auto;
-        padding: 30px;
-        background: rgba(255, 255, 255, 0.95);
-        color: #1a1a1a;
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        padding: var(--sp-6);
+        background: var(--surface-glass);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        color: var(--color-text);
+        border: var(--border-width) solid var(--border-soft);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow-lg);
       }
       .login-gate h2 {
-        color: #2d5016;
+        color: var(--color-text);
         margin-top: 0;
       }
       .login-gate input {
         width: 100%;
-        padding: 10px;
-        margin: 8px 0;
-        border: 1px solid #ccc;
-        border-radius: 8px;
+        padding: var(--sp-3);
+        margin: var(--sp-2) 0;
+        background: var(--surface-2);
+        color: var(--color-text);
+        border: var(--border-width) solid var(--border-soft);
+        border-radius: var(--r-sm);
         font-family: inherit;
         box-sizing: border-box;
       }
       .login-gate button {
         width: 100%;
-        padding: 12px;
-        background: #6ab04c;
+        padding: var(--sp-3);
+        background: var(--color-brand-500);
         color: #fff;
         border: none;
-        border-radius: 8px;
+        border-radius: var(--r-sm);
         font-family: inherit;
         font-weight: 700;
-        font-size: 16px;
+        font-size: var(--fs-md);
         cursor: pointer;
-        margin-top: 8px;
+        margin-top: var(--sp-2);
       }
       .hidden {
         display: none !important;
@@ -449,15 +492,17 @@
 
       .filter-bar {
         display: flex;
-        gap: 10px;
+        gap: var(--sp-3);
         flex-wrap: wrap;
-        margin-bottom: 12px;
+        margin-bottom: var(--sp-3);
       }
       .filter-bar select,
       .filter-bar input {
-        padding: 6px 10px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
+        padding: var(--sp-2) var(--sp-3);
+        background: var(--surface-2);
+        color: var(--color-text);
+        border: var(--border-width) solid var(--border-soft);
+        border-radius: var(--r-sm);
         font-family: inherit;
       }
 
@@ -572,7 +617,7 @@
     <!-- ========== LOGIN GATE (shown if not logged in) ========== -->
     <section id="login-section" class="login-gate hidden">
       <h2><i class="fas fa-user-shield"></i> تسجيل دخول المالك</h2>
-      <p style="color: #666; font-size: 14px">
+      <p style="color: var(--color-text-muted); font-size: 14px">
         هذه اللوحة مخصّصة لأصحاب المعدات. سجّل دخولك بحساب مالك.
       </p>
       <input type="email" id="login-email" placeholder="البريد الإلكتروني" />
@@ -709,7 +754,7 @@
                  listing_type='sale' — it makes no sense to hold a deposit
                  against a sale. -->
             <label id="f-deposit-wrap">
-              تأمين قابل للاسترداد (ريال) <small style="color:#777">— اختياري</small>
+              تأمين قابل للاسترداد (ريال) <small style="color:var(--color-text-soft)">— اختياري</small>
               <input
                 type="number"
                 id="f-deposit-amount"
@@ -717,7 +762,7 @@
                 step="0.01"
                 placeholder="مثال: 50.00"
               />
-              <small style="color:#777;display:block;margin-top:4px">
+              <small style="color:var(--color-text-soft);display:block;margin-top:4px">
                 يُحجز من المستأجر عند الحجز ويُعاد عند إرجاع المعدة سليمة.
                 ينطبق فقط على المعدات للإيجار.
               </small>
@@ -757,7 +802,7 @@
           <details class="specs-acc" id="tech-specs-acc">
             <summary>
               <i class="fas fa-cogs"></i> المواصفات الفنية التفصيلية
-              <small style="color:#888;font-weight:400;margin-inline-start:4px">(اختياري — لتوليد الملف الفني PDF)</small>
+              <small style="color:var(--color-text-soft);font-weight:400;margin-inline-start:4px">(اختياري — لتوليد الملف الفني PDF)</small>
               <span class="acc-arrow">▼</span>
             </summary>
             <div class="acc-body">
@@ -808,12 +853,12 @@
 
               <p class="specs-sub"><i class="fas fa-file-pdf"></i> ملف PDF الرسمي (اختياري)</p>
               <div class="pdf-drop">
-                <small style="color:#666;display:block;margin-bottom:8px">ارفع كتالوج الشركة أو دليل التشغيل أو الملف التقني الرسمي (PDF حتى 20 ميجابايت)</small>
+                <small style="color:var(--color-text-muted);display:block;margin-bottom:8px">ارفع كتالوج الشركة أو دليل التشغيل أو الملف التقني الرسمي (PDF حتى 20 ميجابايت)</small>
                 <input type="file" id="f-datasheet-pdf" accept="application/pdf">
                 <div id="pdf-upload-info" style="display:none" class="pdf-file-info">
                   <i class="fas fa-file-pdf"></i>
                   <span id="pdf-upload-name"></span>
-                  <span id="pdf-upload-size" style="color:#888;margin-inline-start:auto"></span>
+                  <span id="pdf-upload-size" style="color:var(--color-text-soft);margin-inline-start:auto"></span>
                 </div>
                 <input type="hidden" id="f-datasheet-pdf-url">
                 <div id="pdf-current-link" class="pdf-current-link"></div>
@@ -824,7 +869,7 @@
 
           <!-- Image upload -->
           <div style="margin-top: 12px">
-            <label style="display: block; margin-bottom: 6px; color: #333">
+            <label style="display: block; margin-bottom: 6px; color: var(--color-text-muted)">
               الصور (يمكن إضافة حتى 10 صور)
             </label>
             <input
@@ -834,7 +879,7 @@
               multiple
             />
             <div id="image-preview" class="image-preview"></div>
-            <small style="color: #666"
+            <small style="color: var(--color-text-muted)"
               >اضغط على صورة لجعلها الصورة الرئيسية</small
             >
           </div>
@@ -875,14 +920,7 @@
           </select>
           <button
             id="filter-refresh"
-            style="
-              padding: 6px 14px;
-              border: 1px solid #6ab04c;
-              background: #fff;
-              color: #2d5016;
-              border-radius: 6px;
-              cursor: pointer;
-            "
+            class="hs-btn hs-btn--secondary hs-btn--sm"
           >
             <i class="fas fa-sync"></i> تحديث
           </button>
@@ -1527,7 +1565,7 @@
             if (eq.sale_price != null && eq.sale_price !== "") {
               priceHtml += `<span class="eq-price-extra">${eq.daily_price ? " · " : ""}بيع: ${Number(eq.sale_price).toFixed(2)} ر.ع</span>`;
             }
-            if (!priceHtml) priceHtml = `<span class="eq-price-unit" style="color:#aaa">بدون سعر</span>`;
+            if (!priceHtml) priceHtml = `<span class="eq-price-unit" style="color:var(--color-text-soft)">بدون سعر</span>`;
 
             const card = document.createElement("div");
             card.className = "equip-card";
